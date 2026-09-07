@@ -27,9 +27,7 @@ body {
     margin: 0;
 }
 
-/* ==========================================
-   FULLSCREEN MOBILE SCREEN CONTAINER
-   ========================================== */
+/* FULLSCREEN MOBILE SCREEN CONTAINER */
 .app-screen {
     width: 100vw;
     min-height: 100vh;
@@ -43,9 +41,7 @@ body {
     flex-direction: column;
 }
 
-/* ==========================================
-   PAGE 1: ONBOARDING (index.html)
-   ========================================== */
+/* PAGE 1: ONBOARDING */
 .onboarding-screen {
     background: #F2F2F4;
     padding: 40px 24px 30px;
@@ -122,9 +118,7 @@ body {
     transform: scale(0.97);
 }
 
-/* ==========================================
-   PAGE 2: CATALOG (catalog.html)
-   ========================================== */
+/* PAGE 2: CATALOG */
 .catalog-screen {
     padding: 20px 18px 110px 18px;
     overflow-y: auto;
@@ -287,9 +281,7 @@ body {
     font-weight: 600;
 }
 
-/* ==========================================
-   iOS 26 LIQUID GLASS BOTTOM NAV (FIXED)
-   ========================================== */
+/* iOS 26 LIQUID GLASS BOTTOM NAV */
 .bottom-nav {
     position: fixed !important;
     bottom: 16px;
@@ -334,9 +326,7 @@ body {
     transform: translateY(-2px);
 }
 
-/* ==========================================
-   PAGE 3: PRODUCT DETAIL (detail.html)
-   ========================================== */
+/* PAGE 3: PRODUCT DETAIL */
 .detail-screen {
     padding: 20px 20px 90px 20px;
     display: flex;
@@ -484,9 +474,7 @@ body {
     cursor: pointer;
 }
 
-/* ==========================================
-   PAGE 4: ADMIN (admin.html) - UPDATED
-   ========================================== */
+/* PAGE 4: ADMIN (MODIFIKASYON FOTO, POPUP & REMOVE) */
 .admin-screen {
     padding: 20px 20px 40px 20px;
     overflow-y: auto;
@@ -524,7 +512,6 @@ body {
     box-shadow: var(--shadow-soft);
 }
 
-/* REKTANG FOTO AK PLUS */
 .image-upload-box {
     width: 100%;
     height: 110px;
@@ -577,7 +564,6 @@ body {
     border: 1px solid #E5E7EB;
 }
 
-/* KATEGORI POP-UP SELECTOR */
 .category-select-btn {
     width: 100%;
     background: var(--card-white);
@@ -655,6 +641,57 @@ body {
     cursor: pointer;
 }
 
-.cat-option:active {
-    background: #EFEFEF;
+/* LIS ADMIN POU REMOVE PWODUI */
+.admin-product-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.admin-product-item {
+    background: var(--card-white);
+    border-radius: 16px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow-soft);
+}
+
+.admin-prod-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.admin-prod-info img {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.admin-prod-details h5 {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text-dark);
+}
+
+.admin-prod-details span {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-gray);
+}
+
+.btn-remove-prod {
+    background: #FEE2E2;
+    color: #EF4444;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 }

@@ -59,27 +59,58 @@ const defaultProducts = [
     }
 ];
 
-// Pran pwodui yo nan LocalStorage
 function getProducts() {
     const saved = localStorage.getItem('nike_products');
     return saved ? JSON.parse(saved) : defaultProducts;
 }
 
-// Sove nan LocalStorage
 function saveProducts(products) {
     localStorage.setItem('nike_products', JSON.stringify(products));
 }
 
-// Redirèksyon pou paj detay
+// 3. LOJIK REMOVE / EFASER PWODUI
+function removeProduct(id) {
+    if (confirm("Èske w sèten ou vle siprime pwodui sa a?")) {
+        let products = getProducts();
+        products = products.filter(p => p.id !== id);
+        saveProducts(products);
+        renderAdminProductList();
+    }
+}
+
+function renderAdminProductList() {
+    const listContainer = document.getElementById('adminProductList');
+    if (listContainer) {
+        const products = getProducts();
+        if (products.length === 0) {
+            listContainer.innerHTML = `<p style="font-size:12px; color:var(--text-gray);">Pa gen okenn pwodui.</p>`;
+            return;
+        }
+        listContainer.innerHTML = products.map(p => `
+            <div class="admin-product-item">
+                <div class="admin-prod-info">
+                    <img src="${p.images[0] || 'https://via.placeholder.com/150'}" alt="${p.name}">
+                    <div class="admin-prod-details">
+                        <h5>${p.name}</h5>
+                        <span>$${p.price} • ${p.category}</span>
+                    </div>
+                </div>
+                <button class="btn-remove-prod" onclick="removeProduct(${p.id})">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
+        `).join('');
+    }
+}
+
 function openDetail(id) {
     window.location.href = `detail.html?id=${id}`;
 }
 
-// Ekzekisyon lè paj la chaje
 document.addEventListener('DOMContentLoaded', () => {
     const products = getProducts();
 
-    // 1. SI NOU SOU PAJ CATALOG
+    // CATALOG PAGE
     const productGrid = document.querySelector('.product-grid');
     if (productGrid) {
         productGrid.innerHTML = products.map(p => `
@@ -94,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
     }
 
-    // 2. SI NOU SOU PAJ DETAIL
+    // DETAIL PAGE
     if (window.location.pathname.includes('detail.html')) {
         const urlParams = new URLSearchParams(window.location.search);
         const productId = parseInt(urlParams.get('id')) || 1;
@@ -129,7 +160,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 3. SI NOU SOU PAJ ADMIN (Fòm)
+    // ADMIN PAGE
+    renderAdminProductList();
+
     const addForm = document.getElementById('addProductForm');
     if (addForm) {
         addForm.addEventListener('submit', (e) => {
