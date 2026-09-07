@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="ht">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nike - Ajoute Pwodui</title>
+    <title>Nike - Ajoute ak Jere Pwodui</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -14,12 +14,12 @@
             <button class="icon-btn" onclick="location.href='catalog.html'">
                 <i class="fa-solid fa-arrow-left"></i>
             </button>
-            <h3 style="font-weight: 800; font-size: 16px;">Ajoute Pwodui</h3>
+            <h3 style="font-weight: 800; font-size: 16px;">Jere Pwodui</h3>
             <div style="width: 48px;"></div>
         </div>
 
         <form id="addProductForm" class="admin-form">
-            <!-- 1. ADD FOTO (AN PREMYE KATANGL AK PLUS) -->
+            <!-- 1. ADD FOTO (KATANGL AK PLUS) -->
             <div class="form-group">
                 <label>Foto Pwodwi</label>
                 <div class="image-upload-box" onclick="document.getElementById('product-image').click()">
@@ -44,7 +44,7 @@
                 <input type="number" id="prodPrice" placeholder="ex: 200" required>
             </div>
 
-            <!-- 2. SIZE (MANUYÈL POU EKRI SWA RAD OWA SOULYE) -->
+            <!-- 2. SIZE (MANUYÈL) -->
             <div class="form-group">
                 <label>Gwosè / Size (Ekri yo, separe ak konma)</label>
                 <input type="text" id="prodSizes" placeholder="ex: S, M, L, XL oswa 40, 41, 42" required>
@@ -70,6 +70,14 @@
                 Anregistre Pwodui a
             </button>
         </form>
+
+        <!-- SEKSYON POU EFASER / REMOVE PWODUI YO -->
+        <div class="admin-manage-section">
+            <h4 style="margin: 25px 0 15px 0; font-weight: 800; font-size: 14px; text-transform: uppercase; color: var(--text-gray);">Lis Pwodui (Siprime)</h4>
+            <div id="adminProductList" class="admin-product-list">
+                <!-- Pwodui yo ap parèt isit la ak yon bouton siprime -->
+            </div>
+        </div>
     </div>
 
     <!-- MODAL / POP-UP POU KATEGORI -->
