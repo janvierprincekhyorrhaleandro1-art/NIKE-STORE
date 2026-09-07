@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ht">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,54 +19,81 @@
         </div>
 
         <form id="addProductForm" class="admin-form">
-            <!-- Non ak Pri -->
+            <!-- 1. ADD FOTO (AN PREMYE KATANGL AK PLUS) -->
             <div class="form-group">
-                <label>Non Pwodui an</label>
+                <label>Foto Pwodwi</label>
+                <div class="image-upload-box" onclick="document.getElementById('product-image').click()">
+                    <div class="upload-icon-wrapper">
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                    <span>Ajoute foto</span>
+                    <input type="file" id="product-image" accept="image/*" multiple style="display: none;" onchange="previewImage(event)">
+                </div>
+                <div id="image-preview-container" class="image-preview-container"></div>
+            </div>
+
+            <!-- Non Pwodwi -->
+            <div class="form-group">
+                <label>Non Pwodwi an</label>
                 <input type="text" id="prodName" placeholder="ex: Nike Air Force 1" required>
             </div>
 
+            <!-- Pri -->
             <div class="form-group">
                 <label>Pri ($USD)</label>
                 <input type="number" id="prodPrice" placeholder="ex: 200" required>
             </div>
 
+            <!-- 2. SIZE (MANUYÈL POU EKRI SWA RAD OWA SOULYE) -->
+            <div class="form-group">
+                <label>Gwosè / Size (Ekri yo, separe ak konma)</label>
+                <input type="text" id="prodSizes" placeholder="ex: S, M, L, XL oswa 40, 41, 42" required>
+            </div>
+
+            <!-- Koulè -->
+            <div class="form-group">
+                <label>Koulè (Mete kòd HEX oswa non angle: #1A1A1A, red)</label>
+                <input type="text" id="prodColors" placeholder="#1A1A1A, #EF4444, #3B82F6" required>
+            </div>
+
+            <!-- 3. KATEGORI AN POP-UP -->
             <div class="form-group">
                 <label>Kategori</label>
-                <select id="prodCategory">
-                    <option value="Lifestyle">Lifestyle</option>
-                    <option value="Running">Running</option>
-                    <option value="Tennis">Tennis</option>
-                </select>
-            </div>
-
-            <!-- Foto Pwodui (Miltip URL) -->
-            <div class="form-group">
-                <label>Lyen Foto yo (Mete yon lyen pa liyn)</label>
-                <textarea id="prodImages" rows="3" placeholder="https://image1.jpg&#10;https://image2.jpg" required></textarea>
-            </div>
-
-            <!-- Gwosè (Sizes) -->
-            <div class="form-group">
-                <label>Gwosè ki Disponib (Chwazi sa w genyen)</label>
-                <div class="checkbox-options">
-                    <label><input type="checkbox" value="UK 5.5" class="size-check"> UK 5.5</label>
-                    <label><input type="checkbox" value="UK 6.5" class="size-check" checked> UK 6.5</label>
-                    <label><input type="checkbox" value="UK 8.0" class="size-check"> UK 8.0</label>
-                    <label><input type="checkbox" value="UK 9.5" class="size-check" checked> UK 9.5</label>
-                    <label><input type="checkbox" value="UK 11" class="size-check"> UK 11</label>
+                <div class="category-select-btn" onclick="openCategoryModal()">
+                    <span id="selected-category-text">Chwazi yon kategori...</span>
+                    <i class="fa-solid fa-chevron-right"></i>
                 </div>
-            </div>
-
-            <!-- Koulè (Colors) -->
-            <div class="form-group">
-                <label>Koulè (Mete kòd HEX oswa non angle yo kòm: #1A1A1A, #9084A8, red)</label>
-                <input type="text" id="prodColors" placeholder="#1A1A1A, #EF4444, #3B82F6" required>
+                <input type="hidden" id="prodCategory" value="Sneakers / Soulye">
             </div>
 
             <button type="submit" class="btn-get-started" style="margin-top: 15px; justify-content: center;">
                 Anregistre Pwodui a
             </button>
         </form>
+    </div>
+
+    <!-- MODAL / POP-UP POU KATEGORI -->
+    <div id="category-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Chwazi Kategori</h3>
+                <span class="close-btn" onclick="closeCategoryModal()">&times;</span>
+            </div>
+            <div class="category-options-list">
+                <div class="cat-option" onclick="selectCategory('Sneakers / Soulye')">
+                    <i class="fa-solid fa-shoe-prints"></i> Sneakers / Soulye
+                </div>
+                <div class="cat-option" onclick="selectCategory('Rad / Vêtements')">
+                    <i class="fa-solid fa-shirt"></i> Rad / Vêtements
+                </div>
+                <div class="cat-option" onclick="selectCategory('Akseswa')">
+                    <i class="fa-solid fa-glasses"></i> Akseswa
+                </div>
+                <div class="cat-option" onclick="selectCategory('Lòt Bagay')">
+                    <i class="fa-solid fa-box"></i> Lòt Bagay
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="app.js"></script>
