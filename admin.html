@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nike - Ajoute Pwodui</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-screen admin-screen">
+        <div class="detail-header">
+            <button class="icon-btn" onclick="location.href='catalog.html'">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <h3 style="font-weight: 800; font-size: 16px;">Ajoute Pwodui</h3>
+            <div style="width: 48px;"></div>
+        </div>
+
+        <form id="addProductForm" class="admin-form">
+            <!-- Non ak Pri -->
+            <div class="form-group">
+                <label>Non Pwodui an</label>
+                <input type="text" id="prodName" placeholder="ex: Nike Air Force 1" required>
+            </div>
+
+            <div class="form-group">
+                <label>Pri ($USD)</label>
+                <input type="number" id="prodPrice" placeholder="ex: 200" required>
+            </div>
+
+            <div class="form-group">
+                <label>Kategori</label>
+                <select id="prodCategory">
+                    <option value="Lifestyle">Lifestyle</option>
+                    <option value="Running">Running</option>
+                    <option value="Tennis">Tennis</option>
+                </select>
+            </div>
+
+            <!-- Foto Pwodui (Miltip URL) -->
+            <div class="form-group">
+                <label>Lyen Foto yo (Mete yon lyen pa liyn)</label>
+                <textarea id="prodImages" rows="3" placeholder="https://image1.jpg&#10;https://image2.jpg" required></textarea>
+            </div>
+
+            <!-- Gwosè (Sizes) -->
+            <div class="form-group">
+                <label>Gwosè ki Disponib (Chwazi sa w genyen)</label>
+                <div class="checkbox-options">
+                    <label><input type="checkbox" value="UK 5.5" class="size-check"> UK 5.5</label>
+                    <label><input type="checkbox" value="UK 6.5" class="size-check" checked> UK 6.5</label>
+                    <label><input type="checkbox" value="UK 8.0" class="size-check"> UK 8.0</label>
+                    <label><input type="checkbox" value="UK 9.5" class="size-check" checked> UK 9.5</label>
+                    <label><input type="checkbox" value="UK 11" class="size-check"> UK 11</label>
+                </div>
+            </div>
+
+            <!-- Koulè (Colors) -->
+            <div class="form-group">
+                <label>Koulè (Mete kòd HEX oswa non angle yo kòm: #1A1A1A, #9084A8, red)</label>
+                <input type="text" id="prodColors" placeholder="#1A1A1A, #EF4444, #3B82F6" required>
+            </div>
+
+            <button type="submit" class="btn-get-started" style="margin-top: 15px; justify-content: center;">
+                Anregistre Pwodui a
+            </button>
+        </form>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
