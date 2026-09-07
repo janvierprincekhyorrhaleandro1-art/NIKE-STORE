@@ -19,26 +19,25 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+/* ==========================================
+   FULLSCREEN MOBILE STYLES
+   ========================================== */
 body {
-    background-color: #0F172A; /* Background pou preview sou PC */
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background-color: var(--bg-screen); /* Retire fon nwa an */
+    display: block;                     /* Retire flex centrage an */
     min-height: 100vh;
-    padding: 20px;
+    padding: 0;                         /* Retire tout espas bordure yo */
+    margin: 0;
 }
 
-/* ==========================================
-   PHONE FRAME CONTAINER
-   ========================================== */
 .app-screen {
-    width: 350px;
-    height: 700px;
-    background: var(--bg-screen);
-    border-radius: var(--radius-screen);
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    width: 100vw;                       /* Prann 100% lajè ekran an */
+    min-height: 100vh;                  /* Prann 100% otè ekran an */
+    height: auto;
+    border-radius: 0;                   /* Retire kontou kawoutchou yo */
+    box-shadow: none;                   /* Retire ombraj kòn telefòn lan */
     position: relative;
-    overflow: hidden;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
 }
