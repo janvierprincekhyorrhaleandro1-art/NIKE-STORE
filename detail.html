@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nike - Product Detail</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-screen detail-screen">
+        <div class="detail-header">
+            <button class="icon-btn" style="box-shadow: none;" onclick="location.href='catalog.html'">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <button class="icon-btn" style="box-shadow: none;" onclick="toggleLike(this)">
+                <i class="fa-regular fa-heart"></i>
+            </button>
+        </div>
+
+        <div class="detail-title">
+            <h2 id="productTitle">Loading...</h2>
+        </div>
+
+        <div class="detail-image-box">
+            <img id="productImg" src="" alt="" class="detail-shoe-img">
+        </div>
+
+        <div class="ar-banner">
+            <div class="ar-left">
+                <i class="fa-solid fa-vr-cardboard" style="font-size: 18px;"></i>
+                <span>AR Checkout</span>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="font-size: 12px; color: #8C8C8C;"></i>
+        </div>
+
+        <div class="size-selector">
+            <div class="price-row">
+                <span class="price-tag" id="productPrice">$0</span>
+                <div class="color-dots" id="colorContainer"></div>
+            </div>
+
+            <p style="font-size: 11px; font-weight: 700; color: #8C8C8C;">Size</p>
+            <div class="sizes-row" id="sizeContainer"></div>
+        </div>
+
+        <div class="detail-bottom-sheet">
+            <button class="btn-buy-now" onclick="buyNow()">Buy now</button>
+            <button class="cart-icon-btn" onclick="addToCart()"><i class="fa-solid fa-bag-shopping"></i></button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
