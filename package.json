@@ -1,0 +1,9 @@
+{
+  "name": "nike-store",
+  "version": "1.0.0",
+  "description": "Nike Web Store Application",
+  "main": "index.html",
+  "scripts": {
+    "start": "echo 'Static site, no build step required'"
+  }
+}

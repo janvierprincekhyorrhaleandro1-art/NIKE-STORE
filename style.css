@@ -6,7 +6,7 @@
     --dark-main: #141414;
     --text-dark: #0D0D0D;
     --text-gray: #8C8C8C;
-    --radius-screen: 36px;
+    --radius-screen: 0px;
     --radius-card: 22px;
     --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.06);
 }
@@ -19,23 +19,24 @@
     -webkit-tap-highlight-color: transparent;
 }
 
-/* ==========================================
-   FULLSCREEN MOBILE STYLES
-   ========================================== */
 body {
-    background-color: var(--bg-screen); /* Retire fon nwa an */
-    display: block;                     /* Retire flex centrage an */
+    background-color: var(--bg-screen);
+    display: block;
     min-height: 100vh;
-    padding: 0;                         /* Retire tout espas bordure yo */
+    padding: 0;
     margin: 0;
 }
 
+/* ==========================================
+   FULLSCREEN MOBILE SCREEN CONTAINER
+   ========================================== */
 .app-screen {
-    width: 100vw;                       /* Prann 100% lajè ekran an */
-    min-height: 100vh;                  /* Prann 100% otè ekran an */
+    width: 100vw;
+    min-height: 100vh;
     height: auto;
-    border-radius: 0;                   /* Retire kontou kawoutchou yo */
-    box-shadow: none;                   /* Retire ombraj kòn telefòn lan */
+    background: var(--bg-screen);
+    border-radius: var(--radius-screen);
+    box-shadow: none;
     position: relative;
     overflow-x: hidden;
     display: flex;
@@ -49,6 +50,7 @@ body {
     background: #F2F2F4;
     padding: 40px 24px 30px;
     justify-content: space-between;
+    height: 100vh;
 }
 
 .onboarding-hero {
@@ -124,11 +126,9 @@ body {
    PAGE 2: CATALOG (catalog.html)
    ========================================== */
 .catalog-screen {
-    padding: 20px 18px 80px 18px;
+    padding: 20px 18px 110px 18px;
     overflow-y: auto;
-    scrollbar-width: none;
 }
-.catalog-screen::-webkit-scrollbar { display: none; }
 
 .header-search {
     display: flex;
@@ -290,37 +290,61 @@ body {
     font-weight: 600;
 }
 
-/* Bottom Nav */
+/* ==========================================
+   iOS 26 LIQUID GLASS BOTTOM NAV (FIXED)
+   ========================================== */
 .bottom-nav {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 65px;
-    background: var(--card-white);
+    position: fixed !important;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 32px);
+    max-width: 420px;
+    height: 68px;
+    
+    background: rgba(255, 255, 255, 0.45) !important;
+    backdrop-filter: blur(25px) saturate(200%);
+    -webkit-backdrop-filter: blur(25px) saturate(200%);
+    
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 30px !important;
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+
     display: flex;
     justify-content: space-around;
     align-items: center;
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
-    box-shadow: 0 -5px 20px rgba(0,0,0,0.04);
+    z-index: 9999;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .nav-link {
-    color: var(--text-gray);
+    color: rgba(20, 20, 20, 0.5);
     text-decoration: none;
-    font-size: 18px;
+    font-size: 20px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
 }
 
 .nav-link.active {
-    color: var(--text-dark);
+    color: var(--text-dark) !important;
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
 }
 
 /* ==========================================
    PAGE 3: PRODUCT DETAIL (detail.html)
    ========================================== */
 .detail-screen {
-    padding: 20px 20px 0 20px;
+    padding: 20px 20px 90px 20px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -378,7 +402,7 @@ body {
 
 /* Size & Color Controls */
 .size-selector {
-    margin-bottom: 80px;
+    margin-bottom: 20px;
 }
 
 .price-row {
@@ -399,9 +423,10 @@ body {
 }
 
 .dot {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.1);
 }
 
 .sizes-row {
@@ -428,9 +453,9 @@ body {
     border-color: var(--dark-main);
 }
 
-/* Bottom Sheet Action Bar */
+/* Fixed Bottom Bar */
 .detail-bottom-sheet {
-    position: absolute;
+    position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
@@ -442,6 +467,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    z-index: 100;
 }
 
 .btn-buy-now {
@@ -464,5 +490,67 @@ body {
     align-items: center;
     justify-content: center;
     font-size: 15px;
+    cursor: pointer;
+}
+
+/* ==========================================
+   PAGE 4: ADMIN (admin.html)
+   ========================================== */
+.admin-screen {
+    padding: 20px 20px 40px 20px;
+    overflow-y: auto;
+}
+
+.admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text-gray);
+    text-transform: uppercase;
+}
+
+.form-group input, 
+.form-group select, 
+.form-group textarea {
+    width: 100%;
+    background: var(--card-white);
+    border: 1px solid #E5E7EB;
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    outline: none;
+    box-shadow: var(--shadow-soft);
+}
+
+.checkbox-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: var(--card-white);
+    padding: 12px;
+    border-radius: 14px;
+    box-shadow: var(--shadow-soft);
+}
+
+.checkbox-options label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 4px;
     cursor: pointer;
 }
