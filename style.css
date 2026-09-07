@@ -172,7 +172,6 @@ body {
     color: #333;
 }
 
-/* Featured Banner Card */
 .featured-card {
     background: var(--card-white);
     border-radius: var(--radius-card);
@@ -223,7 +222,6 @@ body {
     filter: drop-shadow(0 10px 10px rgba(0,0,0,0.15));
 }
 
-/* Categories Bar */
 .categories-row {
     display: flex;
     justify-content: space-between;
@@ -242,7 +240,6 @@ body {
     font-weight: 600;
 }
 
-/* Product Grid */
 .product-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -301,18 +298,15 @@ body {
     width: calc(100% - 32px);
     max-width: 420px;
     height: 68px;
-    
     background: rgba(255, 255, 255, 0.45) !important;
     backdrop-filter: blur(25px) saturate(200%);
     -webkit-backdrop-filter: blur(25px) saturate(200%);
-    
     border: 1px solid rgba(255, 255, 255, 0.6);
     border-radius: 30px !important;
     box-shadow: 
         0 20px 40px rgba(0, 0, 0, 0.08),
         inset 0 1px 0 rgba(255, 255, 255, 0.8),
         inset 0 -1px 0 rgba(0, 0, 0, 0.05);
-
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -381,7 +375,6 @@ body {
     filter: drop-shadow(0 20px 20px rgba(0,0,0,0.2));
 }
 
-/* AR Banner */
 .ar-banner {
     background: #EFEFEF;
     border-radius: 16px;
@@ -400,7 +393,6 @@ body {
     font-weight: 800;
 }
 
-/* Size & Color Controls */
 .size-selector {
     margin-bottom: 20px;
 }
@@ -453,7 +445,6 @@ body {
     border-color: var(--dark-main);
 }
 
-/* Fixed Bottom Bar */
 .detail-bottom-sheet {
     position: fixed;
     bottom: 0;
@@ -494,7 +485,7 @@ body {
 }
 
 /* ==========================================
-   PAGE 4: ADMIN (admin.html)
+   PAGE 4: ADMIN (admin.html) - UPDATED
    ========================================== */
 .admin-screen {
     padding: 20px 20px 40px 20px;
@@ -521,9 +512,7 @@ body {
     text-transform: uppercase;
 }
 
-.form-group input, 
-.form-group select, 
-.form-group textarea {
+.form-group input {
     width: 100%;
     background: var(--card-white);
     border: 1px solid #E5E7EB;
@@ -535,22 +524,137 @@ body {
     box-shadow: var(--shadow-soft);
 }
 
-.checkbox-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+/* REKTANG FOTO AK PLUS */
+.image-upload-box {
+    width: 100%;
+    height: 110px;
+    border: 2px dashed #D1D5DB;
+    border-radius: 16px;
     background: var(--card-white);
-    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.image-upload-box:active {
+    background: #EFEFEF;
+}
+
+.upload-icon-wrapper {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #F3F4F6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: var(--dark-main);
+}
+
+.image-upload-box span {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-gray);
+}
+
+.image-preview-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    overflow-x: auto;
+}
+
+.image-preview-container img {
+    width: 65px;
+    height: 65px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid #E5E7EB;
+}
+
+/* KATEGORI POP-UP SELECTOR */
+.category-select-btn {
+    width: 100%;
+    background: var(--card-white);
+    border: 1px solid #E5E7EB;
     border-radius: 14px;
+    padding: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
     box-shadow: var(--shadow-soft);
 }
 
-.checkbox-options label {
-    font-size: 12px;
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: flex-end;
+    z-index: 10000;
+}
+
+.modal-overlay.active { 
+    display: flex; 
+}
+
+.modal-content {
+    background: var(--card-white);
+    width: 100%;
+    border-top-left-radius: 28px;
+    border-top-right-radius: 28px;
+    padding: 20px 24px 35px;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.close-btn {
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-gray);
+}
+
+.category-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cat-option {
+    padding: 14px 16px;
+    background: #F9FAFB;
+    border-radius: 14px;
+    font-size: 14px;
     font-weight: 700;
-    color: var(--text-dark);
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 12px;
     cursor: pointer;
+}
+
+.cat-option:active {
+    background: #EFEFEF;
 }

@@ -1,9 +1,48 @@
+let uploadedImages = [];
+
+// 1. AFFICHE FOTO YO PEZE DEPEN DE FICHYE MOBILE LA
+function previewImage(event) {
+    const container = document.getElementById('image-preview-container');
+    container.innerHTML = '';
+    uploadedImages = [];
+    const files = event.target.files;
+
+    if (files) {
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedImages.push(e.target.result);
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                container.appendChild(img);
+            }
+            reader.readAsDataURL(file);
+        });
+    }
+}
+
+// 2. LOJIK POP-UP KATEGORI
+function openCategoryModal() {
+    document.getElementById('category-modal').classList.add('active');
+}
+
+function closeCategoryModal() {
+    document.getElementById('category-modal').classList.remove('active');
+}
+
+function selectCategory(name) {
+    document.getElementById('selected-category-text').innerText = name;
+    document.getElementById('selected-category-text').style.color = 'var(--text-dark)';
+    document.getElementById('prodCategory').value = name;
+    closeCategoryModal();
+}
+
 // Base de données par défaut
 const defaultProducts = [
     {
         id: 1,
         name: "Nike ACG Mountain",
-        category: "Lifestyle",
+        category: "Sneakers / Soulye",
         price: 180,
         images: ["https://i.ibb.co/D8G4yG8/shoe-grey.png"],
         sizes: ["UK 5.5", "UK 6.5", "UK 9.5", "UK 11"],
@@ -12,7 +51,7 @@ const defaultProducts = [
     {
         id: 2,
         name: "Nike Air Max",
-        category: "Running",
+        category: "Sneakers / Soulye",
         price: 218,
         images: ["https://i.ibb.co/wSRyPTh/shoe-color.png"],
         sizes: ["UK 6.0", "UK 7.5", "UK 8.5"],
@@ -45,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (productGrid) {
         productGrid.innerHTML = products.map(p => `
             <div class="grid-card" onclick="openDetail(${p.id})">
-                <img src="${p.images[0]}" alt="${p.name}">
+                <img src="${p.images[0] || 'https://via.placeholder.com/150'}" alt="${p.name}">
                 <div class="price">$${p.price}</div>
                 <div class="name">${p.name}</div>
                 <button class="like-btn" onclick="event.stopPropagation(); toggleLike(this)">
@@ -66,16 +105,14 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('productPrice').innerText = `$${product.price}`;
             document.getElementById('productImg').src = product.images[0];
 
-            // Galerie ti foto si gen plis pase 1 imaj
             if(product.images.length > 1) {
                 const imgBox = document.querySelector('.detail-image-box');
                 const galleryHTML = product.images.map(img => `
-                    <img src="${img}" style="width: 50px; height: 50px; object-fit: contain; cursor: pointer; border-radius: 8px; border: 1px solid #ddd; background: #fff;" onclick="document.getElementById('productImg').src='${img}'">
+                    <img src="${img}" style="width: 50px; height: 50px; object-fit: cover; cursor: pointer; border-radius: 8px; border: 1px solid #ddd; background: #fff;" onclick="document.getElementById('productImg').src='${img}'">
                 `).join('');
                 imgBox.insertAdjacentHTML('afterend', `<div style="display:flex; justify-content:center; gap:8px; margin-bottom:12px;">${galleryHTML}</div>`);
             }
 
-            // Render Gwosè ak Koulè
             const sizeContainer = document.getElementById('sizeContainer');
             if(sizeContainer) {
                 sizeContainer.innerHTML = product.sizes.map((s, i) => `
@@ -98,18 +135,17 @@ document.addEventListener('DOMContentLoaded', () => {
         addForm.addEventListener('submit', (e) => {
             e.preventDefault();
 
-            const selectedSizes = Array.from(document.querySelectorAll('.size-check:checked')).map(cb => cb.value);
-            const rawImages = document.getElementById('prodImages').value.trim().split('\n').map(url => url.trim()).filter(url => url !== '');
-            const rawColors = document.getElementById('prodColors').value.split(',');
+            const sizesArr = document.getElementById('prodSizes').value.split(',').map(s => s.trim());
+            const colorsArr = document.getElementById('prodColors').value.split(',').map(c => c.trim());
 
             const newProduct = {
                 id: Date.now(),
                 name: document.getElementById('prodName').value,
                 category: document.getElementById('prodCategory').value,
                 price: parseFloat(document.getElementById('prodPrice').value),
-                images: rawImages,
-                sizes: selectedSizes.length ? selectedSizes : ["UK 7.0"],
-                colors: rawColors.length ? rawColors : ["#000000"]
+                images: uploadedImages.length ? uploadedImages : ["https://via.placeholder.com/150"],
+                sizes: sizesArr.length ? sizesArr : ["S", "M", "L"],
+                colors: colorsArr.length ? colorsArr : ["#000000"]
             };
 
             const currentProducts = getProducts();
