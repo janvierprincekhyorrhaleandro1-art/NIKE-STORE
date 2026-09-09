@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nike - Ajoute ak Jere Pwodui</title>
+    <title>Nike - Admin Panel</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -14,92 +14,122 @@
             <button class="icon-btn" onclick="location.href='catalog.html'">
                 <i class="fa-solid fa-arrow-left"></i>
             </button>
-            <h3 style="font-weight: 800; font-size: 16px;">Jere Pwodui</h3>
+            <h3 style="font-weight: 800; font-size: 16px;">Jere Pwodui & Banè</h3>
             <div style="width: 48px;"></div>
         </div>
 
-        <form id="addProductForm" class="admin-form">
-            <!-- 1. ADD FOTO (KATANGL AK PLUS) -->
-            <div class="form-group">
-                <label>Foto Pwodwi</label>
-                <div class="image-upload-box" onclick="document.getElementById('product-image').click()">
-                    <div class="upload-icon-wrapper">
-                        <i class="fa-solid fa-plus"></i>
+        <!-- FORMULAIRE NEW COLLECTION -->
+        <div class="admin-card-section">
+            <h4 class="admin-sec-title">Modifye Banè "New Collection"</h4>
+            <form id="newCollectionForm" class="admin-form">
+                <div class="form-group">
+                    <label>Tit Pwodwi / Banners</label>
+                    <input type="text" id="bannerTitle" placeholder="ex: Nike Air Presto" required>
+                </div>
+                <div class="form-group">
+                    <label>Sous-Tit</label>
+                    <input type="text" id="bannerSub" placeholder="ex: Men's Shoes" required>
+                </div>
+                <div class="form-group">
+                    <label>ID Pwodwi pou l louvri lè yo klike</label>
+                    <input type="number" id="bannerProdId" placeholder="ex: 1" required>
+                </div>
+                <div class="form-group">
+                    <label>Foto Banè</label>
+                    <div class="image-upload-box" onclick="document.getElementById('banner-file').click()">
+                        <i class="fa-solid fa-image"></i>
+                        <span>Chanje foto banè an</span>
+                        <input type="file" id="banner-file" accept="image/*" style="display: none;" onchange="previewBannerImg(event)">
                     </div>
-                    <span>Ajoute foto</span>
-                    <input type="file" id="product-image" accept="image/*" multiple style="display: none;" onchange="previewImage(event)">
+                    <div id="banner-preview" class="image-preview-container"></div>
                 </div>
-                <div id="image-preview-container" class="image-preview-container"></div>
-            </div>
+                <button type="submit" class="btn-get-started" style="justify-content: center; height: 48px;">
+                    Sove Banè a
+                </button>
+            </form>
+        </div>
 
-            <!-- Non Pwodwi -->
-            <div class="form-group">
-                <label>Non Pwodwi an</label>
-                <input type="text" id="prodName" placeholder="ex: Nike Air Force 1" required>
-            </div>
+        <!-- FORMULAIRE PWODUI (AJOUTE OSWA EDIT) -->
+        <div class="admin-card-section" style="margin-top: 25px;">
+            <h4 class="admin-sec-title" id="formActionTitle">Ajoute yon Pwodwi</h4>
+            <form id="addProductForm" class="admin-form">
+                <input type="hidden" id="editProductId" value="">
 
-            <!-- Pri -->
-            <div class="form-group">
-                <label>Pri ($USD)</label>
-                <input type="number" id="prodPrice" placeholder="ex: 200" required>
-            </div>
-
-            <!-- 2. SIZE (MANUYÈL) -->
-            <div class="form-group">
-                <label>Gwosè / Size (Ekri yo, separe ak konma)</label>
-                <input type="text" id="prodSizes" placeholder="ex: S, M, L, XL oswa 40, 41, 42" required>
-            </div>
-
-            <!-- Koulè -->
-            <div class="form-group">
-                <label>Koulè (Mete kòd HEX oswa non angle: #1A1A1A, red)</label>
-                <input type="text" id="prodColors" placeholder="#1A1A1A, #EF4444, #3B82F6" required>
-            </div>
-
-            <!-- 3. KATEGORI AN POP-UP -->
-            <div class="form-group">
-                <label>Kategori</label>
-                <div class="category-select-btn" onclick="openCategoryModal()">
-                    <span id="selected-category-text">Chwazi yon kategori...</span>
-                    <i class="fa-solid fa-chevron-right"></i>
+                <div class="form-group">
+                    <label>Foto Pwodwi (Ou ka chwazi plizyè foto)</label>
+                    <div class="image-upload-box" onclick="document.getElementById('product-image').click()">
+                        <div class="upload-icon-wrapper">
+                            <i class="fa-solid fa-plus"></i>
+                        </div>
+                        <span>Ajoute foto yo</span>
+                        <input type="file" id="product-image" accept="image/*" multiple style="display: none;" onchange="previewImage(event)">
+                    </div>
+                    <div id="image-preview-container" class="image-preview-container"></div>
                 </div>
-                <input type="hidden" id="prodCategory" value="Sneakers / Soulye">
-            </div>
 
-            <button type="submit" class="btn-get-started" style="margin-top: 15px; justify-content: center;">
-                Anregistre Pwodui a
-            </button>
-        </form>
+                <div class="form-group">
+                    <label>Non Pwodwi an</label>
+                    <input type="text" id="prodName" placeholder="ex: Nike Air Force 1" required>
+                </div>
 
-        <!-- SEKSYON POU EFASER / REMOVE PWODUI YO -->
+                <div class="form-group">
+                    <label>Pri ($USD)</label>
+                    <input type="number" id="prodPrice" placeholder="ex: 200" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Gwosè / Size (Ekri yo, separe ak konma)</label>
+                    <input type="text" id="prodSizes" placeholder="ex: UK 6.0, UK 7.5, UK 8.5" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Koulè (Kòd HEX oswa non angle separe ak konma)</label>
+                    <input type="text" id="prodColors" placeholder="#1A1A1A, #EF4444, #3B82F6" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Kategori</label>
+                    <div class="category-select-btn" onclick="openCategoryModal()">
+                        <span id="selected-category-text">Chwazi yon kategori...</span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
+                    <input type="hidden" id="prodCategory" value="">
+                </div>
+
+                <button type="submit" id="submitProdBtn" class="btn-get-started" style="margin-top: 15px; justify-content: center; height: 50px;">
+                    Anregistre Pwodui a
+                </button>
+                <button type="button" id="cancelEditBtn" onclick="resetForm()" class="btn-get-started" style="margin-top: 8px; justify-content: center; height: 42px; background: #E5E7EB; color: #333; display: none;">
+                    Anule Modifikasyon
+                </button>
+            </form>
+        </div>
+
+        <!-- LIS PWODUI AK EDIT / REMOVE -->
         <div class="admin-manage-section">
-            <h4 style="margin: 25px 0 15px 0; font-weight: 800; font-size: 14px; text-transform: uppercase; color: var(--text-gray);">Lis Pwodui (Siprime)</h4>
+            <h4 style="margin: 25px 0 15px 0; font-weight: 800; font-size: 14px; text-transform: uppercase; color: var(--text-gray);">Lis Pwodui</h4>
             <div id="adminProductList" class="admin-product-list">
-                <!-- Pwodui yo ap parèt isit la ak yon bouton siprime -->
+                <!-- Dynamique -->
             </div>
         </div>
     </div>
 
-    <!-- MODAL / POP-UP POU KATEGORI -->
+    <!-- MODAL / POP-UP KATEGORI POU ADMIN -->
     <div id="category-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Chwazi Kategori</h3>
+                <h3>Jere Kategori Yo</h3>
                 <span class="close-btn" onclick="closeCategoryModal()">&times;</span>
             </div>
-            <div class="category-options-list">
-                <div class="cat-option" onclick="selectCategory('Sneakers / Soulye')">
-                    <i class="fa-solid fa-shoe-prints"></i> Sneakers / Soulye
-                </div>
-                <div class="cat-option" onclick="selectCategory('Rad / Vêtements')">
-                    <i class="fa-solid fa-shirt"></i> Rad / Vêtements
-                </div>
-                <div class="cat-option" onclick="selectCategory('Akseswa')">
-                    <i class="fa-solid fa-glasses"></i> Akseswa
-                </div>
-                <div class="cat-option" onclick="selectCategory('Lòt Bagay')">
-                    <i class="fa-solid fa-box"></i> Lòt Bagay
-                </div>
+            
+            <!-- Ajoute kategori -->
+            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                <input type="text" id="newCategoryInput" placeholder="Non nouvo kategori..." style="flex:1; padding:10px; border-radius:12px; border:1px solid #E5E7EB; font-weight:600; font-size:12px;">
+                <button onclick="addNewCategory()" style="padding:10px 15px; background:var(--dark-main); color:#fff; border:none; border-radius:12px; font-weight:700; cursor:pointer;">Ajoute</button>
+            </div>
+
+            <div class="category-options-list" id="adminCategoryOptionsList">
+                <!-- Dynamique -->
             </div>
         </div>
     </div>

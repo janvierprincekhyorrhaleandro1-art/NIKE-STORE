@@ -14,7 +14,7 @@
             <button class="icon-btn" style="box-shadow: none;" onclick="location.href='catalog.html'">
                 <i class="fa-solid fa-arrow-left"></i>
             </button>
-            <button class="icon-btn" style="box-shadow: none;" onclick="toggleLike(this)">
+            <button class="icon-btn" style="box-shadow: none;" id="detailLikeBtn" onclick="toggleDetailLike()">
                 <i class="fa-regular fa-heart"></i>
             </button>
         </div>
@@ -27,27 +27,18 @@
             <img id="productImg" src="" alt="" class="detail-shoe-img">
         </div>
 
-        <div class="ar-banner">
-            <div class="ar-left">
-                <i class="fa-solid fa-vr-cardboard" style="font-size: 18px;"></i>
-                <span>AR Checkout</span>
-            </div>
-            <i class="fa-solid fa-chevron-right" style="font-size: 12px; color: #8C8C8C;"></i>
-        </div>
-
         <div class="size-selector">
             <div class="price-row">
                 <span class="price-tag" id="productPrice">$0</span>
                 <div class="color-dots" id="colorContainer"></div>
             </div>
 
-            <p style="font-size: 11px; font-weight: 700; color: #8C8C8C;">Size</p>
+            <p style="font-size: 11px; font-weight: 700; color: #8C8C8C; margin-top: 10px;">Size</p>
             <div class="sizes-row" id="sizeContainer"></div>
         </div>
 
         <div class="detail-bottom-sheet">
-            <button class="btn-buy-now" onclick="buyNow()">Buy now</button>
-            <button class="cart-icon-btn" onclick="addToCart()"><i class="fa-solid fa-bag-shopping"></i></button>
+            <button class="btn-buy-now" onclick="addToCartFromDetail()" style="width: 100%; text-align: center;">Add to Cart</button>
         </div>
     </div>
 

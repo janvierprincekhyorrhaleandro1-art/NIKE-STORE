@@ -13,48 +13,41 @@
         <div class="header-search">
             <div class="search-input-wrapper">
                 <i class="fa-solid fa-magnifying-glass" style="color: #A0A0A0;"></i>
-                <input type="text" placeholder="Search" id="searchInput">
+                <input type="text" placeholder="Search product..." id="searchInput" oninput="handleSearch()">
             </div>
-            <button class="icon-btn"><i class="fa-solid fa-camera"></i></button>
-            <button class="icon-btn"><i class="fa-sliders"></i></button>
+            <button class="icon-btn" onclick="openCategoryModal()"><i class="fa-solid fa-layer-group"></i></button>
+            <button class="icon-btn" onclick="openCategoryModal()"><i class="fa-solid fa-sliders"></i></button>
         </div>
 
-        <div class="featured-card" onclick="openDetail(1)">
-            <span class="badge">NEW COLLECTION</span>
-            <p style="font-size: 9px; color: #8C8C8C;">Nike Original 2026</p>
-            <h3>Nike Air Presto</h3>
-            <p class="subtitle">Men's Shoes</p>
-            <button class="btn-shop-now">Shop Now</button>
-            <img src="https://i.ibb.co/2N4X33q/shoe-red.png" alt="Nike Air Presto" class="featured-shoe-img">
+        <!-- NEW COLLECTION CARD (DYNAMIK) -->
+        <div class="featured-card" id="featuredCardContainer">
+            <!-- Injecter ak JavaScript -->
         </div>
 
-        <div class="categories-row">
-            <div class="cat-item"><h4>Lifestyle</h4><p>60 items</p></div>
-            <div class="cat-item"><h4 style="color: #8C8C8C;">Running</h4><p>45 items</p></div>
-            <div class="cat-item"><h4 style="color: #8C8C8C;">Tennis</h4><p>30 items</p></div>
+        <!-- PRODUCT GRID -->
+        <div class="product-grid" id="catalogProductGrid">
+            <!-- Injecter ak JavaScript -->
         </div>
 
-        <div class="product-grid">
-            <div class="grid-card" onclick="openDetail(1)">
-                <img src="https://i.ibb.co/D8G4yG8/shoe-grey.png" alt="Nike ACG">
-                <div class="price">$180</div>
-                <div class="name">Nike ACG Mountain</div>
-                <button class="like-btn" onclick="event.stopPropagation(); toggleLike(this)"><i class="fa-regular fa-heart"></i></button>
-            </div>
-
-            <div class="grid-card" onclick="openDetail(2)">
-                <img src="https://i.ibb.co/wSRyPTh/shoe-color.png" alt="Nike Air Max">
-                <div class="price">$218</div>
-                <div class="name">Nike Air Max</div>
-                <button class="like-btn" onclick="event.stopPropagation(); toggleLike(this)"><i class="fa-regular fa-heart"></i></button>
-            </div>
-        </div>
-
+        <!-- BOTTOM NAV -->
         <div class="bottom-nav">
             <a href="catalog.html" class="nav-link active"><i class="fa-solid fa-house"></i></a>
-            <a href="#" class="nav-link"><i class="fa-solid fa-bag-shopping"></i></a>
-            <a href="#" class="nav-link"><i class="fa-regular fa-heart"></i></a>
-            <a href="#" class="nav-link"><i class="fa-regular fa-user"></i></a>
+            <a href="cart.html" class="nav-link"><i class="fa-solid fa-bag-shopping"></i></a>
+            <a href="favorite.html" class="nav-link"><i class="fa-regular fa-heart"></i></a>
+            <a href="profil.html" class="nav-link"><i class="fa-regular fa-user"></i></a>
+        </div>
+    </div>
+
+    <!-- MODAL CATEGORIES -->
+    <div id="category-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Kategori Yo</h3>
+                <span class="close-btn" onclick="closeCategoryModal()">&times;</span>
+            </div>
+            <div class="category-options-list" id="catalogCategoryList">
+                <!-- Dynamique -->
+            </div>
         </div>
     </div>
 

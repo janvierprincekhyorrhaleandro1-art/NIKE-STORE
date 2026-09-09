@@ -9,6 +9,7 @@
     --radius-screen: 0px;
     --radius-card: 22px;
     --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.06);
+    --primary-orange: #FF5E3A;
 }
 
 * {
@@ -27,7 +28,6 @@ body {
     margin: 0;
 }
 
-/* FULLSCREEN MOBILE SCREEN CONTAINER */
 .app-screen {
     width: 100vw;
     min-height: 100vh;
@@ -41,7 +41,7 @@ body {
     flex-direction: column;
 }
 
-/* PAGE 1: ONBOARDING */
+/* ONBOARDING */
 .onboarding-screen {
     background: #F2F2F4;
     padding: 40px 24px 30px;
@@ -118,8 +118,8 @@ body {
     transform: scale(0.97);
 }
 
-/* PAGE 2: CATALOG */
-.catalog-screen {
+/* CATALOG */
+.catalog-screen, .favorite-screen, .cart-screen, .profile-screen {
     padding: 20px 18px 110px 18px;
     overflow-y: auto;
 }
@@ -174,6 +174,7 @@ body {
     position: relative;
     margin-bottom: 20px;
     cursor: pointer;
+    min-height: 120px;
 }
 
 .featured-card .badge {
@@ -211,27 +212,11 @@ body {
     position: absolute;
     right: -12px;
     top: 10px;
-    width: 175px;
+    width: 150px;
+    height: 100px;
+    object-fit: contain;
     transform: rotate(-18deg);
     filter: drop-shadow(0 10px 10px rgba(0,0,0,0.15));
-}
-
-.categories-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 16px;
-    padding: 0 4px;
-}
-
-.cat-item h4 {
-    font-size: 14px;
-    font-weight: 800;
-}
-
-.cat-item p {
-    font-size: 10px;
-    color: var(--text-gray);
-    font-weight: 600;
 }
 
 .product-grid {
@@ -263,9 +248,13 @@ body {
     right: 12px;
     background: transparent;
     border: none;
-    font-size: 14px;
+    font-size: 16px;
     color: var(--text-gray);
     cursor: pointer;
+}
+
+.like-btn.liked i {
+    color: #EF4444 !important;
 }
 
 .grid-card .price {
@@ -281,7 +270,7 @@ body {
     font-weight: 600;
 }
 
-/* iOS 26 LIQUID GLASS BOTTOM NAV */
+/* BOTTOM NAV */
 .bottom-nav {
     position: fixed !important;
     bottom: 16px;
@@ -326,7 +315,7 @@ body {
     transform: translateY(-2px);
 }
 
-/* PAGE 3: PRODUCT DETAIL */
+/* DETAIL PAGE */
 .detail-screen {
     padding: 20px 20px 90px 20px;
     display: flex;
@@ -361,26 +350,10 @@ body {
 
 .detail-shoe-img {
     width: 250px;
+    height: 180px;
+    object-fit: contain;
     transform: rotate(-12deg);
     filter: drop-shadow(0 20px 20px rgba(0,0,0,0.2));
-}
-
-.ar-banner {
-    background: #EFEFEF;
-    border-radius: 16px;
-    padding: 12px 18px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 15px;
-}
-
-.ar-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 12px;
-    font-weight: 800;
 }
 
 .size-selector {
@@ -415,10 +388,12 @@ body {
     display: flex;
     gap: 8px;
     margin-top: 8px;
+    overflow-x: auto;
 }
 
 .size-btn {
     flex: 1;
+    min-width: 50px;
     height: 42px;
     background: #FFFFFF;
     border: 1px solid #E5E7EB;
@@ -446,7 +421,7 @@ body {
     border-top-left-radius: 28px;
     border-top-right-radius: 28px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     z-index: 100;
 }
@@ -460,31 +435,278 @@ body {
     cursor: pointer;
 }
 
-.cart-icon-btn {
-    width: 42px;
-    height: 42px;
-    border: 1px solid rgba(255,255,255,0.25);
-    border-radius: 14px;
-    background: transparent;
-    color: white;
+/* CART SCREEN */
+.cart-items-container {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 15px;
+    margin-bottom: 200px;
+}
+
+.cart-item-card {
+    background: var(--card-white);
+    border-radius: 20px;
+    padding: 14px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    box-shadow: var(--shadow-soft);
+}
+
+.cart-item-img {
+    width: 75px;
+    height: 75px;
+    background: #F3F4F6;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 15px;
+}
+
+.cart-item-img img {
+    width: 65px;
+    height: 65px;
+    object-fit: contain;
+}
+
+.cart-item-info {
+    flex: 1;
+}
+
+.cart-item-info h4 {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text-dark);
+}
+
+.cart-item-info .brand {
+    font-size: 11px;
+    color: var(--text-gray);
+    margin-top: 2px;
+}
+
+.cart-item-info .price {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-top: 6px;
+}
+
+.cart-qty-ctrl {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.qty-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid #E5E7EB;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
     cursor: pointer;
 }
 
-/* PAGE 4: ADMIN (MODIFIKASYON FOTO, POPUP & REMOVE) */
+.qty-btn.plus {
+    background: var(--primary-orange);
+    color: white;
+    border: none;
+}
+
+.cart-summary-card {
+    position: fixed;
+    bottom: 85px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 36px);
+    max-width: 420px;
+    background: var(--card-white);
+    border-radius: 24px;
+    padding: 16px 20px;
+    box-shadow: 0 -10px 25px rgba(0,0,0,0.05);
+    z-index: 100;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-gray);
+    margin-bottom: 6px;
+}
+
+.summary-row.total-row {
+    font-size: 15px;
+    font-weight: 900;
+    color: var(--text-dark);
+    margin-top: 10px;
+    border-top: 1px dashed #E5E7EB;
+    padding-top: 8px;
+}
+
+.btn-checkout {
+    width: 100%;
+    height: 48px;
+    background: var(--primary-orange);
+    color: white;
+    border: none;
+    border-radius: 18px;
+    font-size: 14px;
+    font-weight: 800;
+    margin-top: 12px;
+    cursor: pointer;
+}
+
+/* PROFILE SCREEN */
+.profile-user-card {
+    background: var(--card-white);
+    border-radius: 24px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: var(--shadow-soft);
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 12px auto;
+}
+
+.profile-user-card h3 {
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.profile-user-card p {
+    font-size: 12px;
+    color: var(--text-gray);
+    margin-top: 2px;
+}
+
+.btn-edit-profile {
+    background: var(--primary-orange);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.profile-menu-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.menu-item-card {
+    background: var(--card-white);
+    border-radius: 18px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow-soft);
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--text-dark);
+    cursor: pointer;
+}
+
+.menu-item-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.menu-item-left i {
+    font-size: 16px;
+    color: var(--text-dark);
+}
+
+/* AUTH CARD POU PROFIL PA LOGIN */
+.auth-card {
+    background: var(--card-white);
+    border-radius: 24px;
+    padding: 30px 20px;
+    text-align: center;
+    box-shadow: var(--shadow-soft);
+    margin-top: 20px;
+}
+
+.auth-card i {
+    font-size: 40px;
+    color: var(--text-gray);
+    margin-bottom: 15px;
+}
+
+.auth-card h3 {
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.auth-card p {
+    font-size: 12px;
+    color: var(--text-gray);
+    margin-bottom: 20px;
+}
+
+.btn-login {
+    width: 100%;
+    height: 48px;
+    background: var(--dark-main);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-weight: 800;
+    font-size: 14px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+/* ADMIN STYLES */
 .admin-screen {
     padding: 20px 20px 40px 20px;
     overflow-y: auto;
 }
 
+.admin-card-section {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: var(--shadow-soft);
+}
+
+.admin-sec-title {
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--text-gray);
+    margin-bottom: 12px;
+}
+
 .admin-form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    margin-top: 20px;
+    gap: 14px;
 }
 
 .form-group {
@@ -502,81 +724,74 @@ body {
 
 .form-group input {
     width: 100%;
-    background: var(--card-white);
+    background: var(--bg-screen);
     border: 1px solid #E5E7EB;
     border-radius: 14px;
     padding: 12px 14px;
     font-size: 13px;
     font-weight: 600;
     outline: none;
-    box-shadow: var(--shadow-soft);
 }
 
 .image-upload-box {
     width: 100%;
-    height: 110px;
+    height: 90px;
     border: 2px dashed #D1D5DB;
     border-radius: 16px;
-    background: var(--card-white);
+    background: var(--bg-screen);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
     cursor: pointer;
-    transition: background 0.2s ease;
-}
-
-.image-upload-box:active {
-    background: #EFEFEF;
 }
 
 .upload-icon-wrapper {
-    width: 38px;
-    height: 38px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    background: #F3F4F6;
+    background: #E5E7EB;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
+    font-size: 14px;
     color: var(--dark-main);
 }
 
 .image-upload-box span {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     color: var(--text-gray);
 }
 
 .image-preview-container {
     display: flex;
-    gap: 10px;
-    margin-top: 10px;
+    gap: 8px;
+    margin-top: 8px;
     overflow-x: auto;
 }
 
 .image-preview-container img {
-    width: 65px;
-    height: 65px;
+    width: 55px;
+    height: 55px;
     object-fit: cover;
-    border-radius: 12px;
+    border-radius: 10px;
     border: 1px solid #E5E7EB;
 }
 
 .category-select-btn {
     width: 100%;
-    background: var(--card-white);
+    background: var(--bg-screen);
     border: 1px solid #E5E7EB;
     border-radius: 14px;
-    padding: 14px;
+    padding: 12px 14px;
     font-size: 13px;
     font-weight: 600;
     display: flex;
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    box-shadow: var(--shadow-soft);
 }
 
 .modal-overlay {
@@ -599,6 +814,8 @@ body {
 .modal-content {
     background: var(--card-white);
     width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
     border-top-left-radius: 28px;
     border-top-right-radius: 28px;
     padding: 20px 24px 35px;
@@ -614,7 +831,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .close-btn {
@@ -626,32 +843,31 @@ body {
 .category-options-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
 }
 
 .cat-option {
-    padding: 14px 16px;
+    padding: 12px 14px;
     background: #F9FAFB;
     border-radius: 14px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: space-between;
     cursor: pointer;
 }
 
-/* LIS ADMIN POU REMOVE PWODUI */
 .admin-product-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .admin-product-item {
     background: var(--card-white);
     border-radius: 16px;
-    padding: 12px 16px;
+    padding: 10px 14px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -665,8 +881,8 @@ body {
 }
 
 .admin-prod-info img {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     object-fit: cover;
     border-radius: 10px;
 }
@@ -683,13 +899,31 @@ body {
     color: var(--text-gray);
 }
 
+.admin-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.btn-edit-prod {
+    background: #E0F2FE;
+    color: #0284C7;
+    border: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
 .btn-remove-prod {
     background: #FEE2E2;
     color: #EF4444;
     border: none;
-    width: 36px;
-    height: 36px;
-    border-radius: 12px;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;

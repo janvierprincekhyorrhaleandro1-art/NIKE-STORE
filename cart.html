@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nike - Cart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-screen cart-screen">
+        <div class="detail-header">
+            <button class="icon-btn" onclick="location.href='catalog.html'">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <h3 style="font-weight: 800; font-size: 18px;">Cart</h3>
+            <button class="icon-btn" style="box-shadow: none;"><i class="fa-solid fa-ellipsis"></i></button>
+        </div>
+
+        <div class="cart-items-container" id="cartItemsList">
+            <!-- Injecter ak JavaScript -->
+        </div>
+
+        <div class="cart-summary-card">
+            <div class="summary-row">
+                <span>Sub total</span>
+                <span id="subTotalVal">$0.00</span>
+            </div>
+            <div class="summary-row">
+                <span>Shipping & tax</span>
+                <span id="shippingVal">$5.00</span>
+            </div>
+            <div class="summary-row total-row">
+                <span>Total</span>
+                <span id="grandTotalVal">$0.00</span>
+            </div>
+            <button class="btn-checkout" onclick="checkoutCart()">Checkout Now</button>
+        </div>
+
+        <div class="bottom-nav">
+            <a href="catalog.html" class="nav-link"><i class="fa-solid fa-house"></i></a>
+            <a href="cart.html" class="nav-link active"><i class="fa-solid fa-bag-shopping"></i></a>
+            <a href="favorite.html" class="nav-link"><i class="fa-regular fa-heart"></i></a>
+            <a href="profil.html" class="nav-link"><i class="fa-regular fa-user"></i></a>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
