@@ -368,7 +368,7 @@ function renderFavoritesPage() {
     const favProducts = products.filter(p => favs.includes(p.id));
 
     if (favProducts.length === 0) {
-        grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; font-size:13px; color:var(--text-gray); margin-top:40px;">Ou pa gen okenn pwodui nan favori yo.</p>`;
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; font-size:13px; color:var(--text-gray); margin-top:40px;">There is no product in your favorites.</p>`;
         return;
     }
 
@@ -546,7 +546,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const banner = getBanner();
         featuredCard.innerHTML = `
             <span class="badge">NEW COLLECTION</span>
-            <p style="font-size: 9px; color: #8C8C8C;">Nike Original 2026</p>
+            <p style="font-size: 9px; color: #8C8C8C;"></p>
             <h3>${banner.title}</h3>
             <p class="subtitle">${banner.subtitle}</p>
             <button class="btn-shop-now">Shop Now</button>
