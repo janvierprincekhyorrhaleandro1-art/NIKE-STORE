@@ -555,7 +555,7 @@ body {
 .btn-checkout {
     width: 100%;
     height: 48px;
-    background: var(--primary-gray);
+    background: var(--primary-orange);
     color: white;
     border: none;
     border-radius: 18px;
