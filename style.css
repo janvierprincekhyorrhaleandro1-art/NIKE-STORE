@@ -929,3 +929,164 @@ body {
     justify-content: center;
     cursor: pointer;
 }
+/* WELCOME SCREEN (INDEX.HTML) */
+.welcome-screen {
+    padding: 0;
+    background: var(--card-white);
+    height: 100vh;
+}
+
+.welcome-hero {
+    position: relative;
+    width: 100%;
+    height: 440px;
+    flex-shrink: 0;
+    background-color: #D9D9D9;
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-bottom: 60px;
+}
+
+.welcome-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,0.55) 100%);
+}
+
+.welcome-hero::after {
+    content: '';
+    position: absolute;
+    left: -15%;
+    right: -15%;
+    bottom: -110px;
+    height: 180px;
+    background: var(--card-white);
+    border-radius: 50%;
+}
+
+.welcome-logo-badge {
+    position: relative;
+    z-index: 2;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+}
+
+.welcome-logo-badge i {
+    font-size: 15px;
+    color: var(--dark-main);
+}
+
+.welcome-logo-badge .badge-name {
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: var(--dark-main);
+    margin-top: 3px;
+}
+
+.welcome-logo-badge .badge-sub {
+    font-size: 5px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--text-gray);
+}
+
+.welcome-brand-title {
+    position: relative;
+    z-index: 2;
+    color: #FFFFFF;
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+.welcome-brand-subtitle {
+    position: relative;
+    z-index: 2;
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.welcome-sheet {
+    flex: 1;
+    background: var(--card-white);
+    padding: 36px 28px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+}
+
+.welcome-heading {
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--text-dark);
+    letter-spacing: 0.5px;
+}
+
+.welcome-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-gray);
+    line-height: 1.5;
+    margin-top: 8px;
+}
+
+.welcome-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.btn-welcome-login {
+    width: 100%;
+    height: 54px;
+    background: var(--dark-main);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 18px;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.btn-welcome-signup {
+    width: 100%;
+    height: 54px;
+    background: transparent;
+    color: var(--text-dark);
+    border: 1.5px solid #E5E7EB;
+    border-radius: 18px;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.btn-welcome-guest {
+    width: 100%;
+    background: transparent;
+    color: var(--text-gray);
+    border: none;
+    font-size: 12.5px;
+    font-weight: 700;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 4px 0 0;
+}

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Findora - Modifye Welcome</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-screen admin-screen">
+
+        <div class="detail-header">
+            <button class="icon-btn" style="box-shadow: none;" onclick="location.href='index.html'">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <h2 style="font-size: 16px; font-weight: 800;">Modifye Paj Welcome</h2>
+            <div style="width: 48px;"></div>
+        </div>
+
+        <form id="welcomeForm">
+
+            <div class="admin-card-section" style="margin-top: 16px;">
+                <p class="admin-sec-title">Foto Background</p>
+
+                <label for="welcomeBgInput" class="image-upload-box">
+                    <div class="upload-icon-wrapper"><i class="fa-solid fa-camera"></i></div>
+                    <span>Chwazi yon foto nan galri telefòn ou</span>
+                </label>
+                <input type="file" id="welcomeBgInput" accept="image/*" style="display:none;" onchange="previewWelcomeBg(event)">
+
+                <div class="image-preview-container" id="welcomeBgPreview"></div>
+            </div>
+
+            <div class="admin-card-section" style="margin-top: 16px;">
+                <p class="admin-sec-title">Badge sou Foto a</p>
+                <div class="admin-form">
+                    <div class="form-group">
+                        <label>Non mak (egzanp: FINDORA)</label>
+                        <input type="text" id="wBadgeName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Su-tit badge (egzanp: DREAM HOUSE)</label>
+                        <input type="text" id="wBadgeSub" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Gwo non mak (sou foto a)</label>
+                        <input type="text" id="wBrandName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Su-tit anba non mak la</label>
+                        <input type="text" id="wBrandSub" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-card-section" style="margin-top: 16px;">
+                <p class="admin-sec-title">Tèks Welcome</p>
+                <div class="admin-form">
+                    <div class="form-group">
+                        <label>Gwo tit (egzanp: WELCOME)</label>
+                        <input type="text" id="wHeading" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Premye liy tèks</label>
+                        <input type="text" id="wText1" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Dezyèm liy tèks</label>
+                        <input type="text" id="wText2" required>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-checkout" style="margin-top: 20px; margin-bottom: 20px;">Anrejistre Chanjman yo</button>
+        </form>
+
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

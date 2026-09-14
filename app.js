@@ -83,9 +83,31 @@ function setAuthStatus(status) {
     localStorage.setItem('nike_is_logged_in', status ? 'true' : 'false');
 }
 
+// WELCOME PAGE (INDEX.HTML) SETUP
+const defaultWelcome = {
+    bgImage: "",
+    badgeName: "FINDORA",
+    badgeSub: "DREAM HOUSE",
+    brandName: "FINDORA",
+    brandSub: "Dream House",
+    heading: "WELCOME",
+    text1: "Find your next space, feel at home",
+    text2: "Where comfort meets convenience"
+};
+
+function getWelcome() {
+    const saved = localStorage.getItem('nike_welcome');
+    return saved ? JSON.parse(saved) : defaultWelcome;
+}
+
+function saveWelcome(data) {
+    localStorage.setItem('nike_welcome', JSON.stringify(data));
+}
+
 // UPLOAD VARIABLES
 let uploadedImages = [];
 let uploadedBannerImg = "";
+let uploadedWelcomeBg = "";
 
 function previewImage(event) {
     const container = document.getElementById('image-preview-container');
@@ -115,6 +137,22 @@ function previewBannerImg(event) {
         const reader = new FileReader();
         reader.onload = function(e) {
             uploadedBannerImg = e.target.result;
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            container.appendChild(img);
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+function previewWelcomeBg(event) {
+    const container = document.getElementById('welcomeBgPreview');
+    container.innerHTML = '';
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            uploadedWelcomeBg = e.target.result;
             const img = document.createElement('img');
             img.src = e.target.result;
             container.appendChild(img);
@@ -540,6 +578,57 @@ function toggleDetailLike() {
 
 // MAIN INIT
 document.addEventListener('DOMContentLoaded', () => {
+    // 0. WELCOME PAGE RENDER (INDEX.HTML)
+    const welcomeHero = document.getElementById('welcomeHero');
+    if (welcomeHero) {
+        const w = getWelcome();
+        if (w.bgImage) welcomeHero.style.backgroundImage = `url('${w.bgImage}')`;
+        document.getElementById('welcomeBadgeName').innerText = w.badgeName;
+        document.getElementById('welcomeBadgeSub').innerText = w.badgeSub;
+        document.getElementById('welcomeBrandName').innerText = w.brandName;
+        document.getElementById('welcomeBrandSub').innerText = w.brandSub;
+        document.getElementById('welcomeHeading').innerText = w.heading;
+        document.getElementById('welcomeText1').innerText = w.text1;
+        document.getElementById('welcomeText2').innerText = w.text2;
+    }
+
+    // 0.1 WELCOME PAGE EDITOR SETUP (EDIT-WELCOME.HTML)
+    const welcomeForm = document.getElementById('welcomeForm');
+    if (welcomeForm) {
+        const w = getWelcome();
+        document.getElementById('wBadgeName').value = w.badgeName;
+        document.getElementById('wBadgeSub').value = w.badgeSub;
+        document.getElementById('wBrandName').value = w.brandName;
+        document.getElementById('wBrandSub').value = w.brandSub;
+        document.getElementById('wHeading').value = w.heading;
+        document.getElementById('wText1').value = w.text1;
+        document.getElementById('wText2').value = w.text2;
+        if (w.bgImage) {
+            const container = document.getElementById('welcomeBgPreview');
+            const img = document.createElement('img');
+            img.src = w.bgImage;
+            container.appendChild(img);
+        }
+
+        welcomeForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const current = getWelcome();
+            const updated = {
+                bgImage: uploadedWelcomeBg || current.bgImage,
+                badgeName: document.getElementById('wBadgeName').value,
+                badgeSub: document.getElementById('wBadgeSub').value,
+                brandName: document.getElementById('wBrandName').value,
+                brandSub: document.getElementById('wBrandSub').value,
+                heading: document.getElementById('wHeading').value,
+                text1: document.getElementById('wText1').value,
+                text2: document.getElementById('wText2').value
+            };
+            saveWelcome(updated);
+            alert('Paj Welcome la sove ak siksè!');
+            location.href = 'index.html';
+        });
+    }
+
     // 1. BANNER SETUP (CATALOG)
     const featuredCard = document.getElementById('featuredCardContainer');
     if (featuredCard) {

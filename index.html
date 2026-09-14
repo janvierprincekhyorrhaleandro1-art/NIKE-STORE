@@ -1,39 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ht">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Findora - Welcome</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="welcome-body">
+<body>
 
-  <div class="app-card">
-    <!-- Hero Image Area -->
-    <div class="hero-section">
-      <img id="display-hero" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80" alt="Hero Banner">
-      <div class="logo-overlay">
-        <div class="logo-icon-wrap">
-          <img id="display-logo" src="https://cdn-icons-png.flaticon.com/512/25/25694.png" alt="Logo">
+    <div class="app-screen welcome-screen">
+
+        <div class="welcome-hero" id="welcomeHero">
+            <div class="welcome-logo-badge">
+                <i class="fa-solid fa-house-chimney"></i>
+                <span class="badge-name" id="welcomeBadgeName">FINDORA</span>
+                <span class="badge-sub" id="welcomeBadgeSub">DREAM HOUSE</span>
+            </div>
+            <h1 class="welcome-brand-title" id="welcomeBrandName">FINDORA</h1>
+            <p class="welcome-brand-subtitle" id="welcomeBrandSub">Dream House</p>
         </div>
-        <h2 id="display-brand-name">FINDORA</h2>
-        <p id="display-brand-tag">Dream House</p>
-      </div>
+
+        <div class="welcome-sheet">
+            <div>
+                <h2 class="welcome-heading" id="welcomeHeading">WELCOME</h2>
+                <p class="welcome-text" id="welcomeText1">Find your next space, feel at home</p>
+                <p class="welcome-text" id="welcomeText2">Where comfort meets convenience</p>
+            </div>
+
+            <div class="welcome-actions">
+                <button class="btn-welcome-login" onclick="location.href='login.html'">Login</button>
+                <button class="btn-welcome-signup" onclick="location.href='signup.html'">Sign Up</button>
+                <button class="btn-welcome-guest" onclick="location.href='catalog.html'">Kontinye kòm Envite</button>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Bottom Content Sheet -->
-    <div class="content-sheet">
-      <h1 id="display-title">WELCOME</h1>
-      <p id="display-subtitle">Find your next space, feel at home.<br>Where comfort meets convenience.</p>
-
-      <div class="button-group">
-        <button class="btn btn-dark" onclick="alert('Login Clicked')">Login</button>
-        <button class="btn btn-outline" onclick="alert('Sign Up Clicked')">Sign Up</button>
-        <a href="catalog.html" class="btn btn-guest">Continue as Guest (Shop)</a>
-      </div>
-    </div>
-  </div>
-
-  <script src="app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
