@@ -515,7 +515,7 @@ body {
 }
 
 .qty-btn.plus {
-    background: var(--primary-orange);
+    background: var(--dark-main);
     color: white;
     border: none;
 }
