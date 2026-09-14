@@ -1,29 +1,39 @@
 <!DOCTYPE html>
-<html lang="ht">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nike - Start</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="welcome-body">
 
-    <div class="app-screen onboarding-screen">
-        <div class="onboarding-hero">
-            <span class="brand-text-vertical">HIVΣ</span>
-            <img src="https://i.ibb.co/C03848x/shoe-black.png" alt="Nike Shoe" class="shoe-top">
-            <img src="https://i.ibb.co/3kM0PZ1/shoe-blue.png" alt="Nike Shoe" class="shoe-bottom">
+  <div class="app-card">
+    <!-- Hero Image Area -->
+    <div class="hero-section">
+      <img id="display-hero" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80" alt="Hero Banner">
+      <div class="logo-overlay">
+        <div class="logo-icon-wrap">
+          <img id="display-logo" src="https://cdn-icons-png.flaticon.com/512/25/25694.png" alt="Logo">
         </div>
-
-        <div class="onboarding-footer">
-            <h1>Start your<br>sports journey</h1>
-            <button class="btn-get-started" onclick="location.href='catalog.html'">
-                Get Started
-                <i class="fa-solid fa-angles-right"></i>
-            </button>
-        </div>
+        <h2 id="display-brand-name">FINDORA</h2>
+        <p id="display-brand-tag">Dream House</p>
+      </div>
     </div>
 
+    <!-- Bottom Content Sheet -->
+    <div class="content-sheet">
+      <h1 id="display-title">WELCOME</h1>
+      <p id="display-subtitle">Find your next space, feel at home.<br>Where comfort meets convenience.</p>
+
+      <div class="button-group">
+        <button class="btn btn-dark" onclick="alert('Login Clicked')">Login</button>
+        <button class="btn btn-outline" onclick="alert('Sign Up Clicked')">Sign Up</button>
+        <a href="catalog.html" class="btn btn-guest">Continue as Guest (Shop)</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
