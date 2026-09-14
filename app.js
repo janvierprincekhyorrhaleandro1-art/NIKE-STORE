@@ -549,7 +549,6 @@ document.addEventListener('DOMContentLoaded', () => {
             <p style="font-size: 9px; color: #8C8C8C;"></p>
             <h3>${banner.title}</h3>
             <p class="subtitle">${banner.subtitle}</p>
-            <button class="btn-shop-now">Shop Now</button>
             <img src="${banner.image}" alt="${banner.title}" class="featured-shoe-img">
         `;
         featuredCard.onclick = () => openDetail(banner.productId);
