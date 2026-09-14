@@ -596,7 +596,7 @@ body {
 }
 
 .btn-edit-profile {
-    background: var(--primary-orange);
+    background: var(--dark-main);
     color: white;
     border: none;
     padding: 10px 20px;
