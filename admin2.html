@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-Time Editor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="admin-body">
+
+  <div class="admin-container">
+    <h1>Live Content Manager</h1>
+    <p class="admin-subtitle">Changes saved here will immediately reflect on <code>index.html</code> across tabs.</p>
+
+    <form id="editor-form" onsubmit="event.preventDefault();">
+      <div class="form-group">
+        <label for="input-brand-name">Brand Name</label>
+        <input type="text" id="input-brand-name" placeholder="e.g. FINDORA">
+      </div>
+
+      <div class="form-group">
+        <label for="input-brand-tag">Brand Subtitle</label>
+        <input type="text" id="input-brand-tag" placeholder="e.g. Dream House">
+      </div>
+
+      <div class="form-group">
+        <label for="input-title">Main Heading</label>
+        <input type="text" id="input-title" placeholder="e.g. WELCOME">
+      </div>
+
+      <div class="form-group">
+        <label for="input-subtitle">Description Text</label>
+        <textarea id="input-subtitle" rows="3" placeholder="Enter description..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="input-hero">Hero Image URL</label>
+        <input type="url" id="input-hero" placeholder="https://image-url.com/hero.jpg">
+      </div>
+
+      <div class="form-group">
+        <label for="input-logo">Logo Icon URL</label>
+        <input type="url" id="input-logo" placeholder="https://image-url.com/logo.png">
+      </div>
+
+      <button type="button" class="btn btn-dark" onclick="resetToDefaults()">Reset Defaults</button>
+    </form>
+
+    <div class="admin-footer">
+      <a href="index.html" target="_blank" class="preview-link">Open Landing Page Preview ↗</a>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
