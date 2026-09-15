@@ -1,3 +1,7 @@
+// PAYMENT BACKEND CONFIG
+// ⚠️ Ranplase valè sa a ak URL backend NOWPayments ou lè li deploye
+const PAYMENT_BACKEND_URL = "https://REMPLASE-AK-BACKEND-OU.com/api/create-payment";
+
 // INITIAL DATA SETUP
 const defaultBanner = {
     title: "Nike Air Presto",
@@ -386,14 +390,52 @@ function renderCartPage() {
     document.getElementById('grandTotalVal').innerText = `$${(subTotal + shipping).toFixed(2)}`;
 }
 
-function checkoutCart() {
-    if (getCart().length === 0) {
+async function checkoutCart() {
+    const cart = getCart();
+    if (cart.length === 0) {
         alert("Panyen ou vid!");
         return;
     }
-    alert("Kòmand ou anrejistre ak siksè!");
-    saveCart([]);
-    renderCartPage();
+
+    const products = getProducts();
+    let subTotal = 0;
+    cart.forEach(item => {
+        const prod = products.find(p => p.id === item.id);
+        if (prod) subTotal += prod.price * item.qty;
+    });
+    const total = subTotal + 5.00; // shipping & tax
+
+    const btn = document.querySelector('.btn-checkout');
+    const originalText = btn ? btn.innerText : '';
+    if (btn) {
+        btn.disabled = true;
+        btn.innerText = 'Ap chaje peman...';
+    }
+
+    try {
+        const response = await fetch(PAYMENT_BACKEND_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                amount: total,
+                orderId: `order_${Date.now()}`
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.invoice_url) {
+            // Sove panyen an pou referans, epi voye kliyan sou paj peman NOWPayments lan
+            window.location.href = data.invoice_url;
+        } else {
+            alert("Erè: nou pa t ka kreye peman an. Eseye ankò.");
+            if (btn) { btn.disabled = false; btn.innerText = originalText; }
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Erè koneksyon ak sèvè peman an. Verifye entènèt ou epi eseye ankò.");
+        if (btn) { btn.disabled = false; btn.innerText = originalText; }
+    }
 }
 
 // FAVORITES PAGE
