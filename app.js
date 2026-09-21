@@ -1,6 +1,5 @@
-// PAYMENT BACKEND CONFIG
-// ⚠️ Ranplase valè sa a ak URL backend NOWPayments ou lè li deploye
-const PAYMENT_BACKEND_URL = "https://REMPLASE-AK-BACKEND-OU.com/api/create-payment";
+// PAYMENT BACKEND CONFIG (MonCashConnect)
+const PAYMENT_BACKEND_URL = "https://REMPLASE-AK-BACKEND-RENDER-OU.com/api/create-payment";
 
 // INITIAL DATA SETUP
 const defaultBanner = {
@@ -417,16 +416,16 @@ async function checkoutCart() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                amount: total,
-                orderId: `order_${Date.now()}`
+                amount: Math.round(total * 130), // USD→HTG (1USD≈130HTG)
+                referenceId: `order_${Date.now()}`
             })
         });
 
         const data = await response.json();
 
-        if (response.ok && data.invoice_url) {
+        if (response.ok && data.paymentUrl) {
             // Sove panyen an pou referans, epi voye kliyan sou paj peman NOWPayments lan
-            window.location.href = data.invoice_url;
+            window.location.href = data.paymentUrl;
         } else {
             alert("Erè: nou pa t ka kreye peman an. Eseye ankò.");
             if (btn) { btn.disabled = false; btn.innerText = originalText; }
