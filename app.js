@@ -1,5 +1,6 @@
-// PAYMENT BACKEND CONFIG (MonCashConnect)
-const PAYMENT_BACKEND_URL = "https://REMPLASE-AK-BACKEND-RENDER-OU.com/api/create-payment";
+// PAYMENT BACKEND CONFIG
+// ⚠️ Ranplase valè sa a ak URL backend NOWPayments ou lè li deploye
+const PAYMENT_BACKEND_URL = "https://REMPLASE-AK-BACKEND-OU.com/api/create-payment";
 
 // INITIAL DATA SETUP
 const defaultBanner = {
@@ -416,16 +417,16 @@ async function checkoutCart() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                amount: Math.round(total * 130), // USD→HTG (1USD≈130HTG)
-                referenceId: `order_${Date.now()}`
+                amount: total,
+                orderId: `order_${Date.now()}`
             })
         });
 
         const data = await response.json();
 
-        if (response.ok && data.paymentUrl) {
+        if (response.ok && data.invoice_url) {
             // Sove panyen an pou referans, epi voye kliyan sou paj peman NOWPayments lan
-            window.location.href = data.paymentUrl;
+            window.location.href = data.invoice_url;
         } else {
             alert("Erè: nou pa t ka kreye peman an. Eseye ankò.");
             if (btn) { btn.disabled = false; btn.innerText = originalText; }
@@ -811,4 +812,106 @@ document.addEventListener('DOMContentLoaded', () => {
 function setActiveSize(btn) {
     document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+}
+// ===================================
+// LOGIQUE D'AUTHENTIFICATION (AUTH)
+// ===================================
+
+// Basculer entre Login et Sign Up
+function switchTab(tab) {
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const tabLoginBtn = document.getElementById('tabLoginBtn');
+    const tabSignupBtn = document.getElementById('tabSignupBtn');
+    const authHeading = document.getElementById('authHeading');
+    const authSubheading = document.getElementById('authSubheading');
+    const errorDiv = document.getElementById('errorMessage');
+
+    if (!loginForm || !signupForm) return;
+
+    errorDiv.style.display = 'none';
+
+    if (tab === 'login') {
+        loginForm.classList.remove('hidden');
+        signupForm.classList.add('hidden');
+        tabLoginBtn.classList.add('active');
+        tabSignupBtn.classList.remove('active');
+        authHeading.innerText = 'Bienvenue sur Findora';
+        authSubheading.innerText = 'Konekte pou w jwenn kay ideyal ou a';
+    } else {
+        loginForm.classList.add('hidden');
+        signupForm.classList.remove('hidden');
+        tabSignupBtn.classList.add('active');
+        tabLoginBtn.classList.remove('active');
+        authHeading.innerText = 'Créer un Compte';
+        authSubheading.innerText = 'Rejoindre Findora nan kèk segonn';
+    }
+}
+
+// Afficher / Masquer le mot de passe
+function togglePasswordVisibility(inputId, icon) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+
+// Afficher un message d'erreur
+function showError(msg) {
+    const errorDiv = document.getElementById('errorMessage');
+    if (!errorDiv) return;
+    errorDiv.innerText = msg;
+    errorDiv.style.display = 'block';
+}
+
+// Gestion de la connexion (Login)
+function handleLogin(event) {
+    event.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+
+    const users = JSON.parse(localStorage.getItem('findora_users') || '[]');
+    const user = users.find(u => u.email === email && u.password === password);
+
+    if (user) {
+        localStorage.setItem('findora_current_user', JSON.stringify(user));
+        window.location.href = 'catalog.html';
+    } else {
+        showError('Email oswa modpas sa pa korek!');
+    }
+}
+
+// Gestion de l'inscription (Sign Up)
+function handleSignUp(event) {
+    event.preventDefault();
+    const name = document.getElementById('signupName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const password = document.getElementById('signupPassword').value.trim();
+    const confirmPassword = document.getElementById('signupConfirmPassword').value.trim();
+
+    if (password !== confirmPassword) {
+        showError('Modpas yo pa sanble!');
+        return;
+    }
+
+    let users = JSON.parse(localStorage.getItem('findora_users') || '[]');
+    if (users.some(u => u.email === email)) {
+        showError('Gen yon kont ki deja kreye ak email sa a!');
+        return;
+    }
+
+    const newUser = { id: Date.now(), name, email, password };
+    users.push(newUser);
+    localStorage.setItem('findora_users', JSON.stringify(users));
+    localStorage.setItem('findora_current_user', JSON.stringify(newUser));
+
+    window.location.href = 'catalog.html';
 }
