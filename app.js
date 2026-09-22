@@ -699,7 +699,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (product) {
             document.getElementById('productTitle').innerText = product.name;
-            document.getElementById('productPrice').innerText = `$${product.price} HTG`;
+            document.getElementById('productPrice').innerText = `HTG{product.price}`;
             document.getElementById('productImg').src = product.images[0];
 
             const favs = getFavorites();
