@@ -1,6 +1,6 @@
 // PAYMENT BACKEND CONFIG
 // ⚠️ Ranplase valè sa a ak URL backend NOWPayments ou lè li deploye
-const PAYMENT_BACKEND_URL = "https://hiv3-store.onrender.com/api/create-payment";
+const PAYMENT_BACKEND_URL = "https://REMPLASE-AK-BACKEND-OU.com/api/create-payment";
 
 // INITIAL DATA SETUP
 const defaultBanner = {
@@ -699,7 +699,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (product) {
             document.getElementById('productTitle').innerText = product.name;
-            document.getElementById('productPrice').innerText = `HTG{product.price}`;
+            document.getElementById('productPrice').innerText = `$${product.price}`;
             document.getElementById('productImg').src = product.images[0];
 
             const favs = getFavorites();
