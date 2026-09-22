@@ -1067,18 +1067,6 @@ body {
     cursor: pointer;
 }
 
-.btn-welcome-signup {
-    width: 100%;
-    height: 54px;
-    background: transparent;
-    color: var(--text-dark);
-    border: 1.5px solid #E5E7EB;
-    border-radius: 18px;
-    font-size: 15px;
-    font-weight: 800;
-    cursor: pointer;
-}
-
 .btn-welcome-guest {
     width: 100%;
     background: transparent;
@@ -1089,4 +1077,224 @@ body {
     text-decoration: underline;
     cursor: pointer;
     padding: 4px 0 0;
+}
+
+/* ===================================
+   AUTHENTIFICATION SCREEN (AUTH.HTML)
+   =================================== */
+.auth-container {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: var(--bg-screen, #F8F9FA);
+}
+
+.auth-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 25px;
+}
+
+.btn-back {
+    width: 44px;
+    height: 44px;
+    background: #FFFFFF;
+    border-radius: 14px;
+    border: 1px solid #E5E7EB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #141414;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    transition: transform 0.2s ease;
+}
+
+.btn-back:active {
+    transform: scale(0.95);
+}
+
+.auth-brand {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.auth-logo-badge {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #141414;
+    color: #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin-bottom: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.auth-brand h2 {
+    font-size: 22px;
+    font-weight: 900;
+    color: #0D0D0D;
+    letter-spacing: -0.5px;
+}
+
+.auth-brand p {
+    font-size: 13px;
+    color: #8C8C8C;
+    margin-top: 4px;
+    font-weight: 600;
+}
+
+/* Tab Switcher */
+.tab-switcher {
+    background: #EAEBED;
+    padding: 4px;
+    border-radius: 16px;
+    display: flex;
+    margin-bottom: 25px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    font-weight: 800;
+    color: #8C8C8C;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.tab-btn.active {
+    background: #FFFFFF;
+    color: #141414;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+/* Form Controls */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.auth-form.hidden {
+    display: none;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.input-group label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #8C8C8C;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper i.field-icon {
+    position: absolute;
+    left: 16px;
+    color: #8C8C8C;
+    font-size: 15px;
+}
+
+.input-wrapper input {
+    width: 100%;
+    height: 52px;
+    background: #FFFFFF;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 16px;
+    padding: 0 42px 0 46px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #0D0D0D;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.input-wrapper input:focus {
+    border-color: #141414;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 16px;
+    color: #8C8C8C;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    margin-top: -4px;
+}
+
+.forgot-link {
+    color: #141414;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.btn-submit {
+    width: 100%;
+    height: 54px;
+    background: #141414;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 18px;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 10px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.btn-submit:active {
+    transform: scale(0.98);
+}
+
+.guest-link-wrapper {
+    text-align: center;
+    margin-top: auto;
+    padding-top: 20px;
+}
+
+.guest-link-wrapper a {
+    font-size: 13px;
+    font-weight: 700;
+    color: #8C8C8C;
+    text-decoration: underline;
+}
+
+.error-message {
+    background: #FEE2E2;
+    color: #DC2626;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    display: none;
+    margin-bottom: 10px;
 }
