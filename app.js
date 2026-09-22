@@ -92,7 +92,7 @@ const defaultWelcome = {
     bgImage: "",
     badgeName: "FINDORA",
     badgeSub: "DREAM HOUSE",
-    brandName: "FINDORA",
+    brandName: "HIV3",
     brandSub: "Dream House",
     heading: "WELCOME",
     text1: "Find your next space, feel at home",
