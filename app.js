@@ -393,6 +393,8 @@ function renderCartPage() {
 async function checkoutCart() {
     // ...
     try {
+        console.log("Voye rekèt sou:", PAYMENT_BACKEND_URL);
+
         const response = await fetch(PAYMENT_BACKEND_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -404,16 +406,17 @@ async function checkoutCart() {
 
         const data = await response.json();
 
-        // Redirection si le lien de paiement MonCashConnect est présent
         if (response.ok && data.paymentUrl) {
             window.location.href = data.paymentUrl;
         } else {
-            alert("Erè: nou pa t ka kreye peman an. Eseye ankò.");
+            // AFICHE ERÈ SÈVÈ A
+            alert("Erè Sèvè (" + response.status + "): " + JSON.stringify(data));
             if (btn) { btn.disabled = false; btn.innerText = originalText; }
         }
     } catch (err) {
-        console.error(err);
-        alert("Erè koneksyon ak sèvè peman an. Verifye entènèt ou epi eseye ankò.");
+        console.error("Erè Rekèt:", err);
+        // AFICHE ERÈ EXAKTE POUKISA LI BLOKE A
+        alert("DIAGNOSTIK ERÈ:\n\nURL ki rele a: " + PAYMENT_BACKEND_URL + "\n\nMesaj Erè: " + err.message);
         if (btn) { btn.disabled = false; btn.innerText = originalText; }
     }
 }
