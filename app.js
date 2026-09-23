@@ -342,6 +342,7 @@ function updateCartQty(id, size, delta) {
     renderCartPage();
 }
 
+// RENDER CART PAGE WITH DYNAMIC SUBTOTAL & TOTAL MATCH
 function renderCartPage() {
     const cartList = document.getElementById('cartItemsList');
     if (!cartList) return;
@@ -351,8 +352,7 @@ function renderCartPage() {
 
     if (cart.length === 0) {
         cartList.innerHTML = `<p style="text-align:center; font-size:13px; color:var(--text-gray); margin-top:40px;">Panyen ou vid.</p>`;
-        if(document.getElementById('subTotalVal')) document.getElementById('subTotalVal').innerText = '$0.00';
-        if(document.getElementById('grandTotalVal')) document.getElementById('grandTotalVal').innerText = '$0.00';
+        updateCartDisplayValues(0, 0);
         return;
     }
 
@@ -384,9 +384,30 @@ function renderCartPage() {
     }).join('');
 
     const shipping = 5.00;
-    if(document.getElementById('subTotalVal')) document.getElementById('subTotalVal').innerText = `$${subTotal.toFixed(2)}`;
-    if(document.getElementById('shippingVal')) document.getElementById('shippingVal').innerText = `$${shipping.toFixed(2)}`;
-    if(document.getElementById('grandTotalVal')) document.getElementById('grandTotalVal').innerText = `$${(subTotal + shipping).toFixed(2)}`;
+    updateCartDisplayValues(subTotal, shipping);
+}
+
+// FONKSYON POU METE AJOU SUBTOTAL AK TOTAL
+function updateCartDisplayValues(subTotal, shipping) {
+    const grandTotal = subTotal > 0 ? (subTotal + shipping) : 0;
+
+    // 1. Subtotal
+    const subTotalElems = document.querySelectorAll('#subTotalVal, #subtotal, .subtotal-val, .cart-subtotal');
+    subTotalElems.forEach(el => {
+        el.innerText = `$${subTotal.toFixed(2)}`;
+    });
+
+    // 2. Shipping
+    const shippingElems = document.querySelectorAll('#shippingVal, #shipping, .shipping-val');
+    shippingElems.forEach(el => {
+        el.innerText = `$${shipping.toFixed(2)}`;
+    });
+
+    // 3. Grand Total
+    const grandTotalElems = document.querySelectorAll('#grandTotalVal, #cart-total, #total, .total-val, .grand-total');
+    grandTotalElems.forEach(el => {
+        el.innerText = `$${grandTotal.toFixed(2)}`;
+    });
 }
 
 // CHECKOUT CART DINAMIK (SÈVI AK NATIVE STORAGE 'nike_cart')
