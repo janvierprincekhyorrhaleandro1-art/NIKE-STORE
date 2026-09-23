@@ -391,15 +391,36 @@ function renderCartPage() {
 }
 
 async function checkoutCart() {
-    // ...
-    try {
-        console.log("Voye rekèt sou:", PAYMENT_BACKEND_URL);
+    const btn = document.querySelector('.checkout-btn') || document.querySelector('button[onclick*="checkoutCart"]');
+    let originalText = "";
+    if (btn) {
+        originalText = btn.innerText;
+        btn.disabled = true;
+        btn.innerText = "N ap trete peman an...";
+    }
 
+    try {
+        // 1. KALKILE TOTAL LA SOU CART LA DIRECTEMENT
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        
+        if (cart.length === 0) {
+            alert("Panye w la vid!");
+            if (btn) { btn.disabled = false; btn.innerText = originalText; }
+            return;
+        }
+
+        const subtotal = cart.reduce((sum, item) => sum + (Number(item.price) * Number(item.quantity)), 0);
+        const shippingAndTax = 5.00; // Oswa 0 si pa gen fwe
+        const totalAmount = subtotal + shippingAndTax;
+
+        console.log("Voye rekèt sou:", PAYMENT_BACKEND_URL, "Montan:", totalAmount);
+
+        // 2. VOYE REKÈT LA AVÈK MONTAN KI JIS LA
         const response = await fetch(PAYMENT_BACKEND_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                amount: total,
+                amount: totalAmount,
                 referenceId: `order_${Date.now()}`
             })
         });
@@ -407,15 +428,14 @@ async function checkoutCart() {
         const data = await response.json();
 
         if (response.ok && data.paymentUrl) {
+            // REDIREKSYON NAN MONCASHCONNECT
             window.location.href = data.paymentUrl;
         } else {
-            // AFICHE ERÈ SÈVÈ A
             alert("Erè Sèvè (" + response.status + "): " + JSON.stringify(data));
             if (btn) { btn.disabled = false; btn.innerText = originalText; }
         }
     } catch (err) {
         console.error("Erè Rekèt:", err);
-        // AFICHE ERÈ EXAKTE POUKISA LI BLOKE A
         alert("DIAGNOSTIK ERÈ:\n\nURL ki rele a: " + PAYMENT_BACKEND_URL + "\n\nMesaj Erè: " + err.message);
         if (btn) { btn.disabled = false; btn.innerText = originalText; }
     }
