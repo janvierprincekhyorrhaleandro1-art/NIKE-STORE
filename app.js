@@ -400,41 +400,36 @@ async function checkoutCart() {
     }
 
     try {
-        // 1. LI MONTAN TOTAL LA DIRÈKTEMAN NAN EKRAN AN (HTML)
         let totalAmount = 0;
-        
-        // Tcheke si gen yon elemante ki gen total la (ekz: $1005.00)
-        const totalElement = document.querySelector('.total-amount') || document.querySelector('#total') || Array.from(document.querySelectorAll('div, span, p')).find(el => el.textContent.includes('$1005') || el.textContent.includes('Total'));
 
-        if (totalElement) {
-            // Netwaye tèks la pou wete siy '$' ak espas pou n ka jwenn chif la sèlman
-            const parsed = parseFloat(totalElement.innerText.replace(/[^0-9.]/g, ''));
-            if (!isNaN(parsed) && parsed > 0) {
-                totalAmount = parsed;
+        // 1. PRAN VALÈ NAN ELEMENT KI GEN ID "cart-total" LA
+        const totalEl = document.getElementById('cart-total');
+        if (totalEl) {
+            totalAmount = parseFloat(totalEl.innerText.replace(/[^0-9.]/g, ''));
+        }
+
+        // 2. SI PA GEN ID, CHÈCHE POU MÈT ENPÒT MENM KALITE PRIS SOU PAJ LA
+        if (!totalAmount || isNaN(totalAmount)) {
+            const allElements = Array.from(document.querySelectorAll('.total-amount, .cart-total, #total'));
+            for (let el of allElements) {
+                const parsed = parseFloat(el.innerText.replace(/[^0-9.]/g, ''));
+                if (!isNaN(parsed) && parsed > 0) {
+                    totalAmount = parsed;
+                    break;
+                }
             }
         }
 
-        // Si nou pa jwenn li nan HTML la, n ap chèche l nan localStorage kòm sekou
-        if (totalAmount === 0) {
-            const rawCart = localStorage.getItem('cart') || localStorage.getItem('hive_cart') || localStorage.getItem('shopping_cart');
-            const cart = rawCart ? JSON.parse(rawCart) : [];
-            
-            if (cart.length > 0) {
-                const subtotal = cart.reduce((sum, item) => sum + (Number(item.price) * Number(item.quantity)), 0);
-                totalAmount = subtotal + 5.00; // subtotal + shipping
-            }
-        }
-
-        // Si tout bagay echwe
-        if (totalAmount <= 0) {
-            alert("Impossible pou jwenn montan total panye an!");
+        // SI VREMAN PA GEN OKENN PRI KI JWENN SOU PAJ LA
+        if (!totalAmount || isNaN(totalAmount) || totalAmount <= 0) {
+            alert("Erè: Pa ka jwenn montan total panye an! Asire w gen yon element ak id='cart-total'.");
             if (btn) { btn.disabled = false; btn.innerText = originalText; }
             return;
         }
 
-        console.log("Voye rekèt sou:", PAYMENT_BACKEND_URL, "Montan:", totalAmount);
+        console.log("Voye rekèt sou:", PAYMENT_BACKEND_URL, "Montan dinamik:", totalAmount);
 
-        // 2. VOYE REKÈT LA BAY BACKEND AN
+        // 3. VOYE REKÈT LA BAY BACKEND AN
         const response = await fetch(PAYMENT_BACKEND_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -447,7 +442,6 @@ async function checkoutCart() {
         const data = await response.json();
 
         if (response.ok && data.paymentUrl) {
-            // REDIREKSYON DIRECT NAN MONCASHCONNECT
             window.location.href = data.paymentUrl;
         } else {
             alert("Erè Sèvè (" + response.status + "): " + JSON.stringify(data));
