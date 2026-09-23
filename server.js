@@ -75,8 +75,13 @@ app.post('/api/create-payment', async (req, res) => {
             return res.status(500).json({ error: 'Repons MonCashConnect pa nan fòma JSON' });
         }
 
+        // 👇 METE KÒD LA EGZAKTEMAN LA A (ANVAN IF !RESPONSE.OK A) 👇
         if (!response.ok) {
-            console.error('❌ MCC Reponn ak yon ERÈ HTTP:', response.status);
+            console.error('❌ ERÈ NAN REKÈT PEMAN AN:');
+            console.error('1. status:', response.status);
+            console.error('2. rawText:', rawText);
+            console.error('3. details:', data);
+
             return res.status(response.status).json({
                 error: data.message || data.error || 'Erè MonCashConnect',
                 mccDetails: data
