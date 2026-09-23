@@ -92,7 +92,7 @@ const defaultWelcome = {
     bgImage: "",
     badgeName: "FINDORA",
     badgeSub: "DREAM HOUSE",
-    brandName: "HIV3",
+    brandName: "FINDORA",
     brandSub: "Dream House",
     heading: "WELCOME",
     text1: "Find your next space, feel at home",
@@ -391,42 +391,22 @@ function renderCartPage() {
 }
 
 async function checkoutCart() {
-    const cart = getCart();
-    if (cart.length === 0) {
-        alert("Panyen ou vid!");
-        return;
-    }
-
-    const products = getProducts();
-    let subTotal = 0;
-    cart.forEach(item => {
-        const prod = products.find(p => p.id === item.id);
-        if (prod) subTotal += prod.price * item.qty;
-    });
-    const total = subTotal + 5.00; // shipping & tax
-
-    const btn = document.querySelector('.btn-checkout');
-    const originalText = btn ? btn.innerText : '';
-    if (btn) {
-        btn.disabled = true;
-        btn.innerText = 'Ap chaje peman...';
-    }
-
+    // ...
     try {
         const response = await fetch(PAYMENT_BACKEND_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 amount: total,
-                orderId: `order_${Date.now()}`
+                referenceId: `order_${Date.now()}`
             })
         });
 
         const data = await response.json();
 
-        if (response.ok && data.invoice_url) {
-            // Sove panyen an pou referans, epi voye kliyan sou paj peman NOWPayments lan
-            window.location.href = data.invoice_url;
+        // Redirection si le lien de paiement MonCashConnect est présent
+        if (response.ok && data.paymentUrl) {
+            window.location.href = data.paymentUrl;
         } else {
             alert("Erè: nou pa t ka kreye peman an. Eseye ankò.");
             if (btn) { btn.disabled = false; btn.innerText = originalText; }
