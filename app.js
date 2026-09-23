@@ -7,7 +7,7 @@ const defaultBanner = {
     title: "Nike Air Presto",
     subtitle: "Men's Shoes",
     productId: 1,
-    image: "https://i.ibb.co/2N4X33q/shoe-red.png"
+    image:
 };
 
 const defaultCategories = ["Sneakers / Soulye", "Rad / Vêtements", "Akseswa", "Lòt Bagay"];
