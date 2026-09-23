@@ -14,7 +14,7 @@ app.use(cors({
 }));
 
 // JERE PREFLIGHT REQUESTS (OPTIONS) POU EVITE BLOKAJ CORS
-app.options('*', cors());
+app.options('https://hive-online.vercel.app', cors());
 
 const MCC_SECRET = process.env.MCC_SECRET;
 const MCC_WEBHOOK_SECRET = process.env.MCC_WEBHOOK_SECRET;
