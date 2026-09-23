@@ -1,6 +1,6 @@
 // PAYMENT BACKEND CONFIG
 // ⚠️ Ranplase valè sa a ak URL backend NOWPayments ou lè li deploye
-const PAYMENT_BACKEND_URL = "https://hiv3-store.onrender.com/api/create-payment";";
+const PAYMENT_BACKEND_URL = "https://hiv3-store.onrender.com/api/create-payment";
 
 // INITIAL DATA SETUP
 const defaultBanner = {
