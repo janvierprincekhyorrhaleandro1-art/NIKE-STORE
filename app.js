@@ -1,5 +1,4 @@
 // PAYMENT BACKEND CONFIG
-// ⚠️ Ranplase valè sa a ak URL backend NOWPayments ou lè li deploye
 const PAYMENT_BACKEND_URL = "https://hiv3-store.onrender.com/api/create-payment";
 
 // INITIAL DATA SETUP
@@ -352,8 +351,8 @@ function renderCartPage() {
 
     if (cart.length === 0) {
         cartList.innerHTML = `<p style="text-align:center; font-size:13px; color:var(--text-gray); margin-top:40px;">Panyen ou vid.</p>`;
-        document.getElementById('subTotalVal').innerText = '$0.00';
-        document.getElementById('grandTotalVal').innerText = '$0.00';
+        if(document.getElementById('subTotalVal')) document.getElementById('subTotalVal').innerText = '$0.00';
+        if(document.getElementById('grandTotalVal')) document.getElementById('grandTotalVal').innerText = '$0.00';
         return;
     }
 
@@ -385,11 +384,12 @@ function renderCartPage() {
     }).join('');
 
     const shipping = 5.00;
-    document.getElementById('subTotalVal').innerText = `$${subTotal.toFixed(2)}`;
-    document.getElementById('shippingVal').innerText = `$${shipping.toFixed(2)}`;
-    document.getElementById('grandTotalVal').innerText = `$${(subTotal + shipping).toFixed(2)}`;
+    if(document.getElementById('subTotalVal')) document.getElementById('subTotalVal').innerText = `$${subTotal.toFixed(2)}`;
+    if(document.getElementById('shippingVal')) document.getElementById('shippingVal').innerText = `$${shipping.toFixed(2)}`;
+    if(document.getElementById('grandTotalVal')) document.getElementById('grandTotalVal').innerText = `$${(subTotal + shipping).toFixed(2)}`;
 }
 
+// CHECKOUT CART DINAMIK (SÈVI AK NATIVE STORAGE 'nike_cart')
 async function checkoutCart() {
     const btn = document.querySelector('.checkout-btn') || document.querySelector('button[onclick*="checkoutCart"]');
     let originalText = "";
@@ -400,41 +400,34 @@ async function checkoutCart() {
     }
 
     try {
-        let totalAmount = 0;
+        const cart = getCart();
+        const products = getProducts();
 
-        // 1. PRAN VALÈ NAN ELEMENT KI GEN ID "cart-total" LA
-        const totalEl = document.getElementById('cart-total');
-        if (totalEl) {
-            totalAmount = parseFloat(totalEl.innerText.replace(/[^0-9.]/g, ''));
-        }
-
-        // 2. SI PA GEN ID, CHÈCHE POU MÈT ENPÒT MENM KALITE PRIS SOU PAJ LA
-        if (!totalAmount || isNaN(totalAmount)) {
-            const allElements = Array.from(document.querySelectorAll('.total-amount, .cart-total, #total'));
-            for (let el of allElements) {
-                const parsed = parseFloat(el.innerText.replace(/[^0-9.]/g, ''));
-                if (!isNaN(parsed) && parsed > 0) {
-                    totalAmount = parsed;
-                    break;
-                }
-            }
-        }
-
-        // SI VREMAN PA GEN OKENN PRI KI JWENN SOU PAJ LA
-        if (!totalAmount || isNaN(totalAmount) || totalAmount <= 0) {
-            alert("Erè: Pa ka jwenn montan total panye an! Asire w gen yon element ak id='cart-total'.");
+        if (!cart || cart.length === 0) {
+            alert("Panye w la vid! Ajoute kèk pwodui anvan ou fe checkout.");
             if (btn) { btn.disabled = false; btn.innerText = originalText; }
             return;
         }
 
-        console.log("Voye rekèt sou:", PAYMENT_BACKEND_URL, "Montan dinamik:", totalAmount);
+        // Kalkile subtotal sou tout atik ki anndan panye a
+        let subtotal = 0;
+        cart.forEach(item => {
+            const prod = products.find(p => p.id === item.id);
+            if (prod) {
+                subtotal += Number(prod.price) * Number(item.qty);
+            }
+        });
 
-        // 3. VOYE REKÈT LA BAY BACKEND AN
+        const shipping = 5.00;
+        const grandTotal = subtotal + shipping;
+
+        console.log("Voye rekèt sou:", PAYMENT_BACKEND_URL, "Montan Dinamik:", grandTotal);
+
         const response = await fetch(PAYMENT_BACKEND_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                amount: totalAmount,
+                amount: grandTotal,
                 referenceId: `order_${Date.now()}`
             })
         });
@@ -829,11 +822,8 @@ function setActiveSize(btn) {
     document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
 }
-// ===================================
-// LOGIQUE D'AUTHENTIFICATION (AUTH)
-// ===================================
 
-// Basculer entre Login et Sign Up
+// LOGIQUE D'AUTHENTIFICATION (AUTH)
 function switchTab(tab) {
     const loginForm = document.getElementById('loginForm');
     const signupForm = document.getElementById('signupForm');
@@ -864,7 +854,6 @@ function switchTab(tab) {
     }
 }
 
-// Afficher / Masquer le mot de passe
 function togglePasswordVisibility(inputId, icon) {
     const input = document.getElementById(inputId);
     if (!input) return;
@@ -880,7 +869,6 @@ function togglePasswordVisibility(inputId, icon) {
     }
 }
 
-// Afficher un message d'erreur
 function showError(msg) {
     const errorDiv = document.getElementById('errorMessage');
     if (!errorDiv) return;
@@ -888,7 +876,6 @@ function showError(msg) {
     errorDiv.style.display = 'block';
 }
 
-// Gestion de la connexion (Login)
 function handleLogin(event) {
     event.preventDefault();
     const email = document.getElementById('loginEmail').value.trim();
@@ -905,7 +892,6 @@ function handleLogin(event) {
     }
 }
 
-// Gestion de l'inscription (Sign Up)
 function handleSignUp(event) {
     event.preventDefault();
     const name = document.getElementById('signupName').value.trim();
