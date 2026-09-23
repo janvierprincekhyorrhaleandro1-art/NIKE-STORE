@@ -29,6 +29,32 @@ app.use((req, res, next) => {
     next();
 });
 
+// ENDPOINT DIAGNOZE (retire li lè tout mache)
+app.get('/api/test', async (req, res) => {
+    const checks = {
+        MCC_SECRET: MCC_SECRET ? `✅ Set (${MCC_SECRET.slice(0,10)}...)` : '❌ MANKE',
+        DOMAIN: DOMAIN ? `✅ ${DOMAIN}` : '❌ MANKE',
+        SITE_URL: SITE_URL || '❌ MANKE',
+    };
+    console.log('🧪 Test endpoint:', checks);
+    try {
+        const r = await fetch('https://api.moncashconnect.com/v1/pay-create', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${MCC_SECRET}`,
+                'Origin': `https://${DOMAIN}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ amount: 100, referenceId: 'test_001', returnUrl: SITE_URL })
+        });
+        const data = await r.json();
+        checks.MCC_API = r.ok ? `✅ OK — ${data.paymentUrl}` : `❌ ${r.status} — ${JSON.stringify(data)}`;
+    } catch (e) {
+        checks.MCC_API = `❌ Koneksyon echwe: ${e.message}`;
+    }
+    res.json(checks);
+});
+
 // 1. KREYE PEMAN MONCASHCONNECT
 app.use('/api/create-payment', express.json());
 app.post('/api/create-payment', async (req, res) => {
