@@ -1,110 +1,79 @@
 // PAYMENT BACKEND CONFIG
 const PAYMENT_BACKEND_URL = "https://hiv3-store.onrender.com/api/create-payment";
 
-// INITIAL DATA SETUP
-const defaultBanner = {
-    title: "Nike Air Presto",
-    subtitle: "Men's Shoes",
-    productId: 1,
-    image: "https://i.ibb.co/2N4X33q/shoe-red.png"
-};
-
-const defaultCategories = ["Sneakers / Soulye", "Rad / Vêtements", "Akseswa", "Lòt Bagay"];
-
-const defaultProducts = [
-    {
-        id: 1,
-        name: "Nike ACG Mountain",
-        category: "Sneakers / Soulye",
-        price: 180,
-        images: ["https://i.ibb.co/D8G4yG8/shoe-grey.png"],
-        sizes: ["UK 5.5", "UK 6.5", "UK 9.5", "UK 11"],
-        colors: ["#1A1A1A", "#9084A8"]
-    },
-    {
-        id: 2,
-        name: "Nike Air Max",
-        category: "Sneakers / Soulye",
-        price: 218,
-        images: ["https://i.ibb.co/wSRyPTh/shoe-color.png"],
-        sizes: ["UK 6.0", "UK 7.5", "UK 8.5"],
-        colors: ["#3A5A40", "#A3B18A"]
-    }
-];
-
-// LOCALSTORAGE HELPERS
+// LOCALSTORAGE HELPERS (JENERIK AK VYÈJ)
 function getProducts() {
-    const saved = localStorage.getItem('nike_products');
-    return saved ? JSON.parse(saved) : defaultProducts;
+    const saved = localStorage.getItem('store_products');
+    return saved ? JSON.parse(saved) : [];
 }
 
 function saveProducts(products) {
-    localStorage.setItem('nike_products', JSON.stringify(products));
+    localStorage.setItem('store_products', JSON.stringify(products));
 }
 
 function getBanner() {
-    const saved = localStorage.getItem('nike_banner');
-    return saved ? JSON.parse(saved) : defaultBanner;
+    const saved = localStorage.getItem('store_banner');
+    return saved ? JSON.parse(saved) : null;
 }
 
 function saveBanner(banner) {
-    localStorage.setItem('nike_banner', JSON.stringify(banner));
+    localStorage.setItem('store_banner', JSON.stringify(banner));
 }
 
 function getCategories() {
-    const saved = localStorage.getItem('nike_categories');
-    return saved ? JSON.parse(saved) : defaultCategories;
+    const saved = localStorage.getItem('store_categories');
+    return saved ? JSON.parse(saved) : [];
 }
 
 function saveCategories(cats) {
-    localStorage.setItem('nike_categories', JSON.stringify(cats));
+    localStorage.setItem('store_categories', JSON.stringify(cats));
 }
 
 function getFavorites() {
-    const saved = localStorage.getItem('nike_favorites');
+    const saved = localStorage.getItem('store_favorites');
     return saved ? JSON.parse(saved) : [];
 }
 
 function saveFavorites(favs) {
-    localStorage.setItem('nike_favorites', JSON.stringify(favs));
+    localStorage.setItem('store_favorites', JSON.stringify(favs));
 }
 
 function getCart() {
-    const saved = localStorage.getItem('nike_cart');
+    const saved = localStorage.getItem('store_cart');
     return saved ? JSON.parse(saved) : [];
 }
 
 function saveCart(cart) {
-    localStorage.setItem('nike_cart', JSON.stringify(cart));
+    localStorage.setItem('store_cart', JSON.stringify(cart));
 }
 
 function getAuthStatus() {
-    return localStorage.getItem('nike_is_logged_in') === 'true';
+    return localStorage.getItem('store_is_logged_in') === 'true';
 }
 
 function setAuthStatus(status) {
-    localStorage.setItem('nike_is_logged_in', status ? 'true' : 'false');
+    localStorage.setItem('store_is_logged_in', status ? 'true' : 'false');
 }
 
-// WELCOME PAGE (INDEX.HTML) SETUP
+// WELCOME PAGE SETUP
 const defaultWelcome = {
     bgImage: "",
-    badgeName: "FINDORA",
-    badgeSub: "DREAM HOUSE",
-    brandName: "FINDORA",
-    brandSub: "Dream House",
-    heading: "WELCOME",
-    text1: "Find your next space, feel at home",
-    text2: "Where comfort meets convenience"
+    badgeName: "BOUTIK MWEN",
+    badgeSub: "E-COMMERCE STORE",
+    brandName: "MY STORE",
+    brandSub: "Byenveni nan boutik nou an",
+    heading: "BYENVENI",
+    text1: "Dekouvri pi bon pwodui nou yo",
+    text2: "Achte ak tout sekirite ak konfyans"
 };
 
 function getWelcome() {
-    const saved = localStorage.getItem('nike_welcome');
+    const saved = localStorage.getItem('store_welcome');
     return saved ? JSON.parse(saved) : defaultWelcome;
 }
 
 function saveWelcome(data) {
-    localStorage.setItem('nike_welcome', JSON.stringify(data));
+    localStorage.setItem('store_welcome', JSON.stringify(data));
 }
 
 // UPLOAD VARIABLES
@@ -114,6 +83,7 @@ let uploadedWelcomeBg = "";
 
 function previewImage(event) {
     const container = document.getElementById('image-preview-container');
+    if (!container) return;
     container.innerHTML = '';
     uploadedImages = [];
     const files = event.target.files;
@@ -134,6 +104,7 @@ function previewImage(event) {
 
 function previewBannerImg(event) {
     const container = document.getElementById('banner-preview');
+    if (!container) return;
     container.innerHTML = '';
     const file = event.target.files[0];
     if (file) {
@@ -150,6 +121,7 @@ function previewBannerImg(event) {
 
 function previewWelcomeBg(event) {
     const container = document.getElementById('welcomeBgPreview');
+    if (!container) return;
     container.innerHTML = '';
     const file = event.target.files[0];
     if (file) {
@@ -226,22 +198,32 @@ function renderModalCategories() {
     const adminList = document.getElementById('adminCategoryOptionsList');
     const catalogList = document.getElementById('catalogCategoryList');
 
+    const emptyText = `<p style="font-size:12px; color:var(--text-gray); padding:10px; text-align:center;">Pa gen okenn kategori ki kreye ankò.</p>`;
+
     if (adminList) {
-        adminList.innerHTML = cats.map(c => `
-            <div class="cat-option" onclick="selectCategory('${c}')">
-                <span>${c}</span>
-                <i class="fa-solid fa-trash" style="color:#EF4444; cursor:pointer;" onclick="removeCategory('${c}', event)"></i>
-            </div>
-        `).join('');
+        if (cats.length === 0) {
+            adminList.innerHTML = emptyText;
+        } else {
+            adminList.innerHTML = cats.map(c => `
+                <div class="cat-option" onclick="selectCategory('${c}')">
+                    <span>${c}</span>
+                    <i class="fa-solid fa-trash" style="color:#EF4444; cursor:pointer;" onclick="removeCategory('${c}', event)"></i>
+                </div>
+            `).join('');
+        }
     }
 
     if (catalogList) {
-        catalogList.innerHTML = cats.map(c => `
-            <div class="cat-option" onclick="filterByCategory('${c}')">
-                <span>${c}</span>
-                <i class="fa-solid fa-chevron-right" style="color:var(--text-gray);"></i>
-            </div>
-        `).join('');
+        if (cats.length === 0) {
+            catalogList.innerHTML = emptyText;
+        } else {
+            catalogList.innerHTML = cats.map(c => `
+                <div class="cat-option" onclick="filterByCategory('${c}')">
+                    <span>${c}</span>
+                    <i class="fa-solid fa-chevron-right" style="color:var(--text-gray);"></i>
+                </div>
+            `).join('');
+        }
     }
 }
 
@@ -253,7 +235,7 @@ function handleSearch() {
     const products = getProducts();
     const filtered = products.filter(p => 
         p.name.toLowerCase().includes(query) || 
-        p.category.toLowerCase().includes(query)
+        (p.category && p.category.toLowerCase().includes(query))
     );
     renderProductGrid(filtered);
 }
@@ -285,16 +267,17 @@ function renderProductGrid(productsToRender) {
     if (!grid) return;
     const favs = getFavorites();
 
-    if (productsToRender.length === 0) {
-        grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; font-size:12px; color:var(--text-gray); margin-top:20px;">Pa gen okenn pwodui ki jwenn.</p>`;
+    if (!productsToRender || productsToRender.length === 0) {
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; font-size:13px; color:var(--text-gray); margin-top:30px;">Pa gen okenn pwodui nan boutik la pou kounye a.</p>`;
         return;
     }
 
     grid.innerHTML = productsToRender.map(p => {
         const isFav = favs.includes(p.id);
+        const img = (p.images && p.images.length > 0) ? p.images[0] : 'https://via.placeholder.com/150';
         return `
             <div class="grid-card" onclick="openDetail(${p.id})">
-                <img src="${p.images[0] || 'https://via.placeholder.com/150'}" alt="${p.name}">
+                <img src="${img}" alt="${p.name}">
                 <div class="price">$${p.price}</div>
                 <div class="name">${p.name}</div>
                 <button class="like-btn ${isFav ? 'liked' : ''}" onclick="event.stopPropagation(); toggleLike(this, ${p.id})">
@@ -312,7 +295,9 @@ function openDetail(id) {
 // CART MANAGEMENT
 function addToCartFromDetail() {
     const urlParams = new URLSearchParams(window.location.search);
-    const productId = parseInt(urlParams.get('id')) || 1;
+    const productId = parseInt(urlParams.get('id'));
+    if (!productId) return;
+
     const activeSizeBtn = document.querySelector('.size-btn.active');
     const selectedSize = activeSizeBtn ? activeSizeBtn.innerText : 'M';
 
@@ -363,16 +348,17 @@ function renderCartPage() {
         if (!prod) return '';
         const itemTotal = prod.price * item.qty;
         subTotal += itemTotal;
+        const img = (prod.images && prod.images.length > 0) ? prod.images[0] : 'https://via.placeholder.com/150';
 
         return `
             <div class="cart-item-card">
                 <div class="cart-item-img">
-                    <img src="${prod.images[0] || 'https://via.placeholder.com/150'}" alt="${prod.name}">
+                    <img src="${img}" alt="${prod.name}">
                 </div>
                 <div class="cart-item-info">
                     <h4>${prod.name} (${item.size})</h4>
-                    <div class="brand">${prod.category}</div>
-                    <div class="price">$${prod.price.toFixed(2)}</div>
+                    <div class="brand">${prod.category || 'Pwodui'}</div>
+                    <div class="price">$${Number(prod.price).toFixed(2)}</div>
                     <div class="cart-qty-ctrl">
                         <button class="qty-btn" onclick="updateCartQty(${item.id}, '${item.size}', -1)">-</button>
                         <span style="font-size:12px; font-weight:800;">${item.qty}</span>
@@ -391,26 +377,20 @@ function renderCartPage() {
 function updateCartDisplayValues(subTotal, shipping) {
     const grandTotal = subTotal > 0 ? (subTotal + shipping) : 0;
 
-    // 1. Subtotal
-    const subTotalElems = document.querySelectorAll('#subTotalVal, #subtotal, .subtotal-val, .cart-subtotal');
-    subTotalElems.forEach(el => {
+    document.querySelectorAll('#subTotalVal, #subtotal, .subtotal-val, .cart-subtotal').forEach(el => {
         el.innerText = `$${subTotal.toFixed(2)}`;
     });
 
-    // 2. Shipping
-    const shippingElems = document.querySelectorAll('#shippingVal, #shipping, .shipping-val');
-    shippingElems.forEach(el => {
+    document.querySelectorAll('#shippingVal, #shipping, .shipping-val').forEach(el => {
         el.innerText = `$${shipping.toFixed(2)}`;
     });
 
-    // 3. Grand Total
-    const grandTotalElems = document.querySelectorAll('#grandTotalVal, #cart-total, #total, .total-val, .grand-total');
-    grandTotalElems.forEach(el => {
+    document.querySelectorAll('#grandTotalVal, #cart-total, #total, .total-val, .grand-total').forEach(el => {
         el.innerText = `$${grandTotal.toFixed(2)}`;
     });
 }
 
-// CHECKOUT CART DINAMIK (SÈVI AK NATIVE STORAGE 'nike_cart')
+// CHECKOUT CART DINAMIK
 async function checkoutCart() {
     const btn = document.querySelector('.checkout-btn') || document.querySelector('button[onclick*="checkoutCart"]');
     let originalText = "";
@@ -425,12 +405,11 @@ async function checkoutCart() {
         const products = getProducts();
 
         if (!cart || cart.length === 0) {
-            alert("Panye w la vid! Ajoute kèk pwodui anvan ou fe checkout.");
+            alert("Panye w la vid! Ajoute kèk pwodui anvan ou fè checkout.");
             if (btn) { btn.disabled = false; btn.innerText = originalText; }
             return;
         }
 
-        // Kalkile subtotal sou tout atik ki anndan panye a
         let subtotal = 0;
         cart.forEach(item => {
             const prod = products.find(p => p.id === item.id);
@@ -441,8 +420,6 @@ async function checkoutCart() {
 
         const shipping = 5.00;
         const grandTotal = subtotal + shipping;
-
-        console.log("Voye rekèt sou:", PAYMENT_BACKEND_URL, "Montan Dinamik:", grandTotal);
 
         const response = await fetch(PAYMENT_BACKEND_URL, {
             method: 'POST',
@@ -463,7 +440,7 @@ async function checkoutCart() {
         }
     } catch (err) {
         console.error("Erè Rekèt:", err);
-        alert("DIAGNOSTIK ERÈ:\n\nURL ki rele a: " + PAYMENT_BACKEND_URL + "\n\nMesaj Erè: " + err.message);
+        alert("Erè nan peman an: " + err.message);
         if (btn) { btn.disabled = false; btn.innerText = originalText; }
     }
 }
@@ -478,7 +455,7 @@ function renderFavoritesPage() {
     const favProducts = products.filter(p => favs.includes(p.id));
 
     if (favProducts.length === 0) {
-        grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; font-size:13px; color:var(--text-gray); margin-top:40px;">There is no product in your favorites.</p>`;
+        grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; font-size:13px; color:var(--text-gray); margin-top:40px;">Pa gen okenn pwodui nan favori w yo.</p>`;
         return;
     }
 
@@ -500,44 +477,28 @@ function renderProfilePage() {
     if (!container) return;
 
     const isLoggedIn = getAuthStatus();
+    const currentUser = JSON.parse(localStorage.getItem('store_current_user') || '{}');
 
     if (isLoggedIn) {
         container.innerHTML = `
             <div class="profile-user-card">
-                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" alt="Profile" class="profile-avatar">
-                <h3>Hadi jafrai</h3>
-                <p>hadijafari.official@gmail.com</p>
-                <p style="font-size:10px; color:var(--text-gray); margin-top:2px;">Product designer • Madrid, spain</p>
+                <img src="https://via.placeholder.com/100" alt="Profile" class="profile-avatar">
+                <h3>${currentUser.name || 'Kliyan'}</h3>
+                <p>${currentUser.email || 'kliyan@email.com'}</p>
                 <button class="btn-edit-profile"><i class="fa-solid fa-pen"></i> Edit Profile</button>
             </div>
 
             <div class="profile-menu-list">
                 <div class="menu-item-card">
-                    <div class="menu-item-left"><i class="fa-solid fa-language"></i> Language</div>
+                    <div class="menu-item-left"><i class="fa-solid fa-language"></i> Lang</div>
                     <i class="fa-solid fa-chevron-right" style="color:var(--text-gray); font-size:12px;"></i>
                 </div>
                 <div class="menu-item-card">
-                    <div class="menu-item-left"><i class="fa-solid fa-coins"></i> Currencies</div>
-                    <i class="fa-solid fa-chevron-right" style="color:var(--text-gray); font-size:12px;"></i>
-                </div>
-                <div class="menu-item-card">
-                    <div class="menu-item-left"><i class="fa-solid fa-shirt"></i> Appearance</div>
-                    <i class="fa-solid fa-chevron-right" style="color:var(--text-gray); font-size:12px;"></i>
-                </div>
-                <div class="menu-item-card">
-                    <div class="menu-item-left"><i class="fa-solid fa-shield-halved"></i> Application Security</div>
-                    <i class="fa-solid fa-chevron-right" style="color:var(--text-gray); font-size:12px;"></i>
-                </div>
-                <div class="menu-item-card">
-                    <div class="menu-item-left"><i class="fa-solid fa-mobile-screen"></i> Manage Devices</div>
-                    <i class="fa-solid fa-chevron-right" style="color:var(--text-gray); font-size:12px;"></i>
-                </div>
-                <div class="menu-item-card">
-                    <div class="menu-item-left"><i class="fa-solid fa-key"></i> Change Password</div>
+                    <div class="menu-item-left"><i class="fa-solid fa-shield-halved"></i> Sekirite</div>
                     <i class="fa-solid fa-chevron-right" style="color:var(--text-gray); font-size:12px;"></i>
                 </div>
                 <div class="menu-item-card" onclick="logoutUser()" style="color:#EF4444;">
-                    <div class="menu-item-left"><i class="fa-solid fa-right-from-bracket" style="color:#EF4444;"></i> Log Out</div>
+                    <div class="menu-item-left"><i class="fa-solid fa-right-from-bracket" style="color:#EF4444;"></i> Dekonekte</div>
                 </div>
             </div>
         `;
@@ -545,8 +506,8 @@ function renderProfilePage() {
         container.innerHTML = `
             <div class="auth-card">
                 <i class="fa-regular fa-user"></i>
-                <h3>Oups, ou poko konekte!</h3>
-                <p>Konekte sou kont ou pou w ka gade enfòmasyon pèsonèl ou yo.</p>
+                <h3>Ou poko konekte!</h3>
+                <p>Konekte sou kont ou pou w ka gade enfòmasyon w yo.</p>
                 <button class="btn-login" onclick="loginUser()">Log in / Sign up</button>
             </div>
         `;
@@ -560,6 +521,7 @@ function loginUser() {
 
 function logoutUser() {
     setAuthStatus(false);
+    localStorage.removeItem('store_current_user');
     renderProfilePage();
 }
 
@@ -570,7 +532,7 @@ function renderAdminProductList() {
 
     const products = getProducts();
     if (products.length === 0) {
-        listContainer.innerHTML = `<p style="font-size:12px; color:var(--text-gray);">Pa gen okenn pwodui.</p>`;
+        listContainer.innerHTML = `<p style="font-size:12px; color:var(--text-gray);">Pa gen okenn pwodui ki anregistre nan paj admin lan.</p>`;
         return;
     }
 
@@ -580,7 +542,7 @@ function renderAdminProductList() {
                 <img src="${p.images[0] || 'https://via.placeholder.com/150'}" alt="${p.name}">
                 <div class="admin-prod-details">
                     <h5>${p.name}</h5>
-                    <span>$${p.price} • ${p.category}</span>
+                    <span>$${p.price} • ${p.category || 'San Kategori'}</span>
                 </div>
             </div>
             <div class="admin-actions">
@@ -603,15 +565,21 @@ function editProduct(id) {
     document.getElementById('editProductId').value = product.id;
     document.getElementById('prodName').value = product.name;
     document.getElementById('prodPrice').value = product.price;
-    document.getElementById('prodSizes').value = product.sizes.join(', ');
-    document.getElementById('prodColors').value = product.colors.join(', ');
-    document.getElementById('prodCategory').value = product.category;
-    document.getElementById('selected-category-text').innerText = product.category;
-    document.getElementById('selected-category-text').style.color = 'var(--text-dark)';
+    document.getElementById('prodSizes').value = product.sizes ? product.sizes.join(', ') : '';
+    document.getElementById('prodColors').value = product.colors ? product.colors.join(', ') : '';
+    document.getElementById('prodCategory').value = product.category || '';
+    
+    const textElem = document.getElementById('selected-category-text');
+    if (textElem) {
+        textElem.innerText = product.category || 'Chwazi yon kategori...';
+        textElem.style.color = 'var(--text-dark)';
+    }
 
-    uploadedImages = [...product.images];
+    uploadedImages = [...(product.images || [])];
     const previewBox = document.getElementById('image-preview-container');
-    previewBox.innerHTML = uploadedImages.map(img => `<img src="${img}">`).join('');
+    if (previewBox) {
+        previewBox.innerHTML = uploadedImages.map(img => `<img src="${img}">`).join('');
+    }
 
     document.getElementById('formActionTitle').innerText = 'Modifye Pwodwi sa a';
     document.getElementById('submitProdBtn').innerText = 'Sove Modifikasyon yo';
@@ -621,12 +589,19 @@ function editProduct(id) {
 }
 
 function resetForm() {
-    document.getElementById('addProductForm').reset();
+    const form = document.getElementById('addProductForm');
+    if (form) form.reset();
     document.getElementById('editProductId').value = '';
     uploadedImages = [];
-    document.getElementById('image-preview-container').innerHTML = '';
-    document.getElementById('selected-category-text').innerText = 'Chwazi yon kategori...';
-    document.getElementById('selected-category-text').style.color = 'var(--text-gray)';
+    const previewBox = document.getElementById('image-preview-container');
+    if (previewBox) previewBox.innerHTML = '';
+    
+    const textElem = document.getElementById('selected-category-text');
+    if (textElem) {
+        textElem.innerText = 'Chwazi yon kategori...';
+        textElem.style.color = 'var(--text-gray)';
+    }
+    
     document.getElementById('formActionTitle').innerText = 'Ajoute yon Pwodwi';
     document.getElementById('submitProdBtn').innerText = 'Anregistre Pwodui a';
     document.getElementById('cancelEditBtn').style.display = 'none';
@@ -643,7 +618,8 @@ function removeProduct(id) {
 
 function toggleDetailLike() {
     const urlParams = new URLSearchParams(window.location.search);
-    const productId = parseInt(urlParams.get('id')) || 1;
+    const productId = parseInt(urlParams.get('id'));
+    if (!productId) return;
     const btn = document.getElementById('detailLikeBtn');
     toggleLike(btn, productId);
 }
@@ -677,9 +653,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('wText2').value = w.text2;
         if (w.bgImage) {
             const container = document.getElementById('welcomeBgPreview');
-            const img = document.createElement('img');
-            img.src = w.bgImage;
-            container.appendChild(img);
+            if (container) {
+                const img = document.createElement('img');
+                img.src = w.bgImage;
+                container.appendChild(img);
+            }
         }
 
         welcomeForm.addEventListener('submit', (e) => {
@@ -705,14 +683,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const featuredCard = document.getElementById('featuredCardContainer');
     if (featuredCard) {
         const banner = getBanner();
-        featuredCard.innerHTML = `
-            <span class="badge">NEW COLLECTION</span>
-            <p style="font-size: 9px; color: #8C8C8C;"></p>
-            <h3>${banner.title}</h3>
-            <p class="subtitle">${banner.subtitle}</p>
-            <img src="${banner.image}" alt="${banner.title}" class="featured-shoe-img">
-        `;
-        featuredCard.onclick = () => openDetail(banner.productId);
+        if (banner) {
+            featuredCard.style.display = 'block';
+            featuredCard.innerHTML = `
+                <span class="badge">Nouvèl Koleksyon</span>
+                <h3>${banner.title}</h3>
+                <p class="subtitle">${banner.subtitle}</p>
+                <img src="${banner.image}" alt="${banner.title}" class="featured-shoe-img">
+            `;
+            if (banner.productId) {
+                featuredCard.onclick = () => openDetail(banner.productId);
+            }
+        } else {
+            featuredCard.style.display = 'none'; // Kache banè a si l poko kreye nan admin
+        }
     }
 
     // 2. CATALOG RENDER
@@ -723,39 +707,41 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. DETAIL PAGE SETUP
     if (window.location.pathname.includes('detail.html')) {
         const urlParams = new URLSearchParams(window.location.search);
-        const productId = parseInt(urlParams.get('id')) || 1;
+        const productId = parseInt(urlParams.get('id'));
         const products = getProducts();
         const product = products.find(p => p.id === productId);
 
         if (product) {
             document.getElementById('productTitle').innerText = product.name;
             document.getElementById('productPrice').innerText = `$${product.price}`;
-            document.getElementById('productImg').src = product.images[0];
+            document.getElementById('productImg').src = (product.images && product.images.length > 0) ? product.images[0] : 'https://via.placeholder.com/150';
 
             const favs = getFavorites();
             const btn = document.getElementById('detailLikeBtn');
-            if (favs.includes(productId)) {
+            if (favs.includes(productId) && btn) {
                 btn.classList.add('liked');
                 btn.querySelector('i').className = 'fa-solid fa-heart';
             }
 
-            if (product.images.length > 1) {
+            if (product.images && product.images.length > 1) {
                 const imgBox = document.querySelector('.detail-image-box');
                 const galleryHTML = product.images.map(img => `
                     <img src="${img}" style="width: 45px; height: 45px; object-fit: contain; cursor: pointer; border-radius: 8px; border: 1px solid #ddd; background: #fff;" onclick="document.getElementById('productImg').src='${img}'">
                 `).join('');
-                imgBox.insertAdjacentHTML('afterend', `<div style="display:flex; justify-content:center; gap:8px; margin-bottom:12px;">${galleryHTML}</div>`);
+                if (imgBox) {
+                    imgBox.insertAdjacentHTML('afterend', `<div style="display:flex; justify-content:center; gap:8px; margin-bottom:12px;">${galleryHTML}</div>`);
+                }
             }
 
             const sizeContainer = document.getElementById('sizeContainer');
-            if (sizeContainer) {
+            if (sizeContainer && product.sizes && product.sizes.length > 0) {
                 sizeContainer.innerHTML = product.sizes.map((s, i) => `
                     <button class="size-btn ${i === 0 ? 'active' : ''}" onclick="setActiveSize(this)">${s}</button>
                 `).join('');
             }
 
             const colorContainer = document.getElementById('colorContainer');
-            if (colorContainer) {
+            if (colorContainer && product.colors && product.colors.length > 0) {
                 colorContainer.innerHTML = product.colors.map(c => `
                     <div class="dot" style="background: ${c.trim()};"></div>
                 `).join('');
@@ -772,70 +758,81 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.location.pathname.includes('admin.html')) {
         renderAdminProductList();
         
-        // Fill Banner Form with current
+        // Fill Banner Form if exists
         const b = getBanner();
-        document.getElementById('bannerTitle').value = b.title;
-        document.getElementById('bannerSub').value = b.subtitle;
-        document.getElementById('bannerProdId').value = b.productId;
+        if (b) {
+            document.getElementById('bannerTitle').value = b.title || '';
+            document.getElementById('bannerSub').value = b.subtitle || '';
+            document.getElementById('bannerProdId').value = b.productId || '';
+        }
 
         // Banner Form Submit
-        document.getElementById('newCollectionForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const currentB = getBanner();
-            const updated = {
-                title: document.getElementById('bannerTitle').value,
-                subtitle: document.getElementById('bannerSub').value,
-                productId: parseInt(document.getElementById('bannerProdId').value),
-                image: uploadedBannerImg || currentB.image
-            };
-            saveBanner(updated);
-            alert('Banè New Collection sove ak siksè!');
-        });
+        const bannerForm = document.getElementById('newCollectionForm');
+        if (bannerForm) {
+            bannerForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const currentB = getBanner() || {};
+                const updated = {
+                    title: document.getElementById('bannerTitle').value,
+                    subtitle: document.getElementById('bannerSub').value,
+                    productId: parseInt(document.getElementById('bannerProdId').value) || null,
+                    image: uploadedBannerImg || currentB.image || "https://via.placeholder.com/300"
+                };
+                saveBanner(updated);
+                alert('Banè piblisite sove ak siksè!');
+            });
+        }
 
         // Add / Edit Product Submit
-        document.getElementById('addProductForm').addEventListener('submit', (e) => {
-            e.preventDefault();
+        const addProdForm = document.getElementById('addProductForm');
+        if (addProdForm) {
+            addProdForm.addEventListener('submit', (e) => {
+                e.preventDefault();
 
-            const editId = document.getElementById('editProductId').value;
-            const sizesArr = document.getElementById('prodSizes').value.split(',').map(s => s.trim());
-            const colorsArr = document.getElementById('prodColors').value.split(',').map(c => c.trim());
-            const categoryVal = document.getElementById('prodCategory').value || 'Sneakers / Soulye';
+                const editId = document.getElementById('editProductId').value;
+                const rawSizes = document.getElementById('prodSizes').value;
+                const rawColors = document.getElementById('prodColors').value;
 
-            let products = getProducts();
+                const sizesArr = rawSizes ? rawSizes.split(',').map(s => s.trim()).filter(Boolean) : [];
+                const colorsArr = rawColors ? rawColors.split(',').map(c => c.trim()).filter(Boolean) : [];
+                const categoryVal = document.getElementById('prodCategory').value || 'Pwodui Jenerik';
 
-            if (editId) {
-                // EDIT EXISTING
-                const index = products.findIndex(p => p.id === parseInt(editId));
-                if (index > -1) {
-                    products[index].name = document.getElementById('prodName').value;
-                    products[index].price = parseFloat(document.getElementById('prodPrice').value);
-                    products[index].sizes = sizesArr;
-                    products[index].colors = colorsArr;
-                    products[index].category = categoryVal;
-                    if (uploadedImages.length > 0) {
-                        products[index].images = uploadedImages;
+                let products = getProducts();
+
+                if (editId) {
+                    // EDIT EXISTING
+                    const index = products.findIndex(p => p.id === parseInt(editId));
+                    if (index > -1) {
+                        products[index].name = document.getElementById('prodName').value;
+                        products[index].price = parseFloat(document.getElementById('prodPrice').value);
+                        products[index].sizes = sizesArr;
+                        products[index].colors = colorsArr;
+                        products[index].category = categoryVal;
+                        if (uploadedImages.length > 0) {
+                            products[index].images = uploadedImages;
+                        }
                     }
+                    alert('Pwodui modifye ak siksè!');
+                } else {
+                    // ADD NEW
+                    const newProduct = {
+                        id: Date.now(),
+                        name: document.getElementById('prodName').value,
+                        category: categoryVal,
+                        price: parseFloat(document.getElementById('prodPrice').value),
+                        images: uploadedImages.length ? uploadedImages : ["https://via.placeholder.com/150"],
+                        sizes: sizesArr.length ? sizesArr : ["S", "M", "L"],
+                        colors: colorsArr.length ? colorsArr : ["#000000"]
+                    };
+                    products.unshift(newProduct);
+                    alert('Pwodui anrejistre ak siksè!');
                 }
-                alert('Pwodui modifye ak siksè!');
-            } else {
-                // ADD NEW
-                const newProduct = {
-                    id: Date.now(),
-                    name: document.getElementById('prodName').value,
-                    category: categoryVal,
-                    price: parseFloat(document.getElementById('prodPrice').value),
-                    images: uploadedImages.length ? uploadedImages : ["https://via.placeholder.com/150"],
-                    sizes: sizesArr.length ? sizesArr : ["S", "M", "L"],
-                    colors: colorsArr.length ? colorsArr : ["#000000"]
-                };
-                products.unshift(newProduct);
-                alert('Pwodui anrejistre ak siksè!');
-            }
 
-            saveProducts(products);
-            resetForm();
-            renderAdminProductList();
-        });
+                saveProducts(products);
+                resetForm();
+                renderAdminProductList();
+            });
+        }
     }
 });
 
@@ -856,22 +853,22 @@ function switchTab(tab) {
 
     if (!loginForm || !signupForm) return;
 
-    errorDiv.style.display = 'none';
+    if (errorDiv) errorDiv.style.display = 'none';
 
     if (tab === 'login') {
         loginForm.classList.remove('hidden');
         signupForm.classList.add('hidden');
-        tabLoginBtn.classList.add('active');
-        tabSignupBtn.classList.remove('active');
-        authHeading.innerText = 'Bienvenue sur Findora';
-        authSubheading.innerText = 'Konekte pou w jwenn kay ideyal ou a';
+        if (tabLoginBtn) tabLoginBtn.classList.add('active');
+        if (tabSignupBtn) tabSignupBtn.classList.remove('active');
+        if (authHeading) authHeading.innerText = 'Byenveni sou Boutik la';
+        if (authSubheading) authSubheading.innerText = 'Konekte pou w ka fè achte w yo';
     } else {
         loginForm.classList.add('hidden');
         signupForm.classList.remove('hidden');
-        tabSignupBtn.classList.add('active');
-        tabLoginBtn.classList.remove('active');
-        authHeading.innerText = 'Créer un Compte';
-        authSubheading.innerText = 'Rejoindre Findora nan kèk segonn';
+        if (tabSignupBtn) tabSignupBtn.classList.add('active');
+        if (tabLoginBtn) tabLoginBtn.classList.remove('active');
+        if (authHeading) authHeading.innerText = 'Kreye yon Kont';
+        if (authSubheading) authSubheading.innerText = 'Inskri nan kèk segonn';
     }
 }
 
@@ -902,14 +899,15 @@ function handleLogin(event) {
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value.trim();
 
-    const users = JSON.parse(localStorage.getItem('findora_users') || '[]');
+    const users = JSON.parse(localStorage.getItem('store_users') || '[]');
     const user = users.find(u => u.email === email && u.password === password);
 
     if (user) {
-        localStorage.setItem('findora_current_user', JSON.stringify(user));
+        localStorage.setItem('store_current_user', JSON.stringify(user));
+        setAuthStatus(true);
         window.location.href = 'catalog.html';
     } else {
-        showError('Email oswa modpas sa pa korek!');
+        showError('Email oswa modpas sa pa korèk!');
     }
 }
 
@@ -925,7 +923,7 @@ function handleSignUp(event) {
         return;
     }
 
-    let users = JSON.parse(localStorage.getItem('findora_users') || '[]');
+    let users = JSON.parse(localStorage.getItem('store_users') || '[]');
     if (users.some(u => u.email === email)) {
         showError('Gen yon kont ki deja kreye ak email sa a!');
         return;
@@ -933,8 +931,9 @@ function handleSignUp(event) {
 
     const newUser = { id: Date.now(), name, email, password };
     users.push(newUser);
-    localStorage.setItem('findora_users', JSON.stringify(users));
-    localStorage.setItem('findora_current_user', JSON.stringify(newUser));
+    localStorage.setItem('store_users', JSON.stringify(users));
+    localStorage.setItem('store_current_user', JSON.stringify(newUser));
+    setAuthStatus(true);
 
     window.location.href = 'catalog.html';
 }
