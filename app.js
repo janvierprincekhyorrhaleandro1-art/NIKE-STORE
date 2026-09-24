@@ -1,58 +1,53 @@
-// PAYMENT BACKEND CONFIG
+// ==========================================
+// 1. CONFIGURATION SUPABASE & BACKEND
+// ==========================================
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+// Inisyalizasyon Kliyan Supabase nan Navigatè a
+const supabase = (window.supabase && SUPABASE_URL !== "YOUR_SUPABASE_URL") 
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
+    : null;
+
 const PAYMENT_BACKEND_URL = "https://hiv3-store.onrender.com/api/create-payment";
 
-// LOCALSTORAGE HELPERS (JENERIK AK VYÈJ)
-function getProducts() {
-    const saved = localStorage.getItem('store_products');
-    return saved ? JSON.parse(saved) : [];
+// Variable Upload yo
+let uploadedImages = [];
+let uploadedBannerImg = "";
+let uploadedWelcomeBg = "";
+
+// ==========================================
+// 2. SUPABASE API HELPERS (READ / WRITE)
+// ==========================================
+
+// JWENN PWODUI
+async function getProducts() {
+    if (!supabase) return JSON.parse(localStorage.getItem('store_products') || '[]');
+    const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+    if (error) {
+        console.error("Erè Supabase (getProducts):", error.message);
+        return [];
+    }
+    return data || [];
 }
 
-function saveProducts(products) {
-    localStorage.setItem('store_products', JSON.stringify(products));
+// JWENN KATEGORI
+async function getCategories() {
+    if (!supabase) return JSON.parse(localStorage.getItem('store_categories') || '[]');
+    const { data, error } = await supabase.from('categories').select('name').order('created_at', { ascending: true });
+    if (error) {
+        console.error("Erè Supabase (getCategories):", error.message);
+        return [];
+    }
+    return data.map(c => c.name);
 }
 
-function getBanner() {
-    const saved = localStorage.getItem('store_banner');
-    return saved ? JSON.parse(saved) : null;
-}
-
-function saveBanner(banner) {
-    localStorage.setItem('store_banner', JSON.stringify(banner));
-}
-
-function getCategories() {
-    const saved = localStorage.getItem('store_categories');
-    return saved ? JSON.parse(saved) : [];
-}
-
-function saveCategories(cats) {
-    localStorage.setItem('store_categories', JSON.stringify(cats));
-}
-
-function getFavorites() {
-    const saved = localStorage.getItem('store_favorites');
-    return saved ? JSON.parse(saved) : [];
-}
-
-function saveFavorites(favs) {
-    localStorage.setItem('store_favorites', JSON.stringify(favs));
-}
-
-function getCart() {
-    const saved = localStorage.getItem('store_cart');
-    return saved ? JSON.parse(saved) : [];
-}
-
-function saveCart(cart) {
-    localStorage.setItem('store_cart', JSON.stringify(cart));
-}
-
-function getAuthStatus() {
-    return localStorage.getItem('store_is_logged_in') === 'true';
-}
-
-function setAuthStatus(status) {
-    localStorage.setItem('store_is_logged_in', status ? 'true' : 'false');
+// JWENN BANÈ
+async function getBanner() {
+    if (!supabase) return JSON.parse(localStorage.getItem('store_banner') || 'null');
+    const { data, error } = await supabase.from('banners').select('*').limit(1).maybeSingle();
+    if (error) console.error("Erè Supabase (getBanner):", error.message);
+    return data || null;
 }
 
 // WELCOME PAGE SETUP
@@ -76,11 +71,31 @@ function saveWelcome(data) {
     localStorage.setItem('store_welcome', JSON.stringify(data));
 }
 
-// UPLOAD VARIABLES
-let uploadedImages = [];
-let uploadedBannerImg = "";
-let uploadedWelcomeBg = "";
+// LOCALSTORAGE HELPERS (FAVORI AK CART)
+function getFavorites() {
+    return JSON.parse(localStorage.getItem('store_favorites') || '[]');
+}
+function saveFavorites(favs) {
+    localStorage.setItem('store_favorites', JSON.stringify(favs));
+}
 
+function getCart() {
+    return JSON.parse(localStorage.getItem('store_cart') || '[]');
+}
+function saveCart(cart) {
+    localStorage.setItem('store_cart', JSON.stringify(cart));
+}
+
+function getAuthStatus() {
+    return localStorage.getItem('store_is_logged_in') === 'true';
+}
+function setAuthStatus(status) {
+    localStorage.setItem('store_is_logged_in', status ? 'true' : 'false');
+}
+
+// ==========================================
+// 3. IMAGE PREVIEWS
+// ==========================================
 function previewImage(event) {
     const container = document.getElementById('image-preview-container');
     if (!container) return;
@@ -136,11 +151,13 @@ function previewWelcomeBg(event) {
     }
 }
 
-// MODALS POU KATEGORI
-function openCategoryModal() {
+// ==========================================
+// 4. KATEGORI DINAMIK (SUPABASE)
+// ==========================================
+async function openCategoryModal() {
     const modal = document.getElementById('category-modal');
     if (modal) {
-        renderModalCategories();
+        await renderModalCategories();
         modal.classList.add('active');
     }
 }
@@ -161,78 +178,78 @@ function selectCategory(name) {
     closeCategoryModal();
 }
 
-function addNewCategory() {
+async function addNewCategory() {
     const input = document.getElementById('newCategoryInput');
     if (!input) return;
     const val = input.value.trim();
     if (val) {
-        const cats = getCategories();
-        if (!cats.includes(val)) {
-            cats.push(val);
-            saveCategories(cats);
-            input.value = '';
-            renderModalCategories();
+        if (supabase) {
+            const { error } = await supabase.from('categories').insert([{ name: val }]);
+            if (error) return alert("Erè nan kreye kategori: " + error.message);
+        } else {
+            let cats = JSON.parse(localStorage.getItem('store_categories') || '[]');
+            if (!cats.includes(val)) { cats.push(val); localStorage.setItem('store_categories', JSON.stringify(cats)); }
         }
+        input.value = '';
+        await renderModalCategories();
     }
 }
 
-function removeCategory(catName, e) {
+async function removeCategory(catName, e) {
     if (e) e.stopPropagation();
     if (confirm(`Èske w vle siprime kategori "${catName}"?`)) {
-        let cats = getCategories();
-        cats = cats.filter(c => c !== catName);
-        saveCategories(cats);
-        renderModalCategories();
+        if (supabase) {
+            const { error } = await supabase.from('categories').delete().eq('name', catName);
+            if (error) return alert("Erè nan efase kategori: " + error.message);
+        } else {
+            let cats = JSON.parse(localStorage.getItem('store_categories') || '[]');
+            cats = cats.filter(c => c !== catName);
+            localStorage.setItem('store_categories', JSON.stringify(cats));
+        }
+        await renderModalCategories();
     }
 }
 
-function filterByCategory(catName) {
+async function filterByCategory(catName) {
     closeCategoryModal();
-    const products = getProducts();
+    const products = await getProducts();
     const filtered = products.filter(p => p.category === catName);
     renderProductGrid(filtered);
 }
 
-function renderModalCategories() {
-    const cats = getCategories();
+async function renderModalCategories() {
+    const cats = await getCategories();
     const adminList = document.getElementById('adminCategoryOptionsList');
     const catalogList = document.getElementById('catalogCategoryList');
-
-    const emptyText = `<p style="font-size:12px; color:var(--text-gray); padding:10px; text-align:center;">Pa gen okenn kategori ki kreye ankò.</p>`;
+    const emptyText = `<p style="font-size:12px; color:var(--text-gray); padding:10px; text-align:center;">Pa gen okenn kategori.</p>`;
 
     if (adminList) {
-        if (cats.length === 0) {
-            adminList.innerHTML = emptyText;
-        } else {
-            adminList.innerHTML = cats.map(c => `
-                <div class="cat-option" onclick="selectCategory('${c}')">
-                    <span>${c}</span>
-                    <i class="fa-solid fa-trash" style="color:#EF4444; cursor:pointer;" onclick="removeCategory('${c}', event)"></i>
-                </div>
-            `).join('');
-        }
+        adminList.innerHTML = cats.length === 0 ? emptyText : cats.map(c => `
+            <div class="cat-option" onclick="selectCategory('${c}')">
+                <span>${c}</span>
+                <i class="fa-solid fa-trash" style="color:#EF4444; cursor:pointer;" onclick="removeCategory('${c}', event)"></i>
+            </div>
+        `).join('');
     }
 
     if (catalogList) {
-        if (cats.length === 0) {
-            catalogList.innerHTML = emptyText;
-        } else {
-            catalogList.innerHTML = cats.map(c => `
-                <div class="cat-option" onclick="filterByCategory('${c}')">
-                    <span>${c}</span>
-                    <i class="fa-solid fa-chevron-right" style="color:var(--text-gray);"></i>
-                </div>
-            `).join('');
-        }
+        catalogList.innerHTML = cats.length === 0 ? emptyText : cats.map(c => `
+            <div class="cat-option" onclick="filterByCategory('${c}')">
+                <span>${c}</span>
+                <i class="fa-solid fa-chevron-right" style="color:var(--text-gray);"></i>
+            </div>
+        `).join('');
     }
 }
 
-// SEARCH
-function handleSearch() {
+// ==========================================
+// 5. RECHÈCH AK FAVORI
+// ==========================================
+async function handleSearch() {
     const input = document.getElementById('searchInput');
     if (!input) return;
     const query = input.value.toLowerCase().trim();
-    const products = getProducts();
+    const products = await getProducts();
     const filtered = products.filter(p => 
         p.name.toLowerCase().includes(query) || 
         (p.category && p.category.toLowerCase().includes(query))
@@ -240,7 +257,6 @@ function handleSearch() {
     renderProductGrid(filtered);
 }
 
-// FAVORITES MANAGEMENT
 function toggleLike(btn, id) {
     let favs = getFavorites();
     const index = favs.indexOf(id);
@@ -261,7 +277,9 @@ function toggleLike(btn, id) {
     }
 }
 
-// RENDER GRID PWODUI
+// ==========================================
+// 6. RENDER CATALOG GRID
+// ==========================================
 function renderProductGrid(productsToRender) {
     const grid = document.getElementById('catalogProductGrid');
     if (!grid) return;
@@ -292,7 +310,9 @@ function openDetail(id) {
     window.location.href = `detail.html?id=${id}`;
 }
 
-// CART MANAGEMENT
+// ==========================================
+// 7. PANYEN (CART) AK CHECKOUT
+// ==========================================
 function addToCartFromDetail() {
     const urlParams = new URLSearchParams(window.location.search);
     const productId = parseInt(urlParams.get('id'));
@@ -327,13 +347,12 @@ function updateCartQty(id, size, delta) {
     renderCartPage();
 }
 
-// RENDER CART PAGE WITH DYNAMIC SUBTOTAL & TOTAL MATCH
-function renderCartPage() {
+async function renderCartPage() {
     const cartList = document.getElementById('cartItemsList');
     if (!cartList) return;
 
     const cart = getCart();
-    const products = getProducts();
+    const products = await getProducts();
 
     if (cart.length === 0) {
         cartList.innerHTML = `<p style="text-align:center; font-size:13px; color:var(--text-gray); margin-top:40px;">Panyen ou vid.</p>`;
@@ -373,39 +392,23 @@ function renderCartPage() {
     updateCartDisplayValues(subTotal, shipping);
 }
 
-// FONKSYON POU METE AJOU SUBTOTAL AK TOTAL
 function updateCartDisplayValues(subTotal, shipping) {
     const grandTotal = subTotal > 0 ? (subTotal + shipping) : 0;
-
-    document.querySelectorAll('#subTotalVal, #subtotal, .subtotal-val, .cart-subtotal').forEach(el => {
-        el.innerText = `$${subTotal.toFixed(2)}`;
-    });
-
-    document.querySelectorAll('#shippingVal, #shipping, .shipping-val').forEach(el => {
-        el.innerText = `$${shipping.toFixed(2)}`;
-    });
-
-    document.querySelectorAll('#grandTotalVal, #cart-total, #total, .total-val, .grand-total').forEach(el => {
-        el.innerText = `$${grandTotal.toFixed(2)}`;
-    });
+    document.querySelectorAll('#subTotalVal, #subtotal, .subtotal-val, .cart-subtotal').forEach(el => el.innerText = `$${subTotal.toFixed(2)}`);
+    document.querySelectorAll('#shippingVal, #shipping, .shipping-val').forEach(el => el.innerText = `$${shipping.toFixed(2)}`);
+    document.querySelectorAll('#grandTotalVal, #cart-total, #total, .total-val, .grand-total').forEach(el => el.innerText = `$${grandTotal.toFixed(2)}`);
 }
 
-// CHECKOUT CART DINAMIK
 async function checkoutCart() {
     const btn = document.querySelector('.checkout-btn') || document.querySelector('button[onclick*="checkoutCart"]');
-    let originalText = "";
-    if (btn) {
-        originalText = btn.innerText;
-        btn.disabled = true;
-        btn.innerText = "N ap trete peman an...";
-    }
+    let originalText = btn ? btn.innerText : "";
+    if (btn) { btn.disabled = true; btn.innerText = "N ap trete peman an..."; }
 
     try {
         const cart = getCart();
-        const products = getProducts();
-
+        const products = await getProducts();
         if (!cart || cart.length === 0) {
-            alert("Panye w la vid! Ajoute kèk pwodui anvan ou fè checkout.");
+            alert("Panye w la vid!");
             if (btn) { btn.disabled = false; btn.innerText = originalText; }
             return;
         }
@@ -413,45 +416,38 @@ async function checkoutCart() {
         let subtotal = 0;
         cart.forEach(item => {
             const prod = products.find(p => p.id === item.id);
-            if (prod) {
-                subtotal += Number(prod.price) * Number(item.qty);
-            }
+            if (prod) subtotal += Number(prod.price) * Number(item.qty);
         });
 
-        const shipping = 5.00;
-        const grandTotal = subtotal + shipping;
-
+        const grandTotal = subtotal + 5.00;
         const response = await fetch(PAYMENT_BACKEND_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                amount: grandTotal,
-                referenceId: `order_${Date.now()}`
-            })
+            body: JSON.stringify({ amount: grandTotal, referenceId: `order_${Date.now()}` })
         });
 
         const data = await response.json();
-
         if (response.ok && data.paymentUrl) {
             window.location.href = data.paymentUrl;
         } else {
-            alert("Erè Sèvè (" + response.status + "): " + JSON.stringify(data));
+            alert("Erè nan peman: " + JSON.stringify(data));
             if (btn) { btn.disabled = false; btn.innerText = originalText; }
         }
     } catch (err) {
-        console.error("Erè Rekèt:", err);
-        alert("Erè nan peman an: " + err.message);
+        alert("Erè: " + err.message);
         if (btn) { btn.disabled = false; btn.innerText = originalText; }
     }
 }
 
-// FAVORITES PAGE
-function renderFavoritesPage() {
+// ==========================================
+// 8. FAVORIS AK PROFILE & AUTH
+// ==========================================
+async function renderFavoritesPage() {
     const grid = document.getElementById('favoriteProductGrid');
     if (!grid) return;
 
     const favs = getFavorites();
-    const products = getProducts();
+    const products = await getProducts();
     const favProducts = products.filter(p => favs.includes(p.id));
 
     if (favProducts.length === 0) {
@@ -471,7 +467,6 @@ function renderFavoritesPage() {
     `).join('');
 }
 
-// PROFILE PAGE
 function renderProfilePage() {
     const container = document.getElementById('profileContent');
     if (!container) return;
@@ -493,10 +488,6 @@ function renderProfilePage() {
                     <div class="menu-item-left"><i class="fa-solid fa-language"></i> Lang</div>
                     <i class="fa-solid fa-chevron-right" style="color:var(--text-gray); font-size:12px;"></i>
                 </div>
-                <div class="menu-item-card">
-                    <div class="menu-item-left"><i class="fa-solid fa-shield-halved"></i> Sekirite</div>
-                    <i class="fa-solid fa-chevron-right" style="color:var(--text-gray); font-size:12px;"></i>
-                </div>
                 <div class="menu-item-card" onclick="logoutUser()" style="color:#EF4444;">
                     <div class="menu-item-left"><i class="fa-solid fa-right-from-bracket" style="color:#EF4444;"></i> Dekonekte</div>
                 </div>
@@ -508,15 +499,10 @@ function renderProfilePage() {
                 <i class="fa-regular fa-user"></i>
                 <h3>Ou poko konekte!</h3>
                 <p>Konekte sou kont ou pou w ka gade enfòmasyon w yo.</p>
-                <button class="btn-login" onclick="loginUser()">Log in / Sign up</button>
+                <button class="btn-login" onclick="window.location.href='auth.html'">Log in / Sign up</button>
             </div>
         `;
     }
-}
-
-function loginUser() {
-    setAuthStatus(true);
-    renderProfilePage();
 }
 
 function logoutUser() {
@@ -525,21 +511,90 @@ function logoutUser() {
     renderProfilePage();
 }
 
-// ADMIN ACTIONS
-function renderAdminProductList() {
+function switchTab(tab) {
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const tabLoginBtn = document.getElementById('tabLoginBtn');
+    const tabSignupBtn = document.getElementById('tabSignupBtn');
+
+    if (!loginForm || !signupForm) return;
+
+    if (tab === 'login') {
+        loginForm.classList.remove('hidden');
+        signupForm.classList.add('hidden');
+        if (tabLoginBtn) tabLoginBtn.classList.add('active');
+        if (tabSignupBtn) tabSignupBtn.classList.remove('active');
+    } else {
+        loginForm.classList.add('hidden');
+        signupForm.classList.remove('hidden');
+        if (tabSignupBtn) tabSignupBtn.classList.add('active');
+        if (tabLoginBtn) tabLoginBtn.classList.remove('active');
+    }
+}
+
+async function handleLogin(event) {
+    event.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+
+    if (supabase) {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) return alert("Erè nan konneksyon: " + error.message);
+        localStorage.setItem('store_current_user', JSON.stringify({ email: data.user.email, name: data.user.user_metadata?.name || 'Kliyan' }));
+        setAuthStatus(true);
+        window.location.href = 'catalog.html';
+    } else {
+        const users = JSON.parse(localStorage.getItem('store_users') || '[]');
+        const user = users.find(u => u.email === email && u.password === password);
+        if (user) {
+            localStorage.setItem('store_current_user', JSON.stringify(user));
+            setAuthStatus(true);
+            window.location.href = 'catalog.html';
+        } else {
+            alert('Email oswa modpas sa pa korèk!');
+        }
+    }
+}
+
+async function handleSignUp(event) {
+    event.preventDefault();
+    const name = document.getElementById('signupName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const password = document.getElementById('signupPassword').value.trim();
+
+    if (supabase) {
+        const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name } } });
+        if (error) return alert("Erè nan enskripsyon: " + error.message);
+        alert("Enskripsyon reyisi!");
+        window.location.href = 'catalog.html';
+    } else {
+        let users = JSON.parse(localStorage.getItem('store_users') || '[]');
+        const newUser = { id: Date.now(), name, email, password };
+        users.push(newUser);
+        localStorage.setItem('store_users', JSON.stringify(users));
+        localStorage.setItem('store_current_user', JSON.stringify(newUser));
+        setAuthStatus(true);
+        window.location.href = 'catalog.html';
+    }
+}
+
+// ==========================================
+// 9. ADMIN ACTIONS & SUPABASE MUTATIONS
+// ==========================================
+async function renderAdminProductList() {
     const listContainer = document.getElementById('adminProductList');
     if (!listContainer) return;
 
-    const products = getProducts();
+    const products = await getProducts();
     if (products.length === 0) {
-        listContainer.innerHTML = `<p style="font-size:12px; color:var(--text-gray);">Pa gen okenn pwodui ki anregistre nan paj admin lan.</p>`;
+        listContainer.innerHTML = `<p style="font-size:12px; color:var(--text-gray);">Pa gen okenn pwodui nan baz done a.</p>`;
         return;
     }
 
     listContainer.innerHTML = products.map(p => `
         <div class="admin-product-item">
             <div class="admin-prod-info">
-                <img src="${p.images[0] || 'https://via.placeholder.com/150'}" alt="${p.name}">
+                <img src="${(p.images && p.images[0]) ? p.images[0] : 'https://via.placeholder.com/150'}" alt="${p.name}">
                 <div class="admin-prod-details">
                     <h5>${p.name}</h5>
                     <span>$${p.price} • ${p.category || 'San Kategori'}</span>
@@ -557,9 +612,9 @@ function renderAdminProductList() {
     `).join('');
 }
 
-function editProduct(id) {
-    const products = getProducts();
-    const product = products.find(p => p.id === id);
+async function editProduct(id) {
+    const products = await getProducts();
+    const product = products.find(p => Number(p.id) === Number(id));
     if (!product) return;
 
     document.getElementById('editProductId').value = product.id;
@@ -607,58 +662,49 @@ function resetForm() {
     document.getElementById('cancelEditBtn').style.display = 'none';
 }
 
-function removeProduct(id) {
+async function removeProduct(id) {
     if (confirm("Èske w sèten ou vle siprime pwodui sa a?")) {
-        let products = getProducts();
-        products = products.filter(p => p.id !== id);
-        saveProducts(products);
-        renderAdminProductList();
+        if (supabase) {
+            const { error } = await supabase.from('products').delete().eq('id', Number(id));
+            if (error) return alert("Erè nan efase pwodui: " + error.message);
+        } else {
+            let products = JSON.parse(localStorage.getItem('store_products') || '[]');
+            products = products.filter(p => Number(p.id) !== Number(id));
+            localStorage.setItem('store_products', JSON.stringify(products));
+        }
+        await renderAdminProductList();
     }
 }
 
-function toggleDetailLike() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const productId = parseInt(urlParams.get('id'));
-    if (!productId) return;
-    const btn = document.getElementById('detailLikeBtn');
-    toggleLike(btn, productId);
-}
-
-// MAIN INIT
-document.addEventListener('DOMContentLoaded', () => {
-    // 0. WELCOME PAGE RENDER (INDEX.HTML)
+// ==========================================
+// 10. INIT & EVENTS
+// ==========================================
+document.addEventListener('DOMContentLoaded', async () => {
+    // 0. WELCOME PAGE SETUP
     const welcomeHero = document.getElementById('welcomeHero');
     if (welcomeHero) {
         const w = getWelcome();
         if (w.bgImage) welcomeHero.style.backgroundImage = `url('${w.bgImage}')`;
-        document.getElementById('welcomeBadgeName').innerText = w.badgeName;
-        document.getElementById('welcomeBadgeSub').innerText = w.badgeSub;
-        document.getElementById('welcomeBrandName').innerText = w.brandName;
-        document.getElementById('welcomeBrandSub').innerText = w.brandSub;
-        document.getElementById('welcomeHeading').innerText = w.heading;
-        document.getElementById('welcomeText1').innerText = w.text1;
-        document.getElementById('welcomeText2').innerText = w.text2;
+        if (document.getElementById('welcomeBadgeName')) document.getElementById('welcomeBadgeName').innerText = w.badgeName;
+        if (document.getElementById('welcomeBadgeSub')) document.getElementById('welcomeBadgeSub').innerText = w.badgeSub;
+        if (document.getElementById('welcomeBrandName')) document.getElementById('welcomeBrandName').innerText = w.brandName;
+        if (document.getElementById('welcomeBrandSub')) document.getElementById('welcomeBrandSub').innerText = w.brandSub;
+        if (document.getElementById('welcomeHeading')) document.getElementById('welcomeHeading').innerText = w.heading;
+        if (document.getElementById('welcomeText1')) document.getElementById('welcomeText1').innerText = w.text1;
+        if (document.getElementById('welcomeText2')) document.getElementById('welcomeText2').innerText = w.text2;
     }
 
-    // 0.1 WELCOME PAGE EDITOR SETUP (EDIT-WELCOME.HTML)
+    // WELCOME EDITOR FORM
     const welcomeForm = document.getElementById('welcomeForm');
     if (welcomeForm) {
         const w = getWelcome();
-        document.getElementById('wBadgeName').value = w.badgeName;
-        document.getElementById('wBadgeSub').value = w.badgeSub;
-        document.getElementById('wBrandName').value = w.brandName;
-        document.getElementById('wBrandSub').value = w.brandSub;
-        document.getElementById('wHeading').value = w.heading;
-        document.getElementById('wText1').value = w.text1;
-        document.getElementById('wText2').value = w.text2;
-        if (w.bgImage) {
-            const container = document.getElementById('welcomeBgPreview');
-            if (container) {
-                const img = document.createElement('img');
-                img.src = w.bgImage;
-                container.appendChild(img);
-            }
-        }
+        if (document.getElementById('wBadgeName')) document.getElementById('wBadgeName').value = w.badgeName;
+        if (document.getElementById('wBadgeSub')) document.getElementById('wBadgeSub').value = w.badgeSub;
+        if (document.getElementById('wBrandName')) document.getElementById('wBrandName').value = w.brandName;
+        if (document.getElementById('wBrandSub')) document.getElementById('wBrandSub').value = w.brandSub;
+        if (document.getElementById('wHeading')) document.getElementById('wHeading').value = w.heading;
+        if (document.getElementById('wText1')) document.getElementById('wText1').value = w.text1;
+        if (document.getElementById('wText2')) document.getElementById('wText2').value = w.text2;
 
         welcomeForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -679,10 +725,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 1. BANNER SETUP (CATALOG)
+    // BANNER
     const featuredCard = document.getElementById('featuredCardContainer');
     if (featuredCard) {
-        const banner = getBanner();
+        const banner = await getBanner();
         if (banner) {
             featuredCard.style.display = 'block';
             featuredCard.innerHTML = `
@@ -691,25 +737,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p class="subtitle">${banner.subtitle}</p>
                 <img src="${banner.image}" alt="${banner.title}" class="featured-shoe-img">
             `;
-            if (banner.productId) {
-                featuredCard.onclick = () => openDetail(banner.productId);
+            if (banner.product_id) {
+                featuredCard.onclick = () => openDetail(banner.product_id);
             }
         } else {
-            featuredCard.style.display = 'none'; // Kache banè a si l poko kreye nan admin
+            featuredCard.style.display = 'none';
         }
     }
 
-    // 2. CATALOG RENDER
+    // CATALOG
     if (document.getElementById('catalogProductGrid')) {
-        renderProductGrid(getProducts());
+        const products = await getProducts();
+        renderProductGrid(products);
     }
 
-    // 3. DETAIL PAGE SETUP
+    // DETAIL PAGE
     if (window.location.pathname.includes('detail.html')) {
         const urlParams = new URLSearchParams(window.location.search);
         const productId = parseInt(urlParams.get('id'));
-        const products = getProducts();
-        const product = products.find(p => p.id === productId);
+        const products = await getProducts();
+        const product = products.find(p => Number(p.id) === Number(productId));
 
         if (product) {
             document.getElementById('productTitle').innerText = product.name;
@@ -723,114 +770,101 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.querySelector('i').className = 'fa-solid fa-heart';
             }
 
-            if (product.images && product.images.length > 1) {
-                const imgBox = document.querySelector('.detail-image-box');
-                const galleryHTML = product.images.map(img => `
-                    <img src="${img}" style="width: 45px; height: 45px; object-fit: contain; cursor: pointer; border-radius: 8px; border: 1px solid #ddd; background: #fff;" onclick="document.getElementById('productImg').src='${img}'">
-                `).join('');
-                if (imgBox) {
-                    imgBox.insertAdjacentHTML('afterend', `<div style="display:flex; justify-content:center; gap:8px; margin-bottom:12px;">${galleryHTML}</div>`);
-                }
-            }
-
             const sizeContainer = document.getElementById('sizeContainer');
             if (sizeContainer && product.sizes && product.sizes.length > 0) {
                 sizeContainer.innerHTML = product.sizes.map((s, i) => `
                     <button class="size-btn ${i === 0 ? 'active' : ''}" onclick="setActiveSize(this)">${s}</button>
                 `).join('');
             }
-
-            const colorContainer = document.getElementById('colorContainer');
-            if (colorContainer && product.colors && product.colors.length > 0) {
-                colorContainer.innerHTML = product.colors.map(c => `
-                    <div class="dot" style="background: ${c.trim()};"></div>
-                `).join('');
-            }
         }
     }
 
-    // 4. PAGES INIT
+    // OTHER PAGES
     if (window.location.pathname.includes('cart.html')) renderCartPage();
     if (window.location.pathname.includes('favorite.html')) renderFavoritesPage();
     if (window.location.pathname.includes('profil.html')) renderProfilePage();
 
-    // 5. ADMIN SETUP
+    // ADMIN SUBMITS
     if (window.location.pathname.includes('admin.html')) {
-        renderAdminProductList();
-        
-        // Fill Banner Form if exists
-        const b = getBanner();
-        if (b) {
-            document.getElementById('bannerTitle').value = b.title || '';
-            document.getElementById('bannerSub').value = b.subtitle || '';
-            document.getElementById('bannerProdId').value = b.productId || '';
-        }
+        await renderAdminProductList();
 
-        // Banner Form Submit
         const bannerForm = document.getElementById('newCollectionForm');
         if (bannerForm) {
-            bannerForm.addEventListener('submit', (e) => {
+            bannerForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const currentB = getBanner() || {};
-                const updated = {
-                    title: document.getElementById('bannerTitle').value,
-                    subtitle: document.getElementById('bannerSub').value,
-                    productId: parseInt(document.getElementById('bannerProdId').value) || null,
-                    image: uploadedBannerImg || currentB.image || "https://via.placeholder.com/300"
+                const title = document.getElementById('bannerTitle').value;
+                const subtitle = document.getElementById('bannerSub').value;
+                const prodId = parseInt(document.getElementById('bannerProdId').value) || null;
+
+                const currentB = await getBanner();
+                const bannerData = {
+                    title,
+                    subtitle,
+                    product_id: prodId,
+                    image: uploadedBannerImg || (currentB ? currentB.image : 'https://via.placeholder.com/300')
                 };
-                saveBanner(updated);
-                alert('Banè piblisite sove ak siksè!');
+
+                if (supabase) {
+                    if (currentB && currentB.id) {
+                        await supabase.from('banners').update(bannerData).eq('id', currentB.id);
+                    } else {
+                        await supabase.from('banners').insert([bannerData]);
+                    }
+                } else {
+                    localStorage.setItem('store_banner', JSON.stringify(bannerData));
+                }
+                alert('Banè piblisite sove!');
             });
         }
 
-        // Add / Edit Product Submit
         const addProdForm = document.getElementById('addProductForm');
         if (addProdForm) {
-            addProdForm.addEventListener('submit', (e) => {
+            addProdForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
                 const editId = document.getElementById('editProductId').value;
+                const name = document.getElementById('prodName').value;
+                const price = parseFloat(document.getElementById('prodPrice').value);
                 const rawSizes = document.getElementById('prodSizes').value;
                 const rawColors = document.getElementById('prodColors').value;
+                const category = document.getElementById('prodCategory').value || 'Pwodui Jenerik';
 
-                const sizesArr = rawSizes ? rawSizes.split(',').map(s => s.trim()).filter(Boolean) : [];
-                const colorsArr = rawColors ? rawColors.split(',').map(c => c.trim()).filter(Boolean) : [];
-                const categoryVal = document.getElementById('prodCategory').value || 'Pwodui Jenerik';
+                const sizes = rawSizes ? rawSizes.split(',').map(s => s.trim()).filter(Boolean) : [];
+                const colors = rawColors ? rawColors.split(',').map(c => c.trim()).filter(Boolean) : [];
 
-                let products = getProducts();
+                const payload = {
+                    name,
+                    price,
+                    category,
+                    sizes,
+                    colors,
+                    images: uploadedImages.length ? uploadedImages : ["https://via.placeholder.com/150"]
+                };
 
-                if (editId) {
-                    // EDIT EXISTING
-                    const index = products.findIndex(p => p.id === parseInt(editId));
-                    if (index > -1) {
-                        products[index].name = document.getElementById('prodName').value;
-                        products[index].price = parseFloat(document.getElementById('prodPrice').value);
-                        products[index].sizes = sizesArr;
-                        products[index].colors = colorsArr;
-                        products[index].category = categoryVal;
-                        if (uploadedImages.length > 0) {
-                            products[index].images = uploadedImages;
-                        }
+                if (supabase) {
+                    if (editId) {
+                        const { error } = await supabase.from('products').update(payload).eq('id', Number(editId));
+                        if (error) return alert("Erè nan modifikasyon: " + error.message);
+                        alert('Pwodui modifye nan Supabase!');
+                    } else {
+                        const { error } = await supabase.from('products').insert([payload]);
+                        if (error) return alert("Erè nan anrejistreman: " + error.message);
+                        alert('Pwodui kreye nan Supabase!');
                     }
-                    alert('Pwodui modifye ak siksè!');
                 } else {
-                    // ADD NEW
-                    const newProduct = {
-                        id: Date.now(),
-                        name: document.getElementById('prodName').value,
-                        category: categoryVal,
-                        price: parseFloat(document.getElementById('prodPrice').value),
-                        images: uploadedImages.length ? uploadedImages : ["https://via.placeholder.com/150"],
-                        sizes: sizesArr.length ? sizesArr : ["S", "M", "L"],
-                        colors: colorsArr.length ? colorsArr : ["#000000"]
-                    };
-                    products.unshift(newProduct);
-                    alert('Pwodui anrejistre ak siksè!');
+                    let products = JSON.parse(localStorage.getItem('store_products') || '[]');
+                    if (editId) {
+                        const idx = products.findIndex(p => Number(p.id) === Number(editId));
+                        if (idx > -1) products[idx] = { ...products[idx], ...payload };
+                    } else {
+                        products.unshift({ id: Date.now(), ...payload });
+                    }
+                    localStorage.setItem('store_products', JSON.stringify(products));
+                    alert('Sove nan LocalStorage!');
                 }
 
-                saveProducts(products);
                 resetForm();
-                renderAdminProductList();
+                await renderAdminProductList();
             });
         }
     }
@@ -839,101 +873,4 @@ document.addEventListener('DOMContentLoaded', () => {
 function setActiveSize(btn) {
     document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-}
-
-// LOGIQUE D'AUTHENTIFICATION (AUTH)
-function switchTab(tab) {
-    const loginForm = document.getElementById('loginForm');
-    const signupForm = document.getElementById('signupForm');
-    const tabLoginBtn = document.getElementById('tabLoginBtn');
-    const tabSignupBtn = document.getElementById('tabSignupBtn');
-    const authHeading = document.getElementById('authHeading');
-    const authSubheading = document.getElementById('authSubheading');
-    const errorDiv = document.getElementById('errorMessage');
-
-    if (!loginForm || !signupForm) return;
-
-    if (errorDiv) errorDiv.style.display = 'none';
-
-    if (tab === 'login') {
-        loginForm.classList.remove('hidden');
-        signupForm.classList.add('hidden');
-        if (tabLoginBtn) tabLoginBtn.classList.add('active');
-        if (tabSignupBtn) tabSignupBtn.classList.remove('active');
-        if (authHeading) authHeading.innerText = 'Byenveni sou Boutik la';
-        if (authSubheading) authSubheading.innerText = 'Konekte pou w ka fè achte w yo';
-    } else {
-        loginForm.classList.add('hidden');
-        signupForm.classList.remove('hidden');
-        if (tabSignupBtn) tabSignupBtn.classList.add('active');
-        if (tabLoginBtn) tabLoginBtn.classList.remove('active');
-        if (authHeading) authHeading.innerText = 'Kreye yon Kont';
-        if (authSubheading) authSubheading.innerText = 'Inskri nan kèk segonn';
-    }
-}
-
-function togglePasswordVisibility(inputId, icon) {
-    const input = document.getElementById(inputId);
-    if (!input) return;
-
-    if (input.type === 'password') {
-        input.type = 'text';
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
-    } else {
-        input.type = 'password';
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
-    }
-}
-
-function showError(msg) {
-    const errorDiv = document.getElementById('errorMessage');
-    if (!errorDiv) return;
-    errorDiv.innerText = msg;
-    errorDiv.style.display = 'block';
-}
-
-function handleLogin(event) {
-    event.preventDefault();
-    const email = document.getElementById('loginEmail').value.trim();
-    const password = document.getElementById('loginPassword').value.trim();
-
-    const users = JSON.parse(localStorage.getItem('store_users') || '[]');
-    const user = users.find(u => u.email === email && u.password === password);
-
-    if (user) {
-        localStorage.setItem('store_current_user', JSON.stringify(user));
-        setAuthStatus(true);
-        window.location.href = 'catalog.html';
-    } else {
-        showError('Email oswa modpas sa pa korèk!');
-    }
-}
-
-function handleSignUp(event) {
-    event.preventDefault();
-    const name = document.getElementById('signupName').value.trim();
-    const email = document.getElementById('signupEmail').value.trim();
-    const password = document.getElementById('signupPassword').value.trim();
-    const confirmPassword = document.getElementById('signupConfirmPassword').value.trim();
-
-    if (password !== confirmPassword) {
-        showError('Modpas yo pa sanble!');
-        return;
-    }
-
-    let users = JSON.parse(localStorage.getItem('store_users') || '[]');
-    if (users.some(u => u.email === email)) {
-        showError('Gen yon kont ki deja kreye ak email sa a!');
-        return;
-    }
-
-    const newUser = { id: Date.now(), name, email, password };
-    users.push(newUser);
-    localStorage.setItem('store_users', JSON.stringify(users));
-    localStorage.setItem('store_current_user', JSON.stringify(newUser));
-    setAuthStatus(true);
-
-    window.location.href = 'catalog.html';
 }
