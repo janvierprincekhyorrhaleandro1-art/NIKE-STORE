@@ -1305,7 +1305,7 @@ body {
 
 .page-view.active {
     display: block;
-    animation: fadeInView 0.2s ease-in-out;
+    
 }
 
 @keyframes fadeInView {
@@ -1318,22 +1318,17 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(4px);
-    display: flex;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: none; /* Enpòtan: kache l pa defo! */
     justify-content: center;
     align-items: center;
-    z-index: 99999;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease;
+    z-index: 9999;
 }
 
 .loader-overlay.show {
-    opacity: 1;
-    pointer-events: auto;
+    display: flex; /* Afiche l sèlman lè JS ajoute klas .show a */
 }
 
 .spinner {
@@ -1348,4 +1343,8 @@ body {
 @keyframes spinAnim {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+/* Klas pou kache nenpòt eleman nan paj la */
+.hidden {
+    display: none !important;
 }

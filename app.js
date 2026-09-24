@@ -63,6 +63,21 @@ function switchTab(tab) {
     }
 }
 
+function togglePasswordVisibility(inputId, icon) {
+    const input = document.getElementById(inputId);
+    if (input) {
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+}
+
 // ==========================================
 // 1. CONFIGURATION SUPABASE & BACKEND
 // ==========================================
@@ -780,6 +795,10 @@ async function removeProduct(id) {
 // 10. INIT & EVENTS ON DOM LOAD
 // ==========================================
 document.addEventListener('DOMContentLoaded', async () => {
+    // Kache loader a si l te rete afiche nan demaraj paj la
+    const loader = document.getElementById('app-loader');
+    if (loader) loader.classList.remove('show');
+
     // SETUP WELCOME HERO
     const welcomeHero = document.getElementById('welcomeHero');
     if (welcomeHero) {
@@ -821,7 +840,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             };
             saveWelcome(updated);
             alert('Paj Welcome la sove ak siksè!');
-            navigateTo('page-index');
+            navigateTo('page-welcome');
         });
     }
 
