@@ -1,8 +1,8 @@
 // ==========================================
 // 1. CONFIGURATION SUPABASE & BACKEND
 // ==========================================
-const SUPABASE_URL = "YOUR_SUPABASE_URL";
-const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+const SUPABASE_URL = "https://euhubmvffjltycgzpvpb.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1aHVibXZmZmpsdHljZ3pwdnBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyMTQ5MjEsImV4cCI6MjEwNTc5MDkyMX0.eZUE3CStbSYKXTBOlFQxlEmSUhGnDjoGLsPG-CEyqKo";
 
 // Inisyalizasyon Kliyan Supabase nan Navigatè a
 const supabase = (window.supabase && SUPABASE_URL !== "YOUR_SUPABASE_URL") 
