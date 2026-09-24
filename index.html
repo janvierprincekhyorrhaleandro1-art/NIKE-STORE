@@ -40,7 +40,7 @@
                 </div>
 
                 <div class="welcome-actions">
-                    <button class="btn-welcome-login" onclick="navigateTo('page-auth')">GET STARTED</button>
+                    <button type="button" class="btn-welcome-login" onclick="navigateTo('page-auth')">GET STARTED</button>
                 </div>
             </div>
         </div>
@@ -53,7 +53,7 @@
         <div class="app-screen">
             <div class="auth-container">
                 <div class="auth-header">
-                    <button class="btn-back" onclick="navigateTo('page-welcome')">
+                    <button type="button" class="btn-back" onclick="navigateTo('page-welcome')">
                         <i class="fa-solid fa-arrow-left"></i>
                     </button>
                     <div style="width: 44px;"></div>
@@ -68,15 +68,15 @@
                 </div>
 
                 <div class="tab-switcher">
-                    <button class="tab-btn active" id="tabLoginBtn" onclick="switchTab('login')">Login</button>
-                    <button class="tab-btn" id="tabSignupBtn" onclick="switchTab('signup')">Sign Up</button>
+                    <button type="button" class="tab-btn active" id="tabLoginBtn" onclick="switchTab('login')">Login</button>
+                    <button type="button" class="tab-btn" id="tabSignupBtn" onclick="switchTab('signup')">Sign Up</button>
                 </div>
 
                 <div class="error-message" id="errorMessage"></div>
 
                 <form id="loginForm" class="auth-form" onsubmit="handleLogin(event)">
                     <div class="input-group">
-                        <label>Email oswa Telefòn</label>
+                        <label for="loginEmail">Email oswa Telefòn</label>
                         <div class="input-wrapper">
                             <i class="fa-regular fa-envelope field-icon"></i>
                             <input type="text" id="loginEmail" placeholder="eg: user@example.com" required>
@@ -84,7 +84,7 @@
                     </div>
 
                     <div class="input-group">
-                        <label>Mot de passe</label>
+                        <label for="loginPassword">Mot de passe</label>
                         <div class="input-wrapper">
                             <i class="fa-solid fa-lock field-icon"></i>
                             <input type="password" id="loginPassword" placeholder="••••••••" required>
@@ -94,7 +94,7 @@
 
                     <div class="form-options">
                         <div></div>
-                        <a href="#" class="forgot-link" onclick="alert('Fonksyon sa ap disponib nan pwochen mizajou a!')">Mote de pas oubliyé?</a>
+                        <a href="javascript:void(0)" class="forgot-link" onclick="alert('Fonksyon sa ap disponib nan pwochen mizajou a!')">Mote de pas oubliyé?</a>
                     </div>
 
                     <button type="submit" class="btn-submit">Se Connecter</button>
@@ -102,7 +102,7 @@
 
                 <form id="signupForm" class="auth-form hidden" onsubmit="handleSignUp(event)">
                     <div class="input-group">
-                        <label>Nom Complet</label>
+                        <label for="signupName">Nom Complet</label>
                         <div class="input-wrapper">
                             <i class="fa-regular fa-user field-icon"></i>
                             <input type="text" id="signupName" placeholder="eg: Jean Baptiste" required>
@@ -110,7 +110,7 @@
                     </div>
 
                     <div class="input-group">
-                        <label>Adresse Email</label>
+                        <label for="signupEmail">Adresse Email</label>
                         <div class="input-wrapper">
                             <i class="fa-regular fa-envelope field-icon"></i>
                             <input type="email" id="signupEmail" placeholder="eg: user@example.com" required>
@@ -118,7 +118,7 @@
                     </div>
 
                     <div class="input-group">
-                        <label>Mot de passe</label>
+                        <label for="signupPassword">Mot de passe</label>
                         <div class="input-wrapper">
                             <i class="fa-solid fa-lock field-icon"></i>
                             <input type="password" id="signupPassword" placeholder="Lomwen 6 karaktè" required minlength="6">
@@ -127,7 +127,7 @@
                     </div>
 
                     <div class="input-group">
-                        <label>Confirmer Mot de passe</label>
+                        <label for="signupConfirmPassword">Confirmer Mot de passe</label>
                         <div class="input-wrapper">
                             <i class="fa-solid fa-shield-halved field-icon"></i>
                             <input type="password" id="signupConfirmPassword" placeholder="Reantre menm modpas la" required minlength="6">
@@ -154,8 +154,8 @@
                     <i class="fa-solid fa-magnifying-glass" style="color: #A0A0A0;"></i>
                     <input type="text" placeholder="Search product..." id="searchInput" oninput="handleSearch()">
                 </div>
-                <button class="icon-btn" onclick="openCategoryModal()"><i class="fa-solid fa-layer-group"></i></button>
-                <button class="icon-btn" onclick="openCategoryModal()"><i class="fa-solid fa-sliders"></i></button>
+                <button type="button" class="icon-btn" onclick="openCategoryModal()"><i class="fa-solid fa-layer-group"></i></button>
+                <button type="button" class="icon-btn" onclick="openCategoryModal()"><i class="fa-solid fa-sliders"></i></button>
             </div>
 
             <div class="featured-card" id="featuredCardContainer"></div>
@@ -177,10 +177,10 @@
     <section id="page-detail" class="page-view">
         <div class="app-screen detail-screen">
             <div class="detail-header">
-                <button class="icon-btn" style="box-shadow: none;" onclick="navigateTo('page-catalog')">
+                <button type="button" class="icon-btn" style="box-shadow: none;" onclick="navigateTo('page-catalog')">
                     <i class="fa-solid fa-arrow-left"></i>
                 </button>
-                <button class="icon-btn" style="box-shadow: none;" id="detailLikeBtn" onclick="toggleDetailLike()">
+                <button type="button" class="icon-btn" style="box-shadow: none;" id="detailLikeBtn" onclick="toggleDetailLike()">
                     <i class="fa-regular fa-heart"></i>
                 </button>
             </div>
@@ -190,7 +190,7 @@
             </div>
 
             <div class="detail-image-box">
-                <img id="productImg" src="" alt="" class="detail-shoe-img">
+                <img id="productImg" src="" alt="Product Image" class="detail-shoe-img">
             </div>
 
             <div class="size-selector">
@@ -204,7 +204,7 @@
             </div>
 
             <div class="detail-bottom-sheet">
-                <button class="btn-buy-now" onclick="addToCartFromDetail()" style="width: 100%; text-align: center;">Add to Cart</button>
+                <button type="button" class="btn-buy-now" onclick="addToCartFromDetail()" style="width: 100%; text-align: center;">Add to Cart</button>
             </div>
         </div>
     </section>
@@ -215,11 +215,11 @@
     <section id="page-cart" class="page-view">
         <div class="app-screen cart-screen">
             <div class="detail-header">
-                <button class="icon-btn" onclick="navigateTo('page-catalog')">
+                <button type="button" class="icon-btn" onclick="navigateTo('page-catalog')">
                     <i class="fa-solid fa-arrow-left"></i>
                 </button>
                 <h3 style="font-weight: 800; font-size: 18px;">Cart</h3>
-                <button class="icon-btn" style="box-shadow: none;"><i class="fa-solid fa-ellipsis"></i></button>
+                <button type="button" class="icon-btn" style="box-shadow: none;"><i class="fa-solid fa-ellipsis"></i></button>
             </div>
 
             <div class="cart-items-container" id="cartItemsList"></div>
@@ -237,7 +237,7 @@
                     <span>Total</span>
                     <span id="grandTotalVal">$0.00</span>
                 </div>
-                <button class="btn-checkout" onclick="checkoutCart()">Checkout Now</button>
+                <button type="button" class="btn-checkout" onclick="checkoutCart()">Checkout Now</button>
             </div>
 
             <div class="bottom-nav">
@@ -255,7 +255,7 @@
     <section id="page-favorite" class="page-view">
         <div class="app-screen favorite-screen">
             <div class="detail-header" style="margin-bottom: 20px;">
-                <button class="icon-btn" onclick="navigateTo('page-catalog')">
+                <button type="button" class="icon-btn" onclick="navigateTo('page-catalog')">
                     <i class="fa-solid fa-arrow-left"></i>
                 </button>
                 <h3 style="font-weight: 800; font-size: 18px;">Favorites</h3>
@@ -279,7 +279,7 @@
     <section id="page-profile" class="page-view">
         <div class="app-screen profile-screen">
             <div class="detail-header" style="margin-bottom: 10px;">
-                <button class="icon-btn" onclick="navigateTo('page-catalog')">
+                <button type="button" class="icon-btn" onclick="navigateTo('page-catalog')">
                     <i class="fa-solid fa-arrow-left"></i>
                 </button>
                 <h3 style="font-weight: 800; font-size: 18px;">Profile</h3>
@@ -303,7 +303,7 @@
     <section id="page-admin" class="page-view">
         <div class="app-screen admin-screen">
             <div class="detail-header">
-                <button class="icon-btn" onclick="navigateTo('page-catalog')">
+                <button type="button" class="icon-btn" onclick="navigateTo('page-catalog')">
                     <i class="fa-solid fa-arrow-left"></i>
                 </button>
                 <h3 style="font-weight: 800; font-size: 16px;">Jere Pwodui & Banè</h3>
@@ -314,15 +314,15 @@
                 <h4 class="admin-sec-title">Modifye Banè "New Collection"</h4>
                 <form id="newCollectionForm" class="admin-form">
                     <div class="form-group">
-                        <label>Tit Pwodwi / Banners</label>
+                        <label for="bannerTitle">Tit Pwodwi / Banners</label>
                         <input type="text" id="bannerTitle" placeholder="ex: Nike Air Presto" required>
                     </div>
                     <div class="form-group">
-                        <label>Sous-Tit</label>
+                        <label for="bannerSub">Sous-Tit</label>
                         <input type="text" id="bannerSub" placeholder="ex: Men's Shoes" required>
                     </div>
                     <div class="form-group">
-                        <label>ID Pwodwi pou l louvri lè yo klike</label>
+                        <label for="bannerProdId">ID Pwodwi pou l louvri lè yo klike</label>
                         <input type="number" id="bannerProdId" placeholder="ex: 1" required>
                     </div>
                     <div class="form-group">
@@ -358,22 +358,22 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Non Pwodwi an</label>
+                        <label for="prodName">Non Pwodwi an</label>
                         <input type="text" id="prodName" placeholder="ex: Nike Air Force 1" required>
                     </div>
 
                     <div class="form-group">
-                        <label>Pri ($USD)</label>
+                        <label for="prodPrice">Pri ($USD)</label>
                         <input type="number" id="prodPrice" placeholder="ex: 200" step="0.01" required>
                     </div>
 
                     <div class="form-group">
-                        <label>Gwosè / Size (Ekri yo, separe ak konma)</label>
+                        <label for="prodSizes">Gwosè / Size (Ekri yo, separe ak konma)</label>
                         <input type="text" id="prodSizes" placeholder="ex: UK 6.0, UK 7.5, UK 8.5" required>
                     </div>
 
                     <div class="form-group">
-                        <label>Koulè (Kòd HEX oswa non angle separe ak konma)</label>
+                        <label for="prodColors">Koulè (Kòd HEX oswa non angle separe ak konma)</label>
                         <input type="text" id="prodColors" placeholder="#1A1A1A, #EF4444, #3B82F6" required>
                     </div>
 
@@ -408,7 +408,7 @@
     <section id="page-edit-welcome" class="page-view">
         <div class="app-screen admin-screen">
             <div class="detail-header">
-                <button class="icon-btn" style="box-shadow: none;" onclick="navigateTo('page-welcome')">
+                <button type="button" class="icon-btn" style="box-shadow: none;" onclick="navigateTo('page-welcome')">
                     <i class="fa-solid fa-arrow-left"></i>
                 </button>
                 <h2 style="font-size: 16px; font-weight: 800;">Modifye Paj Welcome</h2>
@@ -430,19 +430,19 @@
                     <p class="admin-sec-title">Badge sou Foto a</p>
                     <div class="admin-form">
                         <div class="form-group">
-                            <label>Non mak (egzanp: FINDORA)</label>
+                            <label for="wBadgeName">Non mak (egzanp: FINDORA)</label>
                             <input type="text" id="wBadgeName" required>
                         </div>
                         <div class="form-group">
-                            <label>Su-tit badge (egzanp: DREAM HOUSE)</label>
+                            <label for="wBadgeSub">Su-tit badge (egzanp: DREAM HOUSE)</label>
                             <input type="text" id="wBadgeSub" required>
                         </div>
                         <div class="form-group">
-                            <label>Gwo non mak (sou foto a)</label>
+                            <label for="wBrandName">Gwo non mak (sou foto a)</label>
                             <input type="text" id="wBrandName" required>
                         </div>
                         <div class="form-group">
-                            <label>Su-tit anba non mak la</label>
+                            <label for="wBrandSub">Su-tit anba non mak la</label>
                             <input type="text" id="wBrandSub" required>
                         </div>
                     </div>
@@ -452,15 +452,15 @@
                     <p class="admin-sec-title">Tèks Welcome</p>
                     <div class="admin-form">
                         <div class="form-group">
-                            <label>Gwo tit (egzanp: WELCOME)</label>
+                            <label for="wHeading">Gwo tit (egzanp: WELCOME)</label>
                             <input type="text" id="wHeading" required>
                         </div>
                         <div class="form-group">
-                            <label>Premye liy tèks</label>
+                            <label for="wText1">Premye liy tèks</label>
                             <input type="text" id="wText1" required>
                         </div>
                         <div class="form-group">
-                            <label>Dezyèm liy tèks</label>
+                            <label for="wText2">Dezyèm liy tèks</label>
                             <input type="text" id="wText2" required>
                         </div>
                     </div>
@@ -483,7 +483,7 @@
             
             <div style="display: flex; gap: 8px; margin-bottom: 15px;">
                 <input type="text" id="newCategoryInput" placeholder="Non nouvo kategori..." style="flex:1; padding:10px; border-radius:12px; border:1px solid #E5E7EB; font-weight:600; font-size:12px;">
-                <button onclick="addNewCategory()" style="padding:10px 15px; background:var(--dark-main, #111); color:#fff; border:none; border-radius:12px; font-weight:700; cursor:pointer;">Ajoute</button>
+                <button type="button" onclick="addNewCategory()" style="padding:10px 15px; background:var(--dark-main, #111); color:#fff; border:none; border-radius:12px; font-weight:700; cursor:pointer;">Ajoute</button>
             </div>
 
             <div class="category-options-list" id="adminCategoryOptionsList"></div>
@@ -491,6 +491,7 @@
         </div>
     </div>
 
+    <!-- SCRIPT APPLICATION -->
     <script src="app.js"></script>
 </body>
 </html>
