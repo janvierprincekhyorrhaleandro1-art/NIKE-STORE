@@ -1,4 +1,69 @@
 // ==========================================
+// 0. SPA NAVIGATION SYSTEM & ROUTER
+// ==========================================
+function navigateTo(targetPageId, extraData = null) {
+    const loader = document.getElementById('app-loader');
+    
+    // 1. Montre ti spinner/loader an
+    if (loader) loader.classList.add('show');
+
+    setTimeout(async () => {
+        // 2. Kache tout paj ki te parèt yo
+        document.querySelectorAll('.page-view').forEach(page => {
+            page.classList.remove('active');
+        });
+
+        // 3. Si se paj detay, nou chaje done pwodui espesifik la
+        if (targetPageId === 'page-detail' && extraData) {
+            await renderDetailPage(extraData);
+        }
+
+        // 4. Re-chaje done pou lòt paj espesyal yo si sa nesesè
+        if (targetPageId === 'page-catalog' && typeof renderCatalogPage === 'function') {
+            await renderCatalogPage();
+        } else if (targetPageId === 'page-cart' && typeof renderCartPage === 'function') {
+            await renderCartPage();
+        } else if (targetPageId === 'page-favorite' && typeof renderFavoritesPage === 'function') {
+            await renderFavoritesPage();
+        } else if (targetPageId === 'page-profile' && typeof renderProfilePage === 'function') {
+            renderProfilePage();
+        }
+
+        // 5. Afiche paj ki mande a
+        const targetPage = document.getElementById(targetPageId);
+        if (targetPage) {
+            targetPage.classList.add('active');
+        }
+
+        // Remoute anwo paj la
+        window.scrollTo(0, 0);
+
+        // 6. Kache loader a
+        if (loader) loader.classList.remove('show');
+    }, 200);
+}
+
+// Switch ant Login ak Register
+function switchTab(tab) {
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const tabLoginBtn = document.getElementById('tabLoginBtn');
+    const tabSignupBtn = document.getElementById('tabSignupBtn');
+
+    if (tab === 'login') {
+        if (loginForm) loginForm.classList.remove('hidden');
+        if (signupForm) signupForm.classList.add('hidden');
+        if (tabLoginBtn) tabLoginBtn.classList.add('active');
+        if (tabSignupBtn) tabSignupBtn.classList.remove('active');
+    } else {
+        if (loginForm) loginForm.classList.add('hidden');
+        if (signupForm) signupForm.classList.remove('hidden');
+        if (tabLoginBtn) tabLoginBtn.classList.remove('active');
+        if (tabSignupBtn) tabSignupBtn.classList.add('active');
+    }
+}
+
+// ==========================================
 // 1. CONFIGURATION SUPABASE & BACKEND
 // ==========================================
 const SUPABASE_URL = "https://euhubmvffjltycgzpvpb.supabase.co";
@@ -15,6 +80,7 @@ const PAYMENT_BACKEND_URL = "https://hiv3-store.onrender.com/api/create-payment"
 let uploadedImages = [];
 let uploadedBannerImg = "";
 let uploadedWelcomeBg = "";
+let currentDetailProductId = null;
 
 // ==========================================
 // 2. SUPABASE API HELPERS (READ / WRITE)
@@ -71,7 +137,7 @@ function saveWelcome(data) {
     localStorage.setItem('store_welcome', JSON.stringify(data));
 }
 
-// LOCALSTORAGE HELPERS (FAVORI AK CART)
+// LOCALSTORAGE HELPERS
 function getFavorites() {
     return JSON.parse(localStorage.getItem('store_favorites') || '[]');
 }
@@ -152,7 +218,7 @@ function previewWelcomeBg(event) {
 }
 
 // ==========================================
-// 4. KATEGORI DINAMIK (SUPABASE)
+// 4. KATEGORI DINAMIK
 // ==========================================
 async function openCategoryModal() {
     const modal = document.getElementById('category-modal');
@@ -272,14 +338,40 @@ function toggleLike(btn, id) {
     }
     saveFavorites(favs);
 
-    if (window.location.pathname.includes('favorite.html')) {
+    const favGrid = document.getElementById('favoriteProductGrid');
+    if (favGrid && favGrid.closest('.page-view').classList.contains('active')) {
         renderFavoritesPage();
     }
 }
 
 // ==========================================
-// 6. RENDER CATALOG GRID
+// 6. RENDER CATALOG GRID & DETAIL PAGE
 // ==========================================
+async function renderCatalogPage() {
+    const products = await getProducts();
+    renderProductGrid(products);
+
+    // BANNER
+    const featuredCard = document.getElementById('featuredCardContainer');
+    if (featuredCard) {
+        const banner = await getBanner();
+        if (banner) {
+            featuredCard.style.display = 'block';
+            featuredCard.innerHTML = `
+                <span class="badge">Nouvèl Koleksyon</span>
+                <h3>${banner.title}</h3>
+                <p class="subtitle">${banner.subtitle}</p>
+                <img src="${banner.image}" alt="${banner.title}" class="featured-shoe-img">
+            `;
+            if (banner.product_id) {
+                featuredCard.onclick = () => openDetail(banner.product_id);
+            }
+        } else {
+            featuredCard.style.display = 'none';
+        }
+    }
+}
+
 function renderProductGrid(productsToRender) {
     const grid = document.getElementById('catalogProductGrid');
     if (!grid) return;
@@ -307,27 +399,56 @@ function renderProductGrid(productsToRender) {
 }
 
 function openDetail(id) {
-    window.location.href = `detail.html?id=${id}`;
+    navigateTo('page-detail', id);
+}
+
+async function renderDetailPage(productId) {
+    currentDetailProductId = productId;
+    const products = await getProducts();
+    const product = products.find(p => Number(p.id) === Number(productId));
+
+    if (product) {
+        if(document.getElementById('productTitle')) document.getElementById('productTitle').innerText = product.name;
+        if(document.getElementById('productPrice')) document.getElementById('productPrice').innerText = `$${product.price}`;
+        if(document.getElementById('productImg')) document.getElementById('productImg').src = (product.images && product.images.length > 0) ? product.images[0] : 'https://via.placeholder.com/150';
+
+        const favs = getFavorites();
+        const btn = document.getElementById('detailLikeBtn');
+        if (btn) {
+            if (favs.includes(Number(productId))) {
+                btn.classList.add('liked');
+                btn.querySelector('i').className = 'fa-solid fa-heart';
+            } else {
+                btn.classList.remove('liked');
+                btn.querySelector('i').className = 'fa-regular fa-heart';
+            }
+        }
+
+        const sizeContainer = document.getElementById('sizeContainer');
+        if (sizeContainer && product.sizes && product.sizes.length > 0) {
+            sizeContainer.innerHTML = product.sizes.map((s, i) => `
+                <button class="size-btn ${i === 0 ? 'active' : ''}" onclick="setActiveSize(this)">${s}</button>
+            `).join('');
+        }
+    }
 }
 
 // ==========================================
 // 7. PANYEN (CART) AK CHECKOUT
 // ==========================================
 function addToCartFromDetail() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const productId = parseInt(urlParams.get('id'));
-    if (!productId) return;
+    if (!currentDetailProductId) return;
 
-    const activeSizeBtn = document.querySelector('.size-btn.active');
+    const activeSizeBtn = document.querySelector('#page-detail .size-btn.active');
     const selectedSize = activeSizeBtn ? activeSizeBtn.innerText : 'M';
 
     let cart = getCart();
-    const existing = cart.find(item => item.id === productId && item.size === selectedSize);
+    const existing = cart.find(item => item.id === currentDetailProductId && item.size === selectedSize);
 
     if (existing) {
         existing.qty += 1;
     } else {
-        cart.push({ id: productId, size: selectedSize, qty: 1 });
+        cart.push({ id: currentDetailProductId, size: selectedSize, qty: 1 });
     }
 
     saveCart(cart);
@@ -499,7 +620,7 @@ function renderProfilePage() {
                 <i class="fa-regular fa-user"></i>
                 <h3>Ou poko konekte!</h3>
                 <p>Konekte sou kont ou pou w ka gade enfòmasyon w yo.</p>
-                <button class="btn-login" onclick="window.location.href='auth.html'">Log in / Sign up</button>
+                <button class="btn-login" onclick="navigateTo('page-auth')">Log in / Sign up</button>
             </div>
         `;
     }
@@ -509,27 +630,6 @@ function logoutUser() {
     setAuthStatus(false);
     localStorage.removeItem('store_current_user');
     renderProfilePage();
-}
-
-function switchTab(tab) {
-    const loginForm = document.getElementById('loginForm');
-    const signupForm = document.getElementById('signupForm');
-    const tabLoginBtn = document.getElementById('tabLoginBtn');
-    const tabSignupBtn = document.getElementById('tabSignupBtn');
-
-    if (!loginForm || !signupForm) return;
-
-    if (tab === 'login') {
-        loginForm.classList.remove('hidden');
-        signupForm.classList.add('hidden');
-        if (tabLoginBtn) tabLoginBtn.classList.add('active');
-        if (tabSignupBtn) tabSignupBtn.classList.remove('active');
-    } else {
-        loginForm.classList.add('hidden');
-        signupForm.classList.remove('hidden');
-        if (tabSignupBtn) tabSignupBtn.classList.add('active');
-        if (tabLoginBtn) tabLoginBtn.classList.remove('active');
-    }
 }
 
 async function handleLogin(event) {
@@ -542,14 +642,14 @@ async function handleLogin(event) {
         if (error) return alert("Erè nan konneksyon: " + error.message);
         localStorage.setItem('store_current_user', JSON.stringify({ email: data.user.email, name: data.user.user_metadata?.name || 'Kliyan' }));
         setAuthStatus(true);
-        window.location.href = 'catalog.html';
+        navigateTo('page-catalog');
     } else {
         const users = JSON.parse(localStorage.getItem('store_users') || '[]');
         const user = users.find(u => u.email === email && u.password === password);
         if (user) {
             localStorage.setItem('store_current_user', JSON.stringify(user));
             setAuthStatus(true);
-            window.location.href = 'catalog.html';
+            navigateTo('page-catalog');
         } else {
             alert('Email oswa modpas sa pa korèk!');
         }
@@ -566,7 +666,7 @@ async function handleSignUp(event) {
         const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name } } });
         if (error) return alert("Erè nan enskripsyon: " + error.message);
         alert("Enskripsyon reyisi!");
-        window.location.href = 'catalog.html';
+        navigateTo('page-catalog');
     } else {
         let users = JSON.parse(localStorage.getItem('store_users') || '[]');
         const newUser = { id: Date.now(), name, email, password };
@@ -574,7 +674,7 @@ async function handleSignUp(event) {
         localStorage.setItem('store_users', JSON.stringify(users));
         localStorage.setItem('store_current_user', JSON.stringify(newUser));
         setAuthStatus(true);
-        window.location.href = 'catalog.html';
+        navigateTo('page-catalog');
     }
 }
 
@@ -677,10 +777,10 @@ async function removeProduct(id) {
 }
 
 // ==========================================
-// 10. INIT & EVENTS
+// 10. INIT & EVENTS ON DOM LOAD
 // ==========================================
 document.addEventListener('DOMContentLoaded', async () => {
-    // 0. WELCOME PAGE SETUP
+    // SETUP WELCOME HERO
     const welcomeHero = document.getElementById('welcomeHero');
     if (welcomeHero) {
         const w = getWelcome();
@@ -694,7 +794,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (document.getElementById('welcomeText2')) document.getElementById('welcomeText2').innerText = w.text2;
     }
 
-    // WELCOME EDITOR FORM
+    // WELCOME FORM SUBMIT
     const welcomeForm = document.getElementById('welcomeForm');
     if (welcomeForm) {
         const w = getWelcome();
@@ -721,153 +821,94 @@ document.addEventListener('DOMContentLoaded', async () => {
             };
             saveWelcome(updated);
             alert('Paj Welcome la sove ak siksè!');
-            location.href = 'index.html';
+            navigateTo('page-index');
         });
     }
 
-    // BANNER
-    const featuredCard = document.getElementById('featuredCardContainer');
-    if (featuredCard) {
-        const banner = await getBanner();
-        if (banner) {
-            featuredCard.style.display = 'block';
-            featuredCard.innerHTML = `
-                <span class="badge">Nouvèl Koleksyon</span>
-                <h3>${banner.title}</h3>
-                <p class="subtitle">${banner.subtitle}</p>
-                <img src="${banner.image}" alt="${banner.title}" class="featured-shoe-img">
-            `;
-            if (banner.product_id) {
-                featuredCard.onclick = () => openDetail(banner.product_id);
-            }
-        } else {
-            featuredCard.style.display = 'none';
-        }
-    }
-
-    // CATALOG
-    if (document.getElementById('catalogProductGrid')) {
-        const products = await getProducts();
-        renderProductGrid(products);
-    }
-
-    // DETAIL PAGE
-    if (window.location.pathname.includes('detail.html')) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const productId = parseInt(urlParams.get('id'));
-        const products = await getProducts();
-        const product = products.find(p => Number(p.id) === Number(productId));
-
-        if (product) {
-            document.getElementById('productTitle').innerText = product.name;
-            document.getElementById('productPrice').innerText = `$${product.price}`;
-            document.getElementById('productImg').src = (product.images && product.images.length > 0) ? product.images[0] : 'https://via.placeholder.com/150';
-
-            const favs = getFavorites();
-            const btn = document.getElementById('detailLikeBtn');
-            if (favs.includes(productId) && btn) {
-                btn.classList.add('liked');
-                btn.querySelector('i').className = 'fa-solid fa-heart';
-            }
-
-            const sizeContainer = document.getElementById('sizeContainer');
-            if (sizeContainer && product.sizes && product.sizes.length > 0) {
-                sizeContainer.innerHTML = product.sizes.map((s, i) => `
-                    <button class="size-btn ${i === 0 ? 'active' : ''}" onclick="setActiveSize(this)">${s}</button>
-                `).join('');
-            }
-        }
-    }
-
-    // OTHER PAGES
-    if (window.location.pathname.includes('cart.html')) renderCartPage();
-    if (window.location.pathname.includes('favorite.html')) renderFavoritesPage();
-    if (window.location.pathname.includes('profil.html')) renderProfilePage();
-
     // ADMIN SUBMITS
-    if (window.location.pathname.includes('admin.html')) {
-        await renderAdminProductList();
+    const bannerForm = document.getElementById('newCollectionForm');
+    if (bannerForm) {
+        bannerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('bannerTitle').value;
+            const subtitle = document.getElementById('bannerSub').value;
+            const prodId = parseInt(document.getElementById('bannerProdId').value) || null;
 
-        const bannerForm = document.getElementById('newCollectionForm');
-        if (bannerForm) {
-            bannerForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const title = document.getElementById('bannerTitle').value;
-                const subtitle = document.getElementById('bannerSub').value;
-                const prodId = parseInt(document.getElementById('bannerProdId').value) || null;
+            const currentB = await getBanner();
+            const bannerData = {
+                title,
+                subtitle,
+                product_id: prodId,
+                image: uploadedBannerImg || (currentB ? currentB.image : 'https://via.placeholder.com/300')
+            };
 
-                const currentB = await getBanner();
-                const bannerData = {
-                    title,
-                    subtitle,
-                    product_id: prodId,
-                    image: uploadedBannerImg || (currentB ? currentB.image : 'https://via.placeholder.com/300')
-                };
-
-                if (supabase) {
-                    if (currentB && currentB.id) {
-                        await supabase.from('banners').update(bannerData).eq('id', currentB.id);
-                    } else {
-                        await supabase.from('banners').insert([bannerData]);
-                    }
+            if (supabase) {
+                if (currentB && currentB.id) {
+                    await supabase.from('banners').update(bannerData).eq('id', currentB.id);
                 } else {
-                    localStorage.setItem('store_banner', JSON.stringify(bannerData));
+                    await supabase.from('banners').insert([bannerData]);
                 }
-                alert('Banè piblisite sove!');
-            });
-        }
-
-        const addProdForm = document.getElementById('addProductForm');
-        if (addProdForm) {
-            addProdForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-
-                const editId = document.getElementById('editProductId').value;
-                const name = document.getElementById('prodName').value;
-                const price = parseFloat(document.getElementById('prodPrice').value);
-                const rawSizes = document.getElementById('prodSizes').value;
-                const rawColors = document.getElementById('prodColors').value;
-                const category = document.getElementById('prodCategory').value || 'Pwodui Jenerik';
-
-                const sizes = rawSizes ? rawSizes.split(',').map(s => s.trim()).filter(Boolean) : [];
-                const colors = rawColors ? rawColors.split(',').map(c => c.trim()).filter(Boolean) : [];
-
-                const payload = {
-                    name,
-                    price,
-                    category,
-                    sizes,
-                    colors,
-                    images: uploadedImages.length ? uploadedImages : ["https://via.placeholder.com/150"]
-                };
-
-                if (supabase) {
-                    if (editId) {
-                        const { error } = await supabase.from('products').update(payload).eq('id', Number(editId));
-                        if (error) return alert("Erè nan modifikasyon: " + error.message);
-                        alert('Pwodui modifye nan Supabase!');
-                    } else {
-                        const { error } = await supabase.from('products').insert([payload]);
-                        if (error) return alert("Erè nan anrejistreman: " + error.message);
-                        alert('Pwodui kreye nan Supabase!');
-                    }
-                } else {
-                    let products = JSON.parse(localStorage.getItem('store_products') || '[]');
-                    if (editId) {
-                        const idx = products.findIndex(p => Number(p.id) === Number(editId));
-                        if (idx > -1) products[idx] = { ...products[idx], ...payload };
-                    } else {
-                        products.unshift({ id: Date.now(), ...payload });
-                    }
-                    localStorage.setItem('store_products', JSON.stringify(products));
-                    alert('Sove nan LocalStorage!');
-                }
-
-                resetForm();
-                await renderAdminProductList();
-            });
-        }
+            } else {
+                localStorage.setItem('store_banner', JSON.stringify(bannerData));
+            }
+            alert('Banè piblisite sove!');
+        });
     }
+
+    const addProdForm = document.getElementById('addProductForm');
+    if (addProdForm) {
+        addProdForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const editId = document.getElementById('editProductId').value;
+            const name = document.getElementById('prodName').value;
+            const price = parseFloat(document.getElementById('prodPrice').value);
+            const rawSizes = document.getElementById('prodSizes').value;
+            const rawColors = document.getElementById('prodColors').value;
+            const category = document.getElementById('prodCategory').value || 'Pwodui Jenerik';
+
+            const sizes = rawSizes ? rawSizes.split(',').map(s => s.trim()).filter(Boolean) : [];
+            const colors = rawColors ? rawColors.split(',').map(c => c.trim()).filter(Boolean) : [];
+
+            const payload = {
+                name,
+                price,
+                category,
+                sizes,
+                colors,
+                images: uploadedImages.length ? uploadedImages : ["https://via.placeholder.com/150"]
+            };
+
+            if (supabase) {
+                if (editId) {
+                    const { error } = await supabase.from('products').update(payload).eq('id', Number(editId));
+                    if (error) return alert("Erè nan modifikasyon: " + error.message);
+                    alert('Pwodui modifye nan Supabase!');
+                } else {
+                    const { error } = await supabase.from('products').insert([payload]);
+                    if (error) return alert("Erè nan anrejistreman: " + error.message);
+                    alert('Pwodui kreye nan Supabase!');
+                }
+            } else {
+                let products = JSON.parse(localStorage.getItem('store_products') || '[]');
+                if (editId) {
+                    const idx = products.findIndex(p => Number(p.id) === Number(editId));
+                    if (idx > -1) products[idx] = { ...products[idx], ...payload };
+                } else {
+                    products.unshift({ id: Date.now(), ...payload });
+                }
+                localStorage.setItem('store_products', JSON.stringify(products));
+                alert('Sove nan LocalStorage!');
+            }
+
+            resetForm();
+            await renderAdminProductList();
+        });
+    }
+
+    // INITIAL LOAD OF CATALOG DATA
+    await renderCatalogPage();
+    if (document.getElementById('adminProductList')) await renderAdminProductList();
 });
 
 function setActiveSize(btn) {

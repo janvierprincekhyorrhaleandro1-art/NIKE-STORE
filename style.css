@@ -1298,3 +1298,54 @@ body {
     display: none;
     margin-bottom: 10px;
 }
+/* KACHE AK AFICHE PAJ YO */
+.page-view {
+    display: none;
+}
+
+.page-view.active {
+    display: block;
+    animation: fadeInView 0.2s ease-in-out;
+}
+
+@keyframes fadeInView {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* OVERLAY LOADER */
+.loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.loader-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.spinner {
+    width: 38px;
+    height: 38px;
+    border: 3px solid #E5E7EB;
+    border-top: 3px solid #111827;
+    border-radius: 50%;
+    animation: spinAnim 0.6s linear infinite;
+}
+
+@keyframes spinAnim {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
