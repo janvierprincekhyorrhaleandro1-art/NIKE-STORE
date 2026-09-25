@@ -4,21 +4,17 @@
 function navigateTo(targetPageId, extraData = null) {
     const loader = document.getElementById('app-loader');
     
-    // 1. Montre ti spinner/loader an
     if (loader) loader.classList.add('show');
 
     setTimeout(async () => {
-        // 2. Kache tout paj ki te parèt yo
         document.querySelectorAll('.page-view').forEach(page => {
             page.classList.remove('active');
         });
 
-        // 3. Si se paj detay, nou chaje done pwodui espesifik la
         if (targetPageId === 'page-detail' && extraData) {
             await renderDetailPage(extraData);
         }
 
-        // 4. Re-chaje done pou lòt paj espesyal yo si sa nesesè
         if (targetPageId === 'page-catalog' && typeof renderCatalogPage === 'function') {
             await renderCatalogPage();
         } else if (targetPageId === 'page-cart' && typeof renderCartPage === 'function') {
@@ -29,21 +25,17 @@ function navigateTo(targetPageId, extraData = null) {
             renderProfilePage();
         }
 
-        // 5. Afiche paj ki mande a
         const targetPage = document.getElementById(targetPageId);
         if (targetPage) {
             targetPage.classList.add('active');
         }
 
-        // Remoute anwo paj la
         window.scrollTo(0, 0);
 
-        // 6. Kache loader a
         if (loader) loader.classList.remove('show');
-    }, 200);
+    }, 150);
 }
 
-// Switch ant Login ak Register
 function switchTab(tab) {
     const loginForm = document.getElementById('loginForm');
     const signupForm = document.getElementById('signupForm');
@@ -84,54 +76,56 @@ function togglePasswordVisibility(inputId, icon) {
 const SUPABASE_URL = "https://euhubmvffjltycgzpvpb.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1aHVibXZmZmpsdHljZ3pwdnBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyMTQ5MjEsImV4cCI6MjEwNTc5MDkyMX0.eZUE3CStbSYKXTBOlFQxlEmSUhGnDjoGLsPG-CEyqKo";
 
-// Inisyalizasyon Kliyan Supabase nan Navigatè a
-const supabase = (window.supabase && SUPABASE_URL !== "YOUR_SUPABASE_URL") 
-    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) 
-    : null;
+let supabase = null;
+
+function initSupabase() {
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+        try {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log("Supabase chaje ak siksè!");
+        } catch (err) {
+            console.warn("Erè nan inisyalizasyon Supabase:", err);
+        }
+    }
+}
 
 const PAYMENT_BACKEND_URL = "https://hiv3-store.onrender.com/api/create-payment";
 
-// Variable Upload yo
 let uploadedImages = [];
 let uploadedBannerImg = "";
 let uploadedWelcomeBg = "";
 let currentDetailProductId = null;
 
 // ==========================================
-// 2. SUPABASE API HELPERS (READ / WRITE)
+// 2. SUPABASE API HELPERS
 // ==========================================
-
-// JWENN PWODUI
 async function getProducts() {
     if (!supabase) return JSON.parse(localStorage.getItem('store_products') || '[]');
     const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
     if (error) {
         console.error("Erè Supabase (getProducts):", error.message);
-        return [];
+        return JSON.parse(localStorage.getItem('store_products') || '[]');
     }
     return data || [];
 }
 
-// JWENN KATEGORI
 async function getCategories() {
     if (!supabase) return JSON.parse(localStorage.getItem('store_categories') || '[]');
     const { data, error } = await supabase.from('categories').select('name').order('created_at', { ascending: true });
     if (error) {
         console.error("Erè Supabase (getCategories):", error.message);
-        return [];
+        return JSON.parse(localStorage.getItem('store_categories') || '[]');
     }
     return data.map(c => c.name);
 }
 
-// JWENN BANÈ
 async function getBanner() {
     if (!supabase) return JSON.parse(localStorage.getItem('store_banner') || 'null');
     const { data, error } = await supabase.from('banners').select('*').limit(1).maybeSingle();
     if (error) console.error("Erè Supabase (getBanner):", error.message);
-    return data || null;
+    return data || JSON.parse(localStorage.getItem('store_banner') || 'null');
 }
 
-// WELCOME PAGE SETUP
 const defaultWelcome = {
     bgImage: "",
     badgeName: "BOUTIK MWEN",
@@ -152,7 +146,6 @@ function saveWelcome(data) {
     localStorage.setItem('store_welcome', JSON.stringify(data));
 }
 
-// LOCALSTORAGE HELPERS
 function getFavorites() {
     return JSON.parse(localStorage.getItem('store_favorites') || '[]');
 }
@@ -340,16 +333,20 @@ async function handleSearch() {
 
 function toggleLike(btn, id) {
     let favs = getFavorites();
-    const index = favs.indexOf(id);
+    const index = favs.indexOf(Number(id));
 
     if (index > -1) {
         favs.splice(index, 1);
-        btn.classList.remove('liked');
-        btn.querySelector('i').className = 'fa-regular fa-heart';
+        if (btn) {
+            btn.classList.remove('liked');
+            btn.querySelector('i').className = 'fa-regular fa-heart';
+        }
     } else {
-        favs.push(id);
-        btn.classList.add('liked');
-        btn.querySelector('i').className = 'fa-solid fa-heart';
+        favs.push(Number(id));
+        if (btn) {
+            btn.classList.add('liked');
+            btn.querySelector('i').className = 'fa-solid fa-heart';
+        }
     }
     saveFavorites(favs);
 
@@ -359,6 +356,12 @@ function toggleLike(btn, id) {
     }
 }
 
+function toggleDetailLike() {
+    if (!currentDetailProductId) return;
+    const btn = document.getElementById('detailLikeBtn');
+    toggleLike(btn, currentDetailProductId);
+}
+
 // ==========================================
 // 6. RENDER CATALOG GRID & DETAIL PAGE
 // ==========================================
@@ -366,7 +369,6 @@ async function renderCatalogPage() {
     const products = await getProducts();
     renderProductGrid(products);
 
-    // BANNER
     const featuredCard = document.getElementById('featuredCardContainer');
     if (featuredCard) {
         const banner = await getBanner();
@@ -398,7 +400,7 @@ function renderProductGrid(productsToRender) {
     }
 
     grid.innerHTML = productsToRender.map(p => {
-        const isFav = favs.includes(p.id);
+        const isFav = favs.includes(Number(p.id));
         const img = (p.images && p.images.length > 0) ? p.images[0] : 'https://via.placeholder.com/150';
         return `
             <div class="grid-card" onclick="openDetail(${p.id})">
@@ -418,7 +420,7 @@ function openDetail(id) {
 }
 
 async function renderDetailPage(productId) {
-    currentDetailProductId = productId;
+    currentDetailProductId = Number(productId);
     const products = await getProducts();
     const product = products.find(p => Number(p.id) === Number(productId));
 
@@ -440,8 +442,9 @@ async function renderDetailPage(productId) {
         }
 
         const sizeContainer = document.getElementById('sizeContainer');
-        if (sizeContainer && product.sizes && product.sizes.length > 0) {
-            sizeContainer.innerHTML = product.sizes.map((s, i) => `
+        if (sizeContainer) {
+            const sizesArr = product.sizes && product.sizes.length > 0 ? product.sizes : ['Standard'];
+            sizeContainer.innerHTML = sizesArr.map((s, i) => `
                 <button class="size-btn ${i === 0 ? 'active' : ''}" onclick="setActiveSize(this)">${s}</button>
             `).join('');
         }
@@ -499,7 +502,7 @@ async function renderCartPage() {
     let subTotal = 0;
 
     cartList.innerHTML = cart.map(item => {
-        const prod = products.find(p => p.id === item.id);
+        const prod = products.find(p => Number(p.id) === Number(item.id));
         if (!prod) return '';
         const itemTotal = prod.price * item.qty;
         subTotal += itemTotal;
@@ -536,7 +539,7 @@ function updateCartDisplayValues(subTotal, shipping) {
 }
 
 async function checkoutCart() {
-    const btn = document.querySelector('.checkout-btn') || document.querySelector('button[onclick*="checkoutCart"]');
+    const btn = document.querySelector('.btn-checkout');
     let originalText = btn ? btn.innerText : "";
     if (btn) { btn.disabled = true; btn.innerText = "N ap trete peman an..."; }
 
@@ -551,7 +554,7 @@ async function checkoutCart() {
 
         let subtotal = 0;
         cart.forEach(item => {
-            const prod = products.find(p => p.id === item.id);
+            const prod = products.find(p => Number(p.id) === Number(item.id));
             if (prod) subtotal += Number(prod.price) * Number(item.qty);
         });
 
@@ -584,7 +587,7 @@ async function renderFavoritesPage() {
 
     const favs = getFavorites();
     const products = await getProducts();
-    const favProducts = products.filter(p => favs.includes(p.id));
+    const favProducts = products.filter(p => favs.includes(Number(p.id)));
 
     if (favProducts.length === 0) {
         grid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; font-size:13px; color:var(--text-gray); margin-top:40px;">Pa gen okenn pwodui nan favori w yo.</p>`;
@@ -593,7 +596,7 @@ async function renderFavoritesPage() {
 
     grid.innerHTML = favProducts.map(p => `
         <div class="grid-card" onclick="openDetail(${p.id})">
-            <img src="${p.images[0] || 'https://via.placeholder.com/150'}" alt="${p.name}">
+            <img src="${(p.images && p.images[0]) ? p.images[0] : 'https://via.placeholder.com/150'}" alt="${p.name}">
             <div class="price">$${p.price}</div>
             <div class="name">${p.name}</div>
             <button class="like-btn liked" onclick="event.stopPropagation(); toggleLike(this, ${p.id})">
@@ -620,8 +623,8 @@ function renderProfilePage() {
             </div>
 
             <div class="profile-menu-list">
-                <div class="menu-item-card">
-                    <div class="menu-item-left"><i class="fa-solid fa-language"></i> Lang</div>
+                <div class="menu-item-card" onclick="navigateTo('page-admin')">
+                    <div class="menu-item-left"><i class="fa-solid fa-user-shield"></i> Pano Admin</div>
                     <i class="fa-solid fa-chevron-right" style="color:var(--text-gray); font-size:12px;"></i>
                 </div>
                 <div class="menu-item-card" onclick="logoutUser()" style="color:#EF4444;">
@@ -641,22 +644,37 @@ function renderProfilePage() {
     }
 }
 
-function logoutUser() {
+async function logoutUser() {
+    if (supabase) {
+        await supabase.auth.signOut();
+    }
     setAuthStatus(false);
     localStorage.removeItem('store_current_user');
     renderProfilePage();
 }
 
 async function handleLogin(event) {
-    event.preventDefault();
-    const email = document.getElementById('loginEmail').value.trim();
-    const password = document.getElementById('loginPassword').value.trim();
+    if (event) event.preventDefault();
+    const email = document.getElementById('loginEmail')?.value.trim();
+    const password = document.getElementById('loginPassword')?.value.trim();
+
+    if (!email || !password) {
+        alert("Tanpri antre imèl ak modpas ou!");
+        return;
+    }
 
     if (supabase) {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) return alert("Erè nan konneksyon: " + error.message);
-        localStorage.setItem('store_current_user', JSON.stringify({ email: data.user.email, name: data.user.user_metadata?.name || 'Kliyan' }));
+
+        const userName = data.user?.user_metadata?.name || 'Kliyan';
+        localStorage.setItem('store_current_user', JSON.stringify({ 
+            id: data.user.id,
+            email: data.user.email, 
+            name: userName 
+        }));
         setAuthStatus(true);
+        alert("Ou konekte ak siksè!");
         navigateTo('page-catalog');
     } else {
         const users = JSON.parse(localStorage.getItem('store_users') || '[]');
@@ -672,15 +690,31 @@ async function handleLogin(event) {
 }
 
 async function handleSignUp(event) {
-    event.preventDefault();
-    const name = document.getElementById('signupName').value.trim();
-    const email = document.getElementById('signupEmail').value.trim();
-    const password = document.getElementById('signupPassword').value.trim();
+    if (event) event.preventDefault();
+    const name = document.getElementById('signupName')?.value.trim();
+    const email = document.getElementById('signupEmail')?.value.trim();
+    const password = document.getElementById('signupPassword')?.value.trim();
+
+    if (!email || !password) {
+        alert("Tanpri ranpli imèl ak modpas la!");
+        return;
+    }
 
     if (supabase) {
-        const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name } } });
+        const { data, error } = await supabase.auth.signUp({ 
+            email, 
+            password, 
+            options: { data: { name } } 
+        });
         if (error) return alert("Erè nan enskripsyon: " + error.message);
+
         alert("Enskripsyon reyisi!");
+        localStorage.setItem('store_current_user', JSON.stringify({
+            id: data.user?.id,
+            email: email,
+            name: name
+        }));
+        setAuthStatus(true);
         navigateTo('page-catalog');
     } else {
         let users = JSON.parse(localStorage.getItem('store_users') || '[]');
@@ -689,6 +723,7 @@ async function handleSignUp(event) {
         localStorage.setItem('store_users', JSON.stringify(users));
         localStorage.setItem('store_current_user', JSON.stringify(newUser));
         setAuthStatus(true);
+        alert("Kont kreye an lokal!");
         navigateTo('page-catalog');
     }
 }
@@ -738,7 +773,7 @@ async function editProduct(id) {
     document.getElementById('prodSizes').value = product.sizes ? product.sizes.join(', ') : '';
     document.getElementById('prodColors').value = product.colors ? product.colors.join(', ') : '';
     document.getElementById('prodCategory').value = product.category || '';
-    
+
     const textElem = document.getElementById('selected-category-text');
     if (textElem) {
         textElem.innerText = product.category || 'Chwazi yon kategori...';
@@ -765,13 +800,13 @@ function resetForm() {
     uploadedImages = [];
     const previewBox = document.getElementById('image-preview-container');
     if (previewBox) previewBox.innerHTML = '';
-    
+
     const textElem = document.getElementById('selected-category-text');
     if (textElem) {
         textElem.innerText = 'Chwazi yon kategori...';
         textElem.style.color = 'var(--text-gray)';
     }
-    
+
     document.getElementById('formActionTitle').innerText = 'Ajoute yon Pwodwi';
     document.getElementById('submitProdBtn').innerText = 'Anregistre Pwodui a';
     document.getElementById('cancelEditBtn').style.display = 'none';
@@ -795,11 +830,11 @@ async function removeProduct(id) {
 // 10. INIT & EVENTS ON DOM LOAD
 // ==========================================
 document.addEventListener('DOMContentLoaded', async () => {
-    // Kache loader a si l te rete afiche nan demaraj paj la
+    initSupabase();
+
     const loader = document.getElementById('app-loader');
     if (loader) loader.classList.remove('show');
 
-    // SETUP WELCOME HERO
     const welcomeHero = document.getElementById('welcomeHero');
     if (welcomeHero) {
         const w = getWelcome();
@@ -813,7 +848,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (document.getElementById('welcomeText2')) document.getElementById('welcomeText2').innerText = w.text2;
     }
 
-    // WELCOME FORM SUBMIT
     const welcomeForm = document.getElementById('welcomeForm');
     if (welcomeForm) {
         const w = getWelcome();
@@ -844,7 +878,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // ADMIN SUBMITS
     const bannerForm = document.getElementById('newCollectionForm');
     if (bannerForm) {
         bannerForm.addEventListener('submit', async (e) => {
@@ -925,7 +958,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // INITIAL LOAD OF CATALOG DATA
     await renderCatalogPage();
     if (document.getElementById('adminProductList')) await renderAdminProductList();
 });
