@@ -76,12 +76,12 @@ function togglePasswordVisibility(inputId, icon) {
 const SUPABASE_URL = "https://euhubmvffjltycgzpvpb.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1aHVibXZmZmpsdHljZ3pwdnBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyMTQ5MjEsImV4cCI6MjEwNTc5MDkyMX0.eZUE3CStbSYKXTBOlFQxlEmSUhGnDjoGLsPG-CEyqKo";
 
-let supabase = null;
+let supabaseClient = null;
 
 function initSupabase() {
     if (window.supabase && typeof window.supabase.createClient === 'function') {
         try {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             console.log("Supabase chaje ak siksè!");
         } catch (err) {
             console.warn("Erè nan inisyalizasyon Supabase:", err);
@@ -100,8 +100,8 @@ let currentDetailProductId = null;
 // 2. SUPABASE API HELPERS
 // ==========================================
 async function getProducts() {
-    if (!supabase) return JSON.parse(localStorage.getItem('store_products') || '[]');
-    const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+    if (!supabaseClient) return JSON.parse(localStorage.getItem('store_products') || '[]');
+    const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
     if (error) {
         console.error("Erè Supabase (getProducts):", error.message);
         return JSON.parse(localStorage.getItem('store_products') || '[]');
@@ -110,8 +110,8 @@ async function getProducts() {
 }
 
 async function getCategories() {
-    if (!supabase) return JSON.parse(localStorage.getItem('store_categories') || '[]');
-    const { data, error } = await supabase.from('categories').select('name').order('created_at', { ascending: true });
+    if (!supabaseClient) return JSON.parse(localStorage.getItem('store_categories') || '[]');
+    const { data, error } = await supabaseClient.from('categories').select('name').order('created_at', { ascending: true });
     if (error) {
         console.error("Erè Supabase (getCategories):", error.message);
         return JSON.parse(localStorage.getItem('store_categories') || '[]');
@@ -120,8 +120,8 @@ async function getCategories() {
 }
 
 async function getBanner() {
-    if (!supabase) return JSON.parse(localStorage.getItem('store_banner') || 'null');
-    const { data, error } = await supabase.from('banners').select('*').limit(1).maybeSingle();
+    if (!supabaseClient) return JSON.parse(localStorage.getItem('store_banner') || 'null');
+    const { data, error } = await supabaseClient.from('banners').select('*').limit(1).maybeSingle();
     if (error) console.error("Erè Supabase (getBanner):", error.message);
     return data || JSON.parse(localStorage.getItem('store_banner') || 'null');
 }
@@ -257,8 +257,8 @@ async function addNewCategory() {
     if (!input) return;
     const val = input.value.trim();
     if (val) {
-        if (supabase) {
-            const { error } = await supabase.from('categories').insert([{ name: val }]);
+        if (supabaseClient) {
+            const { error } = await supabaseClient.from('categories').insert([{ name: val }]);
             if (error) return alert("Erè nan kreye kategori: " + error.message);
         } else {
             let cats = JSON.parse(localStorage.getItem('store_categories') || '[]');
@@ -272,8 +272,8 @@ async function addNewCategory() {
 async function removeCategory(catName, e) {
     if (e) e.stopPropagation();
     if (confirm(`Èske w vle siprime kategori "${catName}"?`)) {
-        if (supabase) {
-            const { error } = await supabase.from('categories').delete().eq('name', catName);
+        if (supabaseClient) {
+            const { error } = await supabaseClient.from('categories').delete().eq('name', catName);
             if (error) return alert("Erè nan efase kategori: " + error.message);
         } else {
             let cats = JSON.parse(localStorage.getItem('store_categories') || '[]');
@@ -645,8 +645,8 @@ function renderProfilePage() {
 }
 
 async function logoutUser() {
-    if (supabase) {
-        await supabase.auth.signOut();
+    if (supabaseClient) {
+        await supabaseClient.auth.signOut();
     }
     setAuthStatus(false);
     localStorage.removeItem('store_current_user');
@@ -663,8 +663,8 @@ async function handleLogin(event) {
         return;
     }
 
-    if (supabase) {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (supabaseClient) {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
         if (error) return alert("Erè nan konneksyon: " + error.message);
 
         const userName = data.user?.user_metadata?.name || 'Kliyan';
@@ -700,8 +700,8 @@ async function handleSignUp(event) {
         return;
     }
 
-    if (supabase) {
-        const { data, error } = await supabase.auth.signUp({ 
+    if (supabaseClient) {
+        const { data, error } = await supabaseClient.auth.signUp({ 
             email, 
             password, 
             options: { data: { name } } 
@@ -814,8 +814,8 @@ function resetForm() {
 
 async function removeProduct(id) {
     if (confirm("Èske w sèten ou vle siprime pwodui sa a?")) {
-        if (supabase) {
-            const { error } = await supabase.from('products').delete().eq('id', Number(id));
+        if (supabaseClient) {
+            const { error } = await supabaseClient.from('products').delete().eq('id', Number(id));
             if (error) return alert("Erè nan efase pwodui: " + error.message);
         } else {
             let products = JSON.parse(localStorage.getItem('store_products') || '[]');
@@ -894,11 +894,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 image: uploadedBannerImg || (currentB ? currentB.image : 'https://via.placeholder.com/300')
             };
 
-            if (supabase) {
+            if (supabaseClient) {
                 if (currentB && currentB.id) {
-                    await supabase.from('banners').update(bannerData).eq('id', currentB.id);
+                    await supabaseClient.from('banners').update(bannerData).eq('id', currentB.id);
                 } else {
-                    await supabase.from('banners').insert([bannerData]);
+                    await supabaseClient.from('banners').insert([bannerData]);
                 }
             } else {
                 localStorage.setItem('store_banner', JSON.stringify(bannerData));
@@ -931,13 +931,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 images: uploadedImages.length ? uploadedImages : ["https://via.placeholder.com/150"]
             };
 
-            if (supabase) {
+            if (supabaseClient) {
                 if (editId) {
-                    const { error } = await supabase.from('products').update(payload).eq('id', Number(editId));
+                    const { error } = await supabaseClient.from('products').update(payload).eq('id', Number(editId));
                     if (error) return alert("Erè nan modifikasyon: " + error.message);
                     alert('Pwodui modifye nan Supabase!');
                 } else {
-                    const { error } = await supabase.from('products').insert([payload]);
+                    const { error } = await supabaseClient.from('products').insert([payload]);
                     if (error) return alert("Erè nan anrejistreman: " + error.message);
                     alert('Pwodui kreye nan Supabase!');
                 }
