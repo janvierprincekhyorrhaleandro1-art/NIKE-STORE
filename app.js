@@ -2,6 +2,17 @@
 // 0. SPA NAVIGATION SYSTEM & ROUTER
 // ==========================================
 function navigateTo(targetPageId, extraData = null) {
+    // Kontwòl Sekirite pou Paj Admin
+    if (targetPageId === 'page-admin') {
+        const currentUser = JSON.parse(localStorage.getItem('store_current_user') || '{}');
+        const isAdmin = currentUser.email && ADMIN_EMAILS.map(e => e.toLowerCase()).includes(currentUser.email.toLowerCase());
+        
+        if (!isAdmin) {
+            alert("Aksè refize: Ou pa gen otorizasyon pou antre nan Pano Admin lan!");
+            return;
+        }
+    }
+
     const loader = document.getElementById('app-loader');
     
     if (loader) loader.classList.add('show');
@@ -75,6 +86,11 @@ function togglePasswordVisibility(inputId, icon) {
 // ==========================================
 const SUPABASE_URL = "https://euhubmvffjltycgzpvpb.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1aHVibXZmZmpsdHljZ3pwdnBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyMTQ5MjEsImV4cCI6MjEwNTc5MDkyMX0.eZUE3CStbSYKXTBOlFQxlEmSUhGnDjoGLsPG-CEyqKo";
+
+// LIS EMAIL KI GEN DWA ADMIN (Chanje ak email pa w la)
+const ADMIN_EMAILS = [
+    "emailpaw@gmail.com"
+];
 
 let supabaseClient = null;
 
@@ -612,6 +628,9 @@ function renderProfilePage() {
 
     const isLoggedIn = getAuthStatus();
     const currentUser = JSON.parse(localStorage.getItem('store_current_user') || '{}');
+    
+    // Tcheke si moun ki konekte a nan lis Admin yo
+    const isAdmin = currentUser.email && ADMIN_EMAILS.map(e => e.toLowerCase()).includes(currentUser.email.toLowerCase());
 
     if (isLoggedIn) {
         container.innerHTML = `
@@ -623,10 +642,12 @@ function renderProfilePage() {
             </div>
 
             <div class="profile-menu-list">
+                ${isAdmin ? `
                 <div class="menu-item-card" onclick="navigateTo('page-admin')">
                     <div class="menu-item-left"><i class="fa-solid fa-user-shield"></i> Pano Admin</div>
                     <i class="fa-solid fa-chevron-right" style="color:var(--text-gray); font-size:12px;"></i>
                 </div>
+                ` : ''}
                 <div class="menu-item-card" onclick="logoutUser()" style="color:#EF4444;">
                     <div class="menu-item-left"><i class="fa-solid fa-right-from-bracket" style="color:#EF4444;"></i> Dekonekte</div>
                 </div>
