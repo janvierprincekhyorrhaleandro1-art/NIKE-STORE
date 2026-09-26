@@ -89,7 +89,7 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 // LIS EMAIL KI GEN DWA ADMIN (Chanje ak email pa w la)
 const ADMIN_EMAILS = [
-    "emailpaw@gmail.com"
+    "janvierprincekhyorrhaleandro1@gmail.com"
 ];
 
 let supabaseClient = null;
