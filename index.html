@@ -8,21 +8,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom Style -->
     <link rel="stylesheet" href="style.css">
-    <!-- Bibliyotèk Supabase JS chaje senkronize pou evite erè "undefined" -->
+    <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-    <!-- ========================================== -->
-    <!-- 0. LOADER OVERLAY (ANIMASYON LOADING AN) -->
-    <!-- ========================================== -->
+    <!-- LOADER OVERLAY -->
     <div id="app-loader" class="loader-overlay">
         <div class="spinner"></div>
     </div>
 
-    <!-- ========================================== -->
     <!-- 1. PAJ WELCOME / INDEX -->
-    <!-- ========================================== -->
     <section id="page-welcome" class="page-view active">
         <div class="app-screen welcome-screen">
             <div class="welcome-hero" id="welcomeHero">
@@ -49,9 +45,7 @@
         </div>
     </section>
 
-    <!-- ========================================== -->
     <!-- 2. PAJ AUTHENTIFICATION (AUTH) -->
-    <!-- ========================================== -->
     <section id="page-auth" class="page-view">
         <div class="app-screen">
             <div class="auth-container">
@@ -95,11 +89,6 @@
                         </div>
                     </div>
 
-                    <div class="form-options">
-                        <div></div>
-                        <a href="javascript:void(0)" class="forgot-link" onclick="alert('Fonksyon sa ap disponib nan pwochen mizajou a!')"> forget password </a>
-                    </div>
-
                     <button type="submit" class="btn-submit"> Login </button>
                 </form>
 
@@ -140,16 +129,14 @@
                     <button type="submit" class="btn-submit">Sign up </button>
                 </form>
 
-                <div class="guest-link-wrapper">
-                    <a href="javascript:void(0)" onclick="navigateTo('page-catalog')">Kontinye kòm Envite</a>
+                <div class="guest-link-wrapper" style="margin-top: 15px;">
+                    <a onclick="navigateTo('page-catalog')" style="cursor: pointer;">Kontinye kòm Envite</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ========================================== -->
     <!-- 3. PAJ CATALOG / HOME -->
-    <!-- ========================================== -->
     <section id="page-catalog" class="page-view">
         <div class="app-screen catalog-screen">
             <div class="header-search">
@@ -158,7 +145,6 @@
                     <input type="text" placeholder="Search product..." id="searchInput" oninput="handleSearch()">
                 </div>
                 <button type="button" class="icon-btn" onclick="openCategoryModal()"><i class="fa-solid fa-layer-group"></i></button>
-                <button type="button" class="icon-btn" onclick="openCategoryModal()"><i class="fa-solid fa-sliders"></i></button>
             </div>
 
             <div class="featured-card" id="featuredCardContainer"></div>
@@ -166,17 +152,15 @@
             <div class="product-grid" id="catalogProductGrid"></div>
 
             <div class="bottom-nav">
-                <a href="javascript:void(0)" onclick="navigateTo('page-catalog')" class="nav-link active"><i class="fa-solid fa-house"></i></a>
-                <a href="javascript:void(0)" onclick="navigateTo('page-cart')" class="nav-link"><i class="fa-solid fa-bag-shopping"></i></a>
-                <a href="javascript:void(0)" onclick="navigateTo('page-favorite')" class="nav-link"><i class="fa-regular fa-heart"></i></a>
-                <a href="javascript:void(0)" onclick="navigateTo('page-profile')" class="nav-link"><i class="fa-regular fa-user"></i></a>
+                <a onclick="navigateTo('page-catalog')" class="nav-link active"><i class="fa-solid fa-house"></i></a>
+                <a onclick="navigateTo('page-cart')" class="nav-link"><i class="fa-solid fa-bag-shopping"></i></a>
+                <a onclick="navigateTo('page-favorite')" class="nav-link"><i class="fa-regular fa-heart"></i></a>
+                <a onclick="navigateTo('page-profile')" class="nav-link"><i class="fa-regular fa-user"></i></a>
             </div>
         </div>
     </section>
 
-    <!-- ========================================== -->
     <!-- 4. PAJ DETAIL PWODUI -->
-    <!-- ========================================== -->
     <section id="page-detail" class="page-view">
         <div class="app-screen detail-screen">
             <div class="detail-header">
@@ -212,9 +196,7 @@
         </div>
     </section>
 
-    <!-- ========================================== -->
     <!-- 5. PAJ CART (PANYEN) -->
-    <!-- ========================================== -->
     <section id="page-cart" class="page-view">
         <div class="app-screen cart-screen">
             <div class="detail-header">
@@ -222,7 +204,7 @@
                     <i class="fa-solid fa-arrow-left"></i>
                 </button>
                 <h3 style="font-weight: 800; font-size: 18px;">Cart</h3>
-                <button type="button" class="icon-btn" style="box-shadow: none;"><i class="fa-solid fa-ellipsis"></i></button>
+                <div style="width: 48px;"></div>
             </div>
 
             <div class="cart-items-container" id="cartItemsList"></div>
@@ -244,17 +226,15 @@
             </div>
 
             <div class="bottom-nav">
-                <a href="javascript:void(0)" onclick="navigateTo('page-catalog')" class="nav-link"><i class="fa-solid fa-house"></i></a>
-                <a href="javascript:void(0)" onclick="navigateTo('page-cart')" class="nav-link active"><i class="fa-solid fa-bag-shopping"></i></a>
-                <a href="javascript:void(0)" onclick="navigateTo('page-favorite')" class="nav-link"><i class="fa-regular fa-heart"></i></a>
-                <a href="javascript:void(0)" onclick="navigateTo('page-profile')" class="nav-link"><i class="fa-regular fa-user"></i></a>
+                <a onclick="navigateTo('page-catalog')" class="nav-link"><i class="fa-solid fa-house"></i></a>
+                <a onclick="navigateTo('page-cart')" class="nav-link active"><i class="fa-solid fa-bag-shopping"></i></a>
+                <a onclick="navigateTo('page-favorite')" class="nav-link"><i class="fa-regular fa-heart"></i></a>
+                <a onclick="navigateTo('page-profile')" class="nav-link"><i class="fa-regular fa-user"></i></a>
             </div>
         </div>
     </section>
 
-    <!-- ========================================== -->
     <!-- 6. PAJ FAVORIS -->
-    <!-- ========================================== -->
     <section id="page-favorite" class="page-view">
         <div class="app-screen favorite-screen">
             <div class="detail-header" style="margin-bottom: 20px;">
@@ -268,17 +248,15 @@
             <div class="product-grid" id="favoriteProductGrid"></div>
 
             <div class="bottom-nav">
-                <a href="javascript:void(0)" onclick="navigateTo('page-catalog')" class="nav-link"><i class="fa-solid fa-house"></i></a>
-                <a href="javascript:void(0)" onclick="navigateTo('page-cart')" class="nav-link"><i class="fa-solid fa-bag-shopping"></i></a>
-                <a href="javascript:void(0)" onclick="navigateTo('page-favorite')" class="nav-link active"><i class="fa-regular fa-heart"></i></a>
-                <a href="javascript:void(0)" onclick="navigateTo('page-profile')" class="nav-link"><i class="fa-regular fa-user"></i></a>
+                <a onclick="navigateTo('page-catalog')" class="nav-link"><i class="fa-solid fa-house"></i></a>
+                <a onclick="navigateTo('page-cart')" class="nav-link"><i class="fa-solid fa-bag-shopping"></i></a>
+                <a onclick="navigateTo('page-favorite')" class="nav-link active"><i class="fa-regular fa-heart"></i></a>
+                <a onclick="navigateTo('page-profile')" class="nav-link"><i class="fa-regular fa-user"></i></a>
             </div>
         </div>
     </section>
 
-    <!-- ========================================== -->
     <!-- 7. PAJ PROFIL -->
-    <!-- ========================================== -->
     <section id="page-profile" class="page-view">
         <div class="app-screen profile-screen">
             <div class="detail-header" style="margin-bottom: 10px;">
@@ -292,17 +270,15 @@
             <div id="profileContent"></div>
 
             <div class="bottom-nav">
-                <a href="javascript:void(0)" onclick="navigateTo('page-catalog')" class="nav-link"><i class="fa-solid fa-house"></i></a>
-                <a href="javascript:void(0)" onclick="navigateTo('page-cart')" class="nav-link"><i class="fa-solid fa-bag-shopping"></i></a>
-                <a href="javascript:void(0)" onclick="navigateTo('page-favorite')" class="nav-link"><i class="fa-regular fa-heart"></i></a>
-                <a href="javascript:void(0)" onclick="navigateTo('page-profile')" class="nav-link active"><i class="fa-regular fa-user"></i></a>
+                <a onclick="navigateTo('page-catalog')" class="nav-link"><i class="fa-solid fa-house"></i></a>
+                <a onclick="navigateTo('page-cart')" class="nav-link"><i class="fa-solid fa-bag-shopping"></i></a>
+                <a onclick="navigateTo('page-favorite')" class="nav-link"><i class="fa-regular fa-heart"></i></a>
+                <a onclick="navigateTo('page-profile')" class="nav-link active"><i class="fa-regular fa-user"></i></a>
             </div>
         </div>
     </section>
 
-    <!-- ========================================== -->
     <!-- 8. PAJ ADMIN -->
-    <!-- ========================================== -->
     <section id="page-admin" class="page-view">
         <div class="app-screen admin-screen">
             <div class="detail-header">
@@ -405,78 +381,7 @@
         </div>
     </section>
 
-    <!-- ========================================== -->
-    <!-- 9. PAJ EDIT WELCOME -->
-    <!-- ========================================== -->
-    <section id="page-edit-welcome" class="page-view">
-        <div class="app-screen admin-screen">
-            <div class="detail-header">
-                <button type="button" class="icon-btn" style="box-shadow: none;" onclick="navigateTo('page-welcome')">
-                    <i class="fa-solid fa-arrow-left"></i>
-                </button>
-                <h2 style="font-size: 16px; font-weight: 800;">Modifye Paj Welcome</h2>
-                <div style="width: 48px;"></div>
-            </div>
-
-            <form id="welcomeForm">
-                <div class="admin-card-section" style="margin-top: 16px;">
-                    <p class="admin-sec-title">Foto Background</p>
-                    <label for="welcomeBgInput" class="image-upload-box">
-                        <div class="upload-icon-wrapper"><i class="fa-solid fa-camera"></i></div>
-                        <span>Chwazi yon foto nan galri telefòn ou</span>
-                    </label>
-                    <input type="file" id="welcomeBgInput" accept="image/*" style="display:none;" onchange="previewWelcomeBg(event)">
-                    <div class="image-preview-container" id="welcomeBgPreview"></div>
-                </div>
-
-                <div class="admin-card-section" style="margin-top: 16px;">
-                    <p class="admin-sec-title">Badge sou Foto a</p>
-                    <div class="admin-form">
-                        <div class="form-group">
-                            <label for="wBadgeName">Non mak (egzanp: FINDORA)</label>
-                            <input type="text" id="wBadgeName" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="wBadgeSub">Su-tit badge (egzanp: DREAM HOUSE)</label>
-                            <input type="text" id="wBadgeSub" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="wBrandName">Gwo non mak (sou foto a)</label>
-                            <input type="text" id="wBrandName" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="wBrandSub">Su-tit anba non mak la</label>
-                            <input type="text" id="wBrandSub" required>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="admin-card-section" style="margin-top: 16px;">
-                    <p class="admin-sec-title">Tèks Welcome</p>
-                    <div class="admin-form">
-                        <div class="form-group">
-                            <label for="wHeading">Gwo tit (egzanp: WELCOME)</label>
-                            <input type="text" id="wHeading" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="wText1">Premye liy tèks</label>
-                            <input type="text" id="wText1" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="wText2">Dezyèm liy tèks</label>
-                            <input type="text" id="wText2" required>
-                        </div>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-checkout" style="margin-top: 20px; margin-bottom: 20px;">Anrejistre Chanjman yo</button>
-            </form>
-        </div>
-    </section>
-
-    <!-- ========================================== -->
     <!-- MODAL CATEGORIES -->
-    <!-- ========================================== -->
     <div id="category-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">

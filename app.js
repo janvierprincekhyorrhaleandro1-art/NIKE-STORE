@@ -1,6 +1,12 @@
 // ==========================================
 // 0. SPA NAVIGATION SYSTEM & ROUTER
 // ==========================================
+
+// Cache an memwa pou evite reqèt repetitif nan Supabase
+let productsCache = null;
+let categoriesCache = null;
+let bannerCache = null;
+
 function navigateTo(targetPageId, extraData = null) {
     // Kontwòl Sekirite pou Paj Admin
     if (targetPageId === 'page-admin') {
@@ -13,38 +19,30 @@ function navigateTo(targetPageId, extraData = null) {
         }
     }
 
-    const loader = document.getElementById('app-loader');
-    
-    if (loader) loader.classList.add('show');
+    // Chanje paj yo menm kote a san vye tan tann
+    document.querySelectorAll('.page-view').forEach(page => {
+        page.classList.remove('active');
+    });
 
-    setTimeout(async () => {
-        document.querySelectorAll('.page-view').forEach(page => {
-            page.classList.remove('active');
-        });
+    const targetPage = document.getElementById(targetPageId);
+    if (targetPage) {
+        targetPage.classList.add('active');
+    }
 
-        if (targetPageId === 'page-detail' && extraData) {
-            await renderDetailPage(extraData);
-        }
+    window.scrollTo(0, 0);
 
-        if (targetPageId === 'page-catalog' && typeof renderCatalogPage === 'function') {
-            await renderCatalogPage();
-        } else if (targetPageId === 'page-cart' && typeof renderCartPage === 'function') {
-            await renderCartPage();
-        } else if (targetPageId === 'page-favorite' && typeof renderFavoritesPage === 'function') {
-            await renderFavoritesPage();
-        } else if (targetPageId === 'page-profile' && typeof renderProfilePage === 'function') {
-            renderProfilePage();
-        }
-
-        const targetPage = document.getElementById(targetPageId);
-        if (targetPage) {
-            targetPage.classList.add('active');
-        }
-
-        window.scrollTo(0, 0);
-
-        if (loader) loader.classList.remove('show');
-    }, 150);
+    // Ekzekisyon an tan reyèl selon paj la
+    if (targetPageId === 'page-detail' && extraData) {
+        renderDetailPage(extraData);
+    } else if (targetPageId === 'page-catalog' && typeof renderCatalogPage === 'function') {
+        renderCatalogPage();
+    } else if (targetPageId === 'page-cart' && typeof renderCartPage === 'function') {
+        renderCartPage();
+    } else if (targetPageId === 'page-favorite' && typeof renderFavoritesPage === 'function') {
+        renderFavoritesPage();
+    } else if (targetPageId === 'page-profile' && typeof renderProfilePage === 'function') {
+        renderProfilePage();
+    }
 }
 
 function switchTab(tab) {
@@ -87,7 +85,7 @@ function togglePasswordVisibility(inputId, icon) {
 const SUPABASE_URL = "https://euhubmvffjltycgzpvpb.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1aHVibXZmZmpsdHljZ3pwdnBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyMTQ5MjEsImV4cCI6MjEwNTc5MDkyMX0.eZUE3CStbSYKXTBOlFQxlEmSUhGnDjoGLsPG-CEyqKo";
 
-// LIS EMAIL KI GEN DWA ADMIN (Chanje ak email pa w la)
+// LIS EMAIL KI GEN DWA ADMIN
 const ADMIN_EMAILS = [
     "janvierprincekhyorrhaleandro1@gmail.com"
 ];
@@ -113,33 +111,56 @@ let uploadedWelcomeBg = "";
 let currentDetailProductId = null;
 
 // ==========================================
-// 2. SUPABASE API HELPERS
+// 2. SUPABASE API HELPERS (AK CACHE FAST-LOAD)
 // ==========================================
-async function getProducts() {
-    if (!supabaseClient) return JSON.parse(localStorage.getItem('store_products') || '[]');
+async function getProducts(forceRefresh = false) {
+    if (productsCache && !forceRefresh) return productsCache;
+
+    if (!supabaseClient) {
+        productsCache = JSON.parse(localStorage.getItem('store_products') || '[]');
+        return productsCache;
+    }
+
     const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
     if (error) {
         console.error("Erè Supabase (getProducts):", error.message);
-        return JSON.parse(localStorage.getItem('store_products') || '[]');
+        productsCache = JSON.parse(localStorage.getItem('store_products') || '[]');
+    } else {
+        productsCache = data || [];
     }
-    return data || [];
+    return productsCache;
 }
 
-async function getCategories() {
-    if (!supabaseClient) return JSON.parse(localStorage.getItem('store_categories') || '[]');
+async function getCategories(forceRefresh = false) {
+    if (categoriesCache && !forceRefresh) return categoriesCache;
+
+    if (!supabaseClient) {
+        categoriesCache = JSON.parse(localStorage.getItem('store_categories') || '[]');
+        return categoriesCache;
+    }
+
     const { data, error } = await supabaseClient.from('categories').select('name').order('created_at', { ascending: true });
     if (error) {
         console.error("Erè Supabase (getCategories):", error.message);
-        return JSON.parse(localStorage.getItem('store_categories') || '[]');
+        categoriesCache = JSON.parse(localStorage.getItem('store_categories') || '[]');
+    } else {
+        categoriesCache = data.map(c => c.name);
     }
-    return data.map(c => c.name);
+    return categoriesCache;
 }
 
-async function getBanner() {
-    if (!supabaseClient) return JSON.parse(localStorage.getItem('store_banner') || 'null');
+async function getBanner(forceRefresh = false) {
+    if (bannerCache && !forceRefresh) return bannerCache;
+
+    if (!supabaseClient) {
+        bannerCache = JSON.parse(localStorage.getItem('store_banner') || 'null');
+        return bannerCache;
+    }
+
     const { data, error } = await supabaseClient.from('banners').select('*').limit(1).maybeSingle();
     if (error) console.error("Erè Supabase (getBanner):", error.message);
-    return data || JSON.parse(localStorage.getItem('store_banner') || 'null');
+    bannerCache = data || JSON.parse(localStorage.getItem('store_banner') || 'null');
+    return bannerCache;
 }
 
 const defaultWelcome = {
@@ -281,7 +302,7 @@ async function addNewCategory() {
             if (!cats.includes(val)) { cats.push(val); localStorage.setItem('store_categories', JSON.stringify(cats)); }
         }
         input.value = '';
-        await renderModalCategories();
+        await renderModalCategories(true);
     }
 }
 
@@ -296,7 +317,7 @@ async function removeCategory(catName, e) {
             cats = cats.filter(c => c !== catName);
             localStorage.setItem('store_categories', JSON.stringify(cats));
         }
-        await renderModalCategories();
+        await renderModalCategories(true);
     }
 }
 
@@ -307,8 +328,8 @@ async function filterByCategory(catName) {
     renderProductGrid(filtered);
 }
 
-async function renderModalCategories() {
-    const cats = await getCategories();
+async function renderModalCategories(forceRefresh = false) {
+    const cats = await getCategories(forceRefresh);
     const adminList = document.getElementById('adminCategoryOptionsList');
     const catalogList = document.getElementById('catalogCategoryList');
     const emptyText = `<p style="font-size:12px; color:var(--text-gray); padding:10px; text-align:center;">Pa gen okenn kategori.</p>`;
@@ -843,6 +864,7 @@ async function removeProduct(id) {
             products = products.filter(p => Number(p.id) !== Number(id));
             localStorage.setItem('store_products', JSON.stringify(products));
         }
+        await getProducts(true);
         await renderAdminProductList();
     }
 }
@@ -867,36 +889,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (document.getElementById('welcomeHeading')) document.getElementById('welcomeHeading').innerText = w.heading;
         if (document.getElementById('welcomeText1')) document.getElementById('welcomeText1').innerText = w.text1;
         if (document.getElementById('welcomeText2')) document.getElementById('welcomeText2').innerText = w.text2;
-    }
-
-    const welcomeForm = document.getElementById('welcomeForm');
-    if (welcomeForm) {
-        const w = getWelcome();
-        if (document.getElementById('wBadgeName')) document.getElementById('wBadgeName').value = w.badgeName;
-        if (document.getElementById('wBadgeSub')) document.getElementById('wBadgeSub').value = w.badgeSub;
-        if (document.getElementById('wBrandName')) document.getElementById('wBrandName').value = w.brandName;
-        if (document.getElementById('wBrandSub')) document.getElementById('wBrandSub').value = w.brandSub;
-        if (document.getElementById('wHeading')) document.getElementById('wHeading').value = w.heading;
-        if (document.getElementById('wText1')) document.getElementById('wText1').value = w.text1;
-        if (document.getElementById('wText2')) document.getElementById('wText2').value = w.text2;
-
-        welcomeForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const current = getWelcome();
-            const updated = {
-                bgImage: uploadedWelcomeBg || current.bgImage,
-                badgeName: document.getElementById('wBadgeName').value,
-                badgeSub: document.getElementById('wBadgeSub').value,
-                brandName: document.getElementById('wBrandName').value,
-                brandSub: document.getElementById('wBrandSub').value,
-                heading: document.getElementById('wHeading').value,
-                text1: document.getElementById('wText1').value,
-                text2: document.getElementById('wText2').value
-            };
-            saveWelcome(updated);
-            alert('Paj Welcome la sove ak siksè!');
-            navigateTo('page-welcome');
-        });
     }
 
     const bannerForm = document.getElementById('newCollectionForm');
@@ -924,6 +916,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else {
                 localStorage.setItem('store_banner', JSON.stringify(bannerData));
             }
+            await getBanner(true);
             alert('Banè piblisite sove!');
         });
     }
@@ -975,9 +968,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             resetForm();
+            await getProducts(true);
             await renderAdminProductList();
         });
     }
+
+    // Premye chajman nan background
+    await getProducts();
+    await getBanner();
+    await getCategories();
 
     await renderCatalogPage();
     if (document.getElementById('adminProductList')) await renderAdminProductList();
