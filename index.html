@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HIV3 - Application</title>
+    <title>HIV3</title>
     <!-- FontAwesome CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom Style -->
@@ -100,7 +100,7 @@
                         <a href="javascript:void(0)" class="forgot-link" onclick="alert('Fonksyon sa ap disponib nan pwochen mizajou a!')"> forget password </a>
                     </div>
 
-                    <button type="submit" class="btn-submit">Se Connecter</button>
+                    <button type="submit" class="btn-submit"> Login </button>
                 </form>
 
                 <form id="signupForm" class="auth-form hidden" onsubmit="handleSignUp(event)">
@@ -108,7 +108,7 @@
                         <label for="signupName">full name</label>
                         <div class="input-wrapper">
                             <i class="fa-regular fa-user field-icon"></i>
-                            <input type="text" id="signupName" placeholder="eg: Jean Baptiste" required>
+                            <input type="text" id="signupName" placeholder="eg: Hive Harper " required>
                         </div>
                     </div>
 
@@ -124,7 +124,7 @@
                         <label for="signupPassword">password</label>
                         <div class="input-wrapper">
                             <i class="fa-solid fa-lock field-icon"></i>
-                            <input type="password" id="signupPassword" placeholder="Lomwen 6 karaktè" required minlength="6">
+                            <input type="password" id="signupPassword" placeholder=" 6 digits " required minlength="6">
                             <i class="fa-regular fa-eye toggle-password" onclick="togglePasswordVisibility('signupPassword', this)"></i>
                         </div>
                     </div>
@@ -133,11 +133,11 @@
                         <label for="signupConfirmPassword">Confirm password</label>
                         <div class="input-wrapper">
                             <i class="fa-solid fa-shield-halved field-icon"></i>
-                            <input type="password" id="signupConfirmPassword" placeholder="Reantre menm modpas la" required minlength="6">
+                            <input type="password" id="signupConfirmPassword" placeholder="Confirm your password" required minlength="6">
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-submit">Créer un Compte</button>
+                    <button type="submit" class="btn-submit">Sign up </button>
                 </form>
 
                 <div class="guest-link-wrapper">
