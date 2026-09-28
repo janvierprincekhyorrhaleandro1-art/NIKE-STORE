@@ -105,6 +105,12 @@ function initSupabase() {
 
 const PAYMENT_BACKEND_URL = "https://hiv3-store.onrender.com/api/create-payment";
 
+// Rekèt pou reveye Render backend depi nan konmansman
+function warmupBackend() {
+    fetch("https://hiv3-store.onrender.com/", { method: "GET" })
+        .catch(() => { /* ignore si endpoint jeneral pa egziste */ });
+}
+
 let uploadedImages = [];
 let uploadedBannerImg = "";
 let uploadedWelcomeBg = "";
@@ -489,7 +495,7 @@ async function renderDetailPage(productId) {
 }
 
 // ==========================================
-// 7. PANYEN (CART) AK CHECKOUT
+// 7. PANYEN (CART) AK CHECKOUT (OPTIMIZE MONCASH)
 // ==========================================
 function addToCartFromDetail() {
     if (!currentDetailProductId) return;
@@ -577,15 +583,19 @@ function updateCartDisplayValues(subTotal, shipping) {
 
 async function checkoutCart() {
     const btn = document.querySelector('.btn-checkout');
-    let originalText = btn ? btn.innerText : "";
-    if (btn) { btn.disabled = true; btn.innerText = "N ap trete peman an..."; }
+    let originalText = btn ? btn.innerHTML : "Checkout Now";
+    
+    if (btn) { 
+        btn.disabled = true; 
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> N ap kouri louvri MonCash...`; 
+    }
 
     try {
         const cart = getCart();
         const products = await getProducts();
         if (!cart || cart.length === 0) {
             alert("Panye w la vid!");
-            if (btn) { btn.disabled = false; btn.innerText = originalText; }
+            if (btn) { btn.disabled = false; btn.innerHTML = originalText; }
             return;
         }
 
@@ -596,22 +606,35 @@ async function checkoutCart() {
         });
 
         const grandTotal = subtotal + 5.00;
+
+        // Kontwole tan limit (timeout) pou fetch la evite rete sispann
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 20000); // 20s max
+
         const response = await fetch(PAYMENT_BACKEND_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ amount: grandTotal, referenceId: `order_${Date.now()}` })
+            body: JSON.stringify({ amount: grandTotal, referenceId: `order_${Date.now()}` }),
+            signal: controller.signal
         });
+
+        clearTimeout(timeoutId);
 
         const data = await response.json();
         if (response.ok && data.paymentUrl) {
-            window.location.href = data.paymentUrl;
+            // Sèvi ak location.replace pou ale pi vit
+            window.location.replace(data.paymentUrl);
         } else {
-            alert("Erè nan peman: " + JSON.stringify(data));
-            if (btn) { btn.disabled = false; btn.innerText = originalText; }
+            alert("Erè nan peman: " + (data.message || JSON.stringify(data)));
+            if (btn) { btn.disabled = false; btn.innerHTML = originalText; }
         }
     } catch (err) {
-        alert("Erè: " + err.message);
-        if (btn) { btn.disabled = false; btn.innerText = originalText; }
+        if (err.name === 'AbortError') {
+            alert("Sèvè a pran anpil tan pou reponn. Tanpri reesaye ankò kounye a.");
+        } else {
+            alert("Erè nan rezo a: " + err.message);
+        }
+        if (btn) { btn.disabled = false; btn.innerHTML = originalText; }
     }
 }
 
@@ -874,6 +897,7 @@ async function removeProduct(id) {
 // ==========================================
 document.addEventListener('DOMContentLoaded', async () => {
     initSupabase();
+    warmupBackend(); // Reveye sèvè Render an rapid nan background
 
     const loader = document.getElementById('app-loader');
     if (loader) loader.classList.remove('show');
