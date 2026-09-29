@@ -238,7 +238,7 @@ body {
     width: 100%;
     height: 95px;
     object-fit: contain;
-    transform: rotate(-10deg);
+    transform: rotate(0deg);
     filter: drop-shadow(0 8px 8px rgba(0,0,0,0.1));
 }
 
@@ -268,6 +268,29 @@ body {
     font-size: 10px;
     color: var(--text-gray);
     font-weight: 600;
+}
+
+.cart-icon-btn {
+    position: relative;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    border-radius: 50%;
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 800;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    border: 2px solid #ffffff;
 }
 
 /* BOTTOM NAV */
@@ -352,7 +375,7 @@ body {
     width: 250px;
     height: 180px;
     object-fit: contain;
-    transform: rotate(-12deg);
+    transform: rotate(0deg);
     filter: drop-shadow(0 20px 20px rgba(0,0,0,0.2));
 }
 
@@ -522,7 +545,7 @@ body {
 
 .cart-summary-card {
     position: fixed;
-    bottom: 85px;
+    bottom: 16px;
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 36px);
@@ -1289,15 +1312,60 @@ body {
 }
 
 .error-message {
+    padding: 11px 14px;
+    border-radius: 14px;
+    font-size: 12px;
+    font-weight: 800;
+    display: none;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 10px;
+    animation: authMessageIn 0.25s ease-out;
+}
+
+.error-message i {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+}
+
+.error-message.error {
     background: #FEE2E2;
     color: #DC2626;
-    padding: 10px 14px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 700;
-    display: none;
-    margin-bottom: 10px;
 }
+
+.error-message.error i {
+    background: #DC2626;
+    color: #FFFFFF;
+}
+
+.error-message.success {
+    background: #E8F7EE;
+    color: #16803A;
+}
+
+.error-message.success i {
+    background: #16803A;
+    color: #FFFFFF;
+}
+
+@keyframes authMessageIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* KACHE AK AFICHE PAJ YO */
 .page-view {
     display: none;

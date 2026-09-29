@@ -199,8 +199,29 @@ function saveFavorites(favs) {
 function getCart() {
     return JSON.parse(localStorage.getItem('store_cart') || '[]');
 }
+
 function saveCart(cart) {
     localStorage.setItem('store_cart', JSON.stringify(cart));
+    updateCartBadge();
+}
+
+function updateCartBadge() {
+    const badge = document.getElementById('cartBadge');
+    if (!badge) return;
+
+    const cart = getCart();
+
+    const totalItems = cart.reduce((total, item) => {
+        return total + Number(item.qty || 0);
+    }, 0);
+
+    badge.innerText = totalItems;
+
+    if (totalItems > 0) {
+        badge.style.display = 'flex';
+    } else {
+        badge.style.display = 'none';
+    }
 }
 
 function getAuthStatus() {
@@ -537,7 +558,7 @@ async function renderCartPage() {
     const products = await getProducts();
 
     if (cart.length === 0) {
-        cartList.innerHTML = `<p style="text-align:center; font-size:13px; color:var(--text-gray); margin-top:40px;">Panyen ou vid.</p>`;
+        cartList.innerHTML = `<p style="text-align:center; font-size:13px; color:var(--text-gray); margin-top:40px;">Your cart is empty.</p>`;
         updateCartDisplayValues(0, 0);
         return;
     }
@@ -720,36 +741,70 @@ async function logoutUser() {
 
 async function handleLogin(event) {
     if (event) event.preventDefault();
+
     const email = document.getElementById('loginEmail')?.value.trim();
     const password = document.getElementById('loginPassword')?.value.trim();
+    const messageBox = document.getElementById('errorMessage');
+
+    const showMessage = (type, message, icon) => {
+        if (!messageBox) return;
+
+        messageBox.className = `error-message ${type}`;
+        messageBox.innerHTML = `
+            <i class="fa-solid ${icon}"></i>
+            <span>${message}</span>
+        `;
+        messageBox.style.display = 'flex';
+    };
 
     if (!email || !password) {
-        alert("Tanpri antre imèl ak modpas ou!");
+        showMessage('error', 'Invalid information', 'fa-xmark');
         return;
     }
 
     if (supabaseClient) {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-        if (error) return alert("Erè nan konneksyon: " + error.message);
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (error) {
+            showMessage('error', 'Invalid information', 'fa-xmark');
+            return;
+        }
 
         const userName = data.user?.user_metadata?.name || 'Kliyan';
-        localStorage.setItem('store_current_user', JSON.stringify({ 
+
+        localStorage.setItem('store_current_user', JSON.stringify({
             id: data.user.id,
-            email: data.user.email, 
-            name: userName 
+            email: data.user.email,
+            name: userName
         }));
+
         setAuthStatus(true);
-        alert("Ou konekte ak siksè!");
-        navigateTo('page-catalog');
+
+        showMessage('success', 'Successful', 'fa-check');
+
+        setTimeout(() => {
+            navigateTo('page-catalog');
+        }, 900);
+
     } else {
         const users = JSON.parse(localStorage.getItem('store_users') || '[]');
         const user = users.find(u => u.email === email && u.password === password);
+
         if (user) {
             localStorage.setItem('store_current_user', JSON.stringify(user));
             setAuthStatus(true);
-            navigateTo('page-catalog');
+
+            showMessage('success', 'Successful', 'fa-check');
+
+            setTimeout(() => {
+                navigateTo('page-catalog');
+            }, 900);
+
         } else {
-            alert('Email oswa modpas sa pa korèk!');
+            showMessage('error', 'Invalid information', 'fa-xmark');
         }
     }
 }
@@ -999,11 +1054,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Premye chajman nan background
     await getProducts();
-    await getBanner();
-    await getCategories();
+await getBanner();
+await getCategories();
 
-    await renderCatalogPage();
-    if (document.getElementById('adminProductList')) await renderAdminProductList();
+await renderCatalogPage();
+updateCartBadge();
+
+if (document.getElementById('adminProductList')) await renderAdminProductList();
 });
 
 function setActiveSize(btn) {

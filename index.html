@@ -138,27 +138,42 @@
 
     <!-- 3. PAJ CATALOG / HOME -->
     <section id="page-catalog" class="page-view">
-        <div class="app-screen catalog-screen">
-            <div class="header-search">
-                <div class="search-input-wrapper">
-                    <i class="fa-solid fa-magnifying-glass" style="color: #A0A0A0;"></i>
-                    <input type="text" placeholder="Search product..." id="searchInput" oninput="handleSearch()">
-                </div>
-                <button type="button" class="icon-btn" onclick="openCategoryModal()"><i class="fa-solid fa-layer-group"></i></button>
+    <div class="app-screen catalog-screen">
+
+        <div class="header-search">
+            <div class="search-input-wrapper">
+                <i class="fa-solid fa-magnifying-glass" style="color: #A0A0A0;"></i>
+                <input type="text" placeholder="Search product..." id="searchInput" oninput="handleSearch()">
             </div>
 
-            <div class="featured-card" id="featuredCardContainer"></div>
+            <button type="button" class="icon-btn" onclick="openCategoryModal()">
+                <i class="fa-solid fa-layer-group"></i>
+            </button>
 
-            <div class="product-grid" id="catalogProductGrid"></div>
-
-            <div class="bottom-nav">
-                <a onclick="navigateTo('page-catalog')" class="nav-link active"><i class="fa-solid fa-house"></i></a>
-                <a onclick="navigateTo('page-cart')" class="nav-link"><i class="fa-solid fa-bag-shopping"></i></a>
-                <a onclick="navigateTo('page-favorite')" class="nav-link"><i class="fa-regular fa-heart"></i></a>
-                <a onclick="navigateTo('page-profile')" class="nav-link"><i class="fa-regular fa-user"></i></a>
-            </div>
+            <button type="button" class="icon-btn cart-icon-btn" onclick="navigateTo('page-cart')">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span id="cartBadge" class="cart-badge">0</span>
+            </button>
         </div>
-    </section>
+
+        <div class="featured-card" id="featuredCardContainer"></div>
+
+        <div class="product-grid" id="catalogProductGrid"></div>
+
+        <div class="bottom-nav">
+            <a onclick="navigateTo('page-catalog')" class="nav-link active">
+                <i class="fa-solid fa-house"></i>
+            </a>
+            <a onclick="navigateTo('page-favorite')" class="nav-link">
+                <i class="fa-regular fa-heart"></i>
+            </a>
+            <a onclick="navigateTo('page-profile')" class="nav-link">
+                <i class="fa-regular fa-user"></i>
+            </a>
+        </div>
+
+    </div>
+</section>
 
     <!-- 4. PAJ DETAIL PWODUI -->
     <section id="page-detail" class="page-view">
@@ -224,13 +239,6 @@
                 </div>
                 <button type="button" class="btn-checkout" onclick="checkoutCart()">Checkout Now</button>
             </div>
-
-            <div class="bottom-nav">
-                <a onclick="navigateTo('page-catalog')" class="nav-link"><i class="fa-solid fa-house"></i></a>
-                <a onclick="navigateTo('page-cart')" class="nav-link active"><i class="fa-solid fa-bag-shopping"></i></a>
-                <a onclick="navigateTo('page-favorite')" class="nav-link"><i class="fa-regular fa-heart"></i></a>
-                <a onclick="navigateTo('page-profile')" class="nav-link"><i class="fa-regular fa-user"></i></a>
-            </div>
         </div>
     </section>
 
@@ -249,7 +257,6 @@
 
             <div class="bottom-nav">
                 <a onclick="navigateTo('page-catalog')" class="nav-link"><i class="fa-solid fa-house"></i></a>
-                <a onclick="navigateTo('page-cart')" class="nav-link"><i class="fa-solid fa-bag-shopping"></i></a>
                 <a onclick="navigateTo('page-favorite')" class="nav-link active"><i class="fa-regular fa-heart"></i></a>
                 <a onclick="navigateTo('page-profile')" class="nav-link"><i class="fa-regular fa-user"></i></a>
             </div>
@@ -271,7 +278,6 @@
 
             <div class="bottom-nav">
                 <a onclick="navigateTo('page-catalog')" class="nav-link"><i class="fa-solid fa-house"></i></a>
-                <a onclick="navigateTo('page-cart')" class="nav-link"><i class="fa-solid fa-bag-shopping"></i></a>
                 <a onclick="navigateTo('page-favorite')" class="nav-link"><i class="fa-regular fa-heart"></i></a>
                 <a onclick="navigateTo('page-profile')" class="nav-link active"><i class="fa-regular fa-user"></i></a>
             </div>
