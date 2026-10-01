@@ -7,24 +7,37 @@ let productsCache = null;
 let categoriesCache = null;
 let bannerCache = null;
 
-function navigateTo(targetPageId, extraData = null) {
+function navigateTo(targetPageId, extraData = null, addToHistory = true) {
     // Kontwòl Sekirite pou Paj Admin
-    if (targetPageId === 'page-admin') {
+    if (
+    targetPageId === 'page-admin' ||
+    targetPageId === 'page-welcome-admin') {
         const currentUser = JSON.parse(localStorage.getItem('store_current_user') || '{}');
-        const isAdmin = currentUser.email && ADMIN_EMAILS.map(e => e.toLowerCase()).includes(currentUser.email.toLowerCase());
-        
+        const isAdmin = currentUser.email &&
+            ADMIN_EMAILS.map(e => e.toLowerCase()).includes(currentUser.email.toLowerCase());
+
         if (!isAdmin) {
             alert("Aksè refize: Ou pa gen otorizasyon pou antre nan Pano Admin lan!");
             return;
         }
     }
 
-    // Chanje paj yo menm kote a san vye tan tann
+    // Anrejistre paj la nan browser history
+    if (addToHistory) {
+        history.pushState(
+            { targetPageId, extraData },
+            '',
+            `#${targetPageId}`
+        );
+    }
+
+    // Chanje paj la
     document.querySelectorAll('.page-view').forEach(page => {
         page.classList.remove('active');
     });
 
     const targetPage = document.getElementById(targetPageId);
+
     if (targetPage) {
         targetPage.classList.add('active');
     }
@@ -42,8 +55,23 @@ function navigateTo(targetPageId, extraData = null) {
         renderFavoritesPage();
     } else if (targetPageId === 'page-profile' && typeof renderProfilePage === 'function') {
         renderProfilePage();
+    } else if (targetPageId === 'page-admin' && typeof renderAdminProductList === 'function') {
+        renderAdminProductList();
     }
 }
+
+// Lè itilizatè a peze Back/Forward sou telefòn oswa navigatè
+window.addEventListener('popstate', (event) => {
+    if (event.state && event.state.targetPageId) {
+        navigateTo(
+            event.state.targetPageId,
+            event.state.extraData,
+            false
+        );
+    } else {
+        navigateTo('page-welcome', null, false);
+    }
+});
 
 function switchTab(tab) {
     const loginForm = document.getElementById('loginForm');
@@ -181,12 +209,113 @@ const defaultWelcome = {
 };
 
 function getWelcome() {
-    const saved = localStorage.getItem('store_welcome');
-    return saved ? JSON.parse(saved) : defaultWelcome;
+try {
+const saved = localStorage.getItem('store_welcome');
+return saved ? { ...defaultWelcome, ...JSON.parse(saved) } : { ...defaultWelcome };
+} catch (error) {
+console.error('Erè getWelcome:', error);
+return { ...defaultWelcome };
+}
 }
 
-function saveWelcome(data) {
+async function loadWelcomeFromServer() {
+    if (!supabaseClient) {
+        return getWelcome();
+    }
+
+    const { data, error } = await supabaseClient
+        .from('welcome_settings')
+        .select('*')
+        .eq('id', 1)
+        .maybeSingle();
+
+    if (error) {
+        console.error('Welcome load error:', error);
+        return getWelcome();
+    }
+
+    if (!data) {
+        return getWelcome();
+    }
+
+    const welcome = {
+        bgImage: data.bg_image || '',
+        badgeName: data.badge_name || defaultWelcome.badgeName,
+        badgeSub: data.badge_sub || defaultWelcome.badgeSub,
+        brandName: data.brand_name || defaultWelcome.brandName,
+        brandSub: data.brand_sub || defaultWelcome.brandSub,
+        heading: data.heading || defaultWelcome.heading,
+        text1: data.text1 || defaultWelcome.text1,
+        text2: data.text2 || defaultWelcome.text2
+    };
+
+    localStorage.setItem('store_welcome', JSON.stringify(welcome));
+
+    return welcome;
+}
+
+async function uploadWelcomeBackground(file) {
+    if (!supabaseClient) {
+        throw new Error('Supabase pa disponib.');
+    }
+
+    if (!file) return '';
+
+    const extension = file.name.split('.').pop() || 'jpg';
+    const fileName = `welcome-${Date.now()}.${extension}`;
+
+    const { error: uploadError } = await supabaseClient
+        .storage
+        .from('welcome')
+        .upload(fileName, file, {
+            cacheControl: '3600',
+            upsert: true,
+            contentType: file.type
+        });
+
+    if (uploadError) {
+        console.error('Welcome image upload error:', uploadError);
+        throw uploadError;
+    }
+
+    const { data } = supabaseClient
+        .storage
+        .from('welcome')
+        .getPublicUrl(fileName);
+
+    return data.publicUrl;
+}
+
+
+async function saveWelcome(data) {
+    if (!supabaseClient) {
+        throw new Error('Supabase pa disponib.');
+    }
+
+    const { error } = await supabaseClient
+        .from('welcome_settings')
+        .upsert({
+            id: 1,
+            bg_image: data.bgImage || '',
+            badge_name: data.badgeName || '',
+            badge_sub: data.badgeSub || '',
+            brand_name: data.brandName || '',
+            brand_sub: data.brandSub || '',
+            heading: data.heading || '',
+            text1: data.text1 || '',
+            text2: data.text2 || '',
+            updated_at: new Date().toISOString()
+        });
+
+    if (error) {
+        console.error('Welcome save error:', error);
+        throw error;
+    }
+
+    // Cache lokal la sèlman sèvi pou loading pi rapid.
     localStorage.setItem('store_welcome', JSON.stringify(data));
+
+    return true;
 }
 
 function getFavorites() {
@@ -275,18 +404,28 @@ function previewBannerImg(event) {
 function previewWelcomeBg(event) {
     const container = document.getElementById('welcomeBgPreview');
     if (!container) return;
+
     container.innerHTML = '';
+
     const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            uploadedWelcomeBg = e.target.result;
-            const img = document.createElement('img');
-            img.src = e.target.result;
-            container.appendChild(img);
-        }
-        reader.readAsDataURL(file);
+
+    if (!file) {
+        uploadedWelcomeBg = '';
+        return;
     }
+
+    uploadedWelcomeBg = file;
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.alt = 'Welcome background preview';
+        container.appendChild(img);
+    };
+
+    reader.readAsDataURL(file);
 }
 
 // ==========================================
@@ -505,19 +644,52 @@ async function renderDetailPage(productId) {
             }
         }
 
-        const sizeContainer = document.getElementById('sizeContainer');
-        if (sizeContainer) {
-            const sizesArr = product.sizes && product.sizes.length > 0 ? product.sizes : ['Standard'];
-            sizeContainer.innerHTML = sizesArr.map((s, i) => `
-                <button class="size-btn ${i === 0 ? 'active' : ''}" onclick="setActiveSize(this)">${s}</button>
-            `).join('');
-        }
+       const sizeContainer = document.getElementById('sizeContainer');
+if (sizeContainer) {
+    const sizesArr = product.sizes && product.sizes.length > 0 ? product.sizes : ['Standard'];
+    sizeContainer.innerHTML = sizesArr.map((s, i) => `
+        <button class="size-btn ${i === 0 ? 'active' : ''}" onclick="setActiveSize(this)">${s}</button>
+    `).join('');
+}
+
+// METE NOUVO KÒD LA LA
+const colorContainer = document.getElementById('colorContainer');
+
+if (colorContainer) {
+    const colors = Array.isArray(product.colors)
+        ? product.colors
+        : String(product.colors || '')
+            .split(',')
+            .map(c => c.trim())
+            .filter(Boolean);
+
+    colorContainer.innerHTML = colors.length
+        ? colors.map((color, index) => `
+            <button
+                type="button"
+                class="color-option ${index === 0 ? 'selected' : ''}"
+                style="background:${color};"
+                title="${color}"
+                onclick="selectProductColor(this, '${color.replace(/'/g, "\\'")}')">
+            </button>
+        `).join('')
+        : '<span style="color:var(--text-gray);">Pa gen koulè disponib</span>';
+}
     }
+}
+
+function selectProductColor(button, color) {
+    document.querySelectorAll('.color-option').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+
+    button.classList.add('selected');
+
+    window.selectedProductColor = color;
 }
 
 // ==========================================
 // 7. PANYEN (CART) AK CHECKOUT (OPTIMIZE MONCASH)
-// ==========================================
 function addToCartFromDetail() {
     if (!currentDetailProductId) return;
 
@@ -713,6 +885,15 @@ function renderProfilePage() {
                     <i class="fa-solid fa-chevron-right" style="color:var(--text-gray); font-size:12px;"></i>
                 </div>
                 ` : ''}
+                ${isAdmin ? `
+<div class="menu-item-card" onclick="navigateTo('page-welcome-admin')">
+    <div class="menu-item-left">
+        <i class="fa-solid fa-house"></i> Welcome Admin
+    </div>
+    <i class="fa-solid fa-chevron-right"
+       style="color:var(--text-gray); font-size:12px;"></i>
+</div>
+` : ''}
                 <div class="menu-item-card" onclick="logoutUser()" style="color:#EF4444;">
                     <div class="menu-item-left"><i class="fa-solid fa-right-from-bracket" style="color:#EF4444;"></i> Dekonekte</div>
                 </div>
@@ -1052,6 +1233,66 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+const welcomeAdminForm = document.getElementById('welcomeAdminForm');
+
+if (welcomeAdminForm) {
+    welcomeAdminForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        try {
+            const current = await loadWelcomeFromServer();
+
+            let bgImage = current.bgImage || '';
+
+            if (uploadedWelcomeBg instanceof File) {
+                bgImage = await uploadWelcomeBackground(uploadedWelcomeBg);
+            }
+
+            const welcomeData = {
+                bgImage: bgImage,
+
+                badgeName:
+                    document.getElementById('welcomeBadgeName')?.value.trim()
+                    || current.badgeName,
+
+                badgeSub:
+                    document.getElementById('welcomeBadgeSub')?.value.trim()
+                    || current.badgeSub,
+
+                brandName:
+                    document.getElementById('welcomeBrandName')?.value.trim()
+                    || current.brandName,
+
+                brandSub:
+                    document.getElementById('welcomeBrandSub')?.value.trim()
+                    || current.brandSub,
+
+                heading:
+                    document.getElementById('welcomeHeading')?.value.trim()
+                    || current.heading,
+
+                text1:
+                    document.getElementById('welcomeText1')?.value.trim()
+                    || current.text1,
+
+                text2:
+                    document.getElementById('welcomeText2')?.value.trim()
+                    || current.text2
+            };
+
+            await saveWelcome(welcomeData);
+
+            uploadedWelcomeBg = '';
+
+            alert('Welcome Admin sove avèk siksè.');
+
+        } catch (error) {
+            console.error('Welcome Admin save error:', error);
+            alert('Pa t kapab sove Welcome Admin lan.');
+        }
+    });
+}
+
     // Premye chajman nan background
     await getProducts();
 await getBanner();
@@ -1066,4 +1307,16 @@ if (document.getElementById('adminProductList')) await renderAdminProductList();
 function setActiveSize(btn) {
     document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+}
+
+function toggleWelcomeAdmin() {
+    const card = document.getElementById('welcomeAdminCard');
+
+    if (!card) return;
+
+    if (card.style.display === 'none') {
+        card.style.display = 'block';
+    } else {
+        card.style.display = 'none';
+    }
 }

@@ -206,8 +206,11 @@
             </div>
 
             <div class="detail-bottom-sheet">
-                <button type="button" class="btn-buy-now" onclick="addToCartFromDetail()" style="width: 100%; text-align: center;">Add to Cart</button>
-            </div>
+    <button type="button" class="btn-buy-now" onclick="addToCartFromDetail()">
+        <span>Add to cart</span>
+        <i class="fa-solid fa-bag-shopping"></i>
+    </button>
+</div>
         </div>
     </section>
 
@@ -275,7 +278,6 @@
             </div>
 
             <div id="profileContent"></div>
-
             <div class="bottom-nav">
                 <a onclick="navigateTo('page-catalog')" class="nav-link"><i class="fa-solid fa-house"></i></a>
                 <a onclick="navigateTo('page-favorite')" class="nav-link"><i class="fa-regular fa-heart"></i></a>
@@ -283,6 +285,162 @@
             </div>
         </div>
     </section>
+
+
+<!-- PAJ WELCOME ADMIN -->
+<section id="page-welcome-admin" class="page-view">
+    <div class="app-screen admin-screen">
+
+        <div class="detail-header">
+            <button
+                type="button"
+                class="icon-btn"
+                onclick="navigateTo('page-profile')"
+            >
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+
+            <h3 style="font-weight:800; font-size:16px;">
+                Welcome Admin
+            </h3>
+
+            <div style="width:48px;"></div>
+        </div>
+        
+<!-- WELCOME ADMIN -->
+<div class="admin-card-section welcome-admin-card">
+    <div class="welcome-admin-header">
+        <div>
+            <span class="welcome-admin-kicker">SITE CUSTOMIZATION</span>
+            <h4 class="admin-sec-title">Welcome Admin</h4>
+            <p class="welcome-admin-description">
+                Modifye sa kliyan yo wè lè yo antre sou paj Welcome la.
+            </p>
+        </div>
+        <div class="welcome-admin-icon">
+            <i class="fa-solid fa-house"></i>
+        </div>
+    </div>
+    <form id="welcomeAdminForm" class="admin-form">
+        <!-- Background -->
+        <div class="welcome-image-section">
+            <div class="form-group">
+                <label>Background Welcome</label>
+                <div
+                    class="welcome-upload-box"
+                    onclick="document.getElementById('welcome-bg-file').click()"
+                >
+                    <div class="welcome-upload-icon">
+                        <i class="fa-solid fa-image"></i>
+                    </div>
+                    <div>
+                        <strong>Chanje Background</strong>
+                        <span>Chwazi yon imaj pou paj Welcome la</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-right welcome-upload-arrow"></i>
+                    <input
+                        type="file"
+                        id="welcome-bg-file"
+                        accept="image/*"
+                        style="display:none;"
+                        onchange="previewWelcomeBg(event)"
+                    >
+                </div>
+            </div>
+            <div
+                id="welcomeBgPreview"
+                class="welcome-bg-preview"
+            ></div>
+        </div>
+        <!-- Badge -->
+        <div class="welcome-field-group">
+            <div class="welcome-field-title">
+                <i class="fa-solid fa-tag"></i>
+                <span>Badge</span>
+            </div>
+            <div class="form-group">
+                <label for="welcomeBadgeName">Badge Name</label>
+                <input
+                    type="text"
+                    id="welcomeBadgeName"
+                    placeholder="ex: BOUTIK MWEN"
+                >
+            </div>
+            <div class="form-group">
+                <label for="welcomeBadgeSub">Badge Subtitle</label>
+                <input
+                    type="text"
+                    id="welcomeBadgeSub"
+                    placeholder="ex: E-COMMERCE STORE"
+                >
+            </div>
+        </div>
+        <!-- Brand -->
+        <div class="welcome-field-group">
+            <div class="welcome-field-title">
+                <i class="fa-solid fa-store"></i>
+                <span>Brand</span>
+            </div>
+            <div class="form-group">
+                <label for="welcomeBrandName">Brand Name</label>
+                <input
+                    type="text"
+                    id="welcomeBrandName"
+                    placeholder="ex: MY STORE"
+                >
+            </div>
+            <div class="form-group">
+                <label for="welcomeBrandSub">Brand Subtitle</label>
+                <input
+                    type="text"
+                    id="welcomeBrandSub"
+                    placeholder="ex: Byenveni nan boutik nou an"
+                >
+            </div>
+        </div>
+        <!-- Main Welcome -->
+        <div class="welcome-field-group">
+            <div class="welcome-field-title">
+                <i class="fa-solid fa-pen"></i>
+                <span>Welcome Content</span>
+            </div>
+            <div class="form-group">
+                <label for="welcomeHeading">Heading</label>
+                <input
+                    type="text"
+                    id="welcomeHeading"
+                    placeholder="ex: BYENVENI"
+                >
+            </div>
+            <div class="form-group">
+                <label for="welcomeText1">Text 1</label>
+                <textarea
+                    id="welcomeText1"
+                    rows="3"
+                    placeholder="ex: Dekouvri pi bon pwodui nou yo"
+                ></textarea>
+            </div>
+            <div class="form-group">
+                <label for="welcomeText2">Text 2</label>
+                <textarea
+                    id="welcomeText2"
+                    rows="3"
+                    placeholder="ex: Achte ak tout sekirite ak konfyans"
+                ></textarea>
+            </div>
+        </div>
+        <button
+            type="submit"
+            class="welcome-save-btn"
+        >
+            <i class="fa-solid fa-check"></i>
+            <span>Sove Welcome Admin</span>
+        </button>
+    </form>
+</div>
+    </div>
+</section>
+
 
     <!-- 8. PAJ ADMIN -->
     <section id="page-admin" class="page-view">
